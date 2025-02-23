@@ -1,0 +1,7 @@
+source $HOME/.dotfiles/zsh/zshrc
+
+# Add custom scripts dir to PATH
+export PATH=$PATH:$HOME/scripts
+
+# Add user development configuration from dev-profile file
+[[ -f $HOME/dev-tools/dev-profile ]] && source $HOME/dev-tools/dev-profile
