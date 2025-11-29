@@ -148,3 +148,11 @@ alias vi=nvim
 alias l='ls -lah'
 alias la='ls -lAh'
 alias ll='ls -lh'
+
+alias kcc=kubectx
+alias kns=kubens
+
+# goenv
+export GOENV_ROOT="$HOME/.goenv"
+export PATH="$GOENV_ROOT/bin:$PATH"
+eval "$(goenv init -)"
