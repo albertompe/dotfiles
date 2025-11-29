@@ -1,18 +1,27 @@
 .DEFAULT_GOAL := install
 
+# Detect operating system
+OS := $(shell uname | tr "[:upper:]" "[:lower:]")
+
 # List of packages to manage with stow. Default: All packages in stow_packager directory
-PACKAGES ?= $(shell ls stow_packages)
+ifeq ($(OS),linux)
+PACKAGES := fonts nvim terminator tmux zsh
+else if ($(OS),darwin)
+PACKAGES := nvim tmux zsh
+else
+@echo "No stow packages defined for OS: $(OS)"
+endif
 
 # Directory where stow will look for packages
-DIR ?= $$(pwd)/stow_packages
+STOW_SRC_DIR ?= $$(pwd)/stow_packages
 
 # Default location where stow will create symbolic links
-TARGET ?= ${HOME}
+STOW_TARGET_DIR ?= ${HOME}
 
 # Stow command to create links
 STOW_CMD = stow \
-	--dir="${DIR}" \
-	--target="${TARGET}" \
+	--dir="${STOW_SRC_DIR}" \
+	--target="${STOW_TARGET_DIR}" \
 	--no-folding \
 	--dotfiles \
 	--verbose
@@ -42,8 +51,13 @@ update: packages update-submodules extra-builds restow	## Update dotfiles
 
 # Install the required APT packages
 .PHONY: packages
+ifeq ($(OS),linux)
 packages:
 	sudo apt -y install cmake make zsh neovim tmux python3-pip autojump fortune curl python3-pynvim stow
+else
+packages:
+	@echo "No package installation defined for OS: $(OS)"
+endif
 
 # Initialize git submodules
 .PHONY: init-submodules
