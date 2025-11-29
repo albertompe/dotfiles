@@ -5,11 +5,11 @@ OS := $(shell uname | tr "[:upper:]" "[:lower:]")
 
 # List of packages to manage with stow. Default: All packages in stow_packager directory
 ifeq ($(OS),linux)
-PACKAGES := fonts nvim terminator tmux zsh
-else if ($(OS),darwin)
-PACKAGES := nvim tmux zsh
+	PACKAGES := fonts nvim terminator tmux zsh
+else ifeq ($(OS),darwin)
+	PACKAGES := nvim tmux zsh
 else
-@echo "No stow packages defined for OS: $(OS)"
+	@echo "No stow packages defined for OS: $(OS)"
 endif
 
 # Directory where stow will look for packages
@@ -30,11 +30,13 @@ STOW_CMD = stow \
 # egrep + sed combined is used instead of native grep -e syntax to be
 # compatible with non GNU grep on MacOS.
 define backup_if_exists
-	checks=$$(${STOW_CMD} --no --verbose ${1} 2>&1 | \
-		egrep '\* existing target is ' | \
-		sed 's/  \* existing target is neither a link nor a directory: //'); \
+	echo "Backing up existing files for package: ${1}"; \
+	checks=$$(${STOW_CMD} --no ${1} 2>&1 | \
+		grep 'cannot stow' | \
+		sed -n 's/.*existing target \([^[:space:]]*\).*/\1/p'); \
 	for file in $$checks; do \
-		filepath=${TARGET}/$$file; \
+		echo "Found existing file to backup: $$file"; \
+		filepath=${STOW_TARGET_DIR}/$$file; \
 		backup_suffix="backup-$$(date -u +%Y%m%d%H%M%S)"; \
 		echo "Creating backup $$filepath.$$backup_suffix"; \
 		mv "$$filepath" "$$filepath.$$backup_suffix"; \
