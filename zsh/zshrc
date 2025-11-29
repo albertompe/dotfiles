@@ -144,3 +144,7 @@ umask 077
 
 alias vim=nvim
 alias vi=nvim
+
+alias l='ls -lah'
+alias la='ls -lAh'
+alias ll='ls -lh'
