@@ -74,3 +74,12 @@ if command -v terraform &> /dev/null; then
     autoload -U +X bashcompinit && bashcompinit
     complete -o nospace -C $(command -v terraform) terraform
 fi
+
+# nvm (Node Version Manager) 
+if [[ -d "/opt/homebrew/opt/nvm" ]]; then
+    export NVM_DIR="$HOME/.nvm"
+    # Load nvm
+    [ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"
+    # Load nvm bash_completion
+    [ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"
+fi
