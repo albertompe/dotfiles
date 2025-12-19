@@ -92,7 +92,6 @@ plugins=(git
 	     gcloud
 	     aws
  	     helm
-         nvm
 		 gh)
 
 source $ZSH/oh-my-zsh.sh
