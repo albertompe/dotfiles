@@ -9,3 +9,8 @@ fi
 if [[ -f $HOME/dev-tools/dev-profile ]]; then
     source $HOME/dev-tools/dev-profile
 fi
+
+# Add LM Studio bin dir to PATH
+if [[ -d $HOME/.lmstudio/bin ]]; then
+    export PATH="$PATH:$HOME/.lmstudio/bin"
+fi
