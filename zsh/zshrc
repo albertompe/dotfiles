@@ -85,7 +85,6 @@ plugins=(git
 	     chucknorris
 	     colored-man-pages
 	     colorize
-	     golang
 	     mosh
 	     pylint
 	     vagrant
