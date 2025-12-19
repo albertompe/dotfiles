@@ -4,18 +4,24 @@ source $HOME/.dotfiles/zsh/zshrc
 # Set a secure umask
 umask 077
 
-# Aliases
+# Aliases definition
 source $DOTFILES/zsh/aliases.zsh
 
-# FZF
+# FZF settings
 source $DOTFILES/zsh/fzf.zsh
+
+# macOS and Linux specific settings
+local uname="$(uname -s)"
+[[ ${uname} == "Darwin" ]] && source $DOTFILES/zsh/macos.zsh
+[[ ${uname} == "Linux" ]] && source $DOTFILES/zsh/linux.zsh
+unset uname
 
 # batdiff: use bat to show git diffs
 batdiff() {
     git diff --name-only --diff-filter=d | xargs bat --diff
 }
 
-# Add user development configuration from dev-profile file
+# Add user development settings from dev-profile file
 if [[ -f $HOME/dev-tools/dev-profile ]]; then
     source $HOME/dev-tools/dev-profile
 fi
