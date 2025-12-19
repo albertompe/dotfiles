@@ -1,5 +1,9 @@
 # macOS specific settings
 
 # Set GPG_TTY to enable gpg-agent support for pinentry
-GPG_TTY=$(tty)
-export GPG_TTY
+git() {
+    if [[ "$1" == "commit" || "$1" == "tag" ]]; then
+        export GPG_TTY=$(tty)
+    fi
+    command git "$@"
+}
