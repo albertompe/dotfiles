@@ -85,8 +85,6 @@ plugins=(git
 	     chucknorris
 	     colored-man-pages
 	     colorize
-         docker
-         docker-compose
 	     golang
 	     mosh
 	     pylint
@@ -181,4 +179,18 @@ fi
 # kubectl autocompletion
 if command -v kubectl &> /dev/null; then
     source <(kubectl completion zsh)
+fi
+
+# docker autocompletion
+if command -v docker &> /dev/null; then
+    if [ ! -d ~/.docker/completions ]; then
+        mkdir -p $HOME/.docker/completions
+    fi
+    if [ ! -f ~/.docker/completions/_docker ]; then
+        docker completion zsh > $HOME/.docker/completions/_docker
+    fi
+
+    FPATH="$HOME/.docker/completions:$FPATH"
+    autoload -Uz compinit
+    compinit
 fi
