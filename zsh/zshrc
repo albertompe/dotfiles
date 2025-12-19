@@ -89,7 +89,6 @@ plugins=(git
 	     mosh
 	     pylint
 	     vagrant
-	     terraform
 	     minikube
 	     gcloud
 	     aws
@@ -193,4 +192,10 @@ if command -v docker &> /dev/null; then
     FPATH="$HOME/.docker/completions:$FPATH"
     autoload -Uz compinit
     compinit
+fi
+
+# terraform autocompletion
+if command -v terraform &> /dev/null; then
+    autoload -U +X bashcompinit && bashcompinit
+    complete -o nospace -C $(command -v terraform) terraform
 fi
