@@ -88,7 +88,6 @@ plugins=(git
          docker
          docker-compose
 	     golang
-	     kubectl
 	     mosh
 	     pylint
 	     vagrant
@@ -97,7 +96,6 @@ plugins=(git
 	     gcloud
 	     aws
  	     helm
-         pyenv
          nvm
 		 gh)
 
@@ -174,3 +172,13 @@ eval "$(goenv init -)"
 export PYENV_ROOT="$HOME/.pyenv"
 [[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
 eval "$(pyenv init - zsh)"
+
+# oc autocompletion
+if command -v oc &> /dev/null; then
+    source <(oc completion zsh)
+fi
+
+# kubectl autocompletion
+if command -v kubectl &> /dev/null; then
+    source <(kubectl completion zsh)
+fi
