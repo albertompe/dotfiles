@@ -14,3 +14,8 @@ fi
 if [[ -d $HOME/.lmstudio/bin ]]; then
     export PATH="$PATH:$HOME/.lmstudio/bin"
 fi
+
+# Add krew (kubectl plugin manager) bin dir to PATH
+if [[ -d "${KREW_ROOT:-$HOME/.krew}/bin" ]]; then
+    export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
+fi
