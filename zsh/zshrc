@@ -128,8 +128,6 @@ source $DOTFILES/zsh/themes/p10k-lean.zsh
 
 source $DOTFILES/zsh/fzf.zsh
 
-alias hg='history | grep'
-
 batdiff() {
     git diff --name-only --diff-filter=d | xargs bat --diff
 }

@@ -1,3 +1,5 @@
+alias hg='history | grep'
+
 alias vim=nvim
 alias vi=nvim
 
