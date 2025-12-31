@@ -1,6 +1,14 @@
 # Set a secure umask
 umask 077
 
+# Set the GPG_TTY to be the same as the TTY, required to enter
+# GPG passphrases in a terminal.
+if [ -n "$TTY" ]; then
+  export GPG_TTY=$(tty)
+else
+  export GPG_TTY="$TTY"
+fi
+
 # Aliases definition
 source $DOTFILES/zsh/aliases.zsh
 
