@@ -1,5 +1,2 @@
-# Load base zsh settings
-source $HOME/.dotfiles/zsh/zshrc-base.zsh
-
 # Load custom zsh settings
 source $HOME/.dotfiles/zsh/zshrc-custom.zsh
