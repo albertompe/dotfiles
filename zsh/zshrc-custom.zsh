@@ -2,14 +2,14 @@
 umask 077
 
 # Set the GPG_TTY to be the same as the TTY, required to enter
-# GPG passphrases in a terminal.
+# GPG passphrases in a terminal
 if [ -n "$TTY" ]; then
   export GPG_TTY=$(tty)
 else
   export GPG_TTY="$TTY"
 fi
 
-# Path to the dotfiles.
+# Path to the dotfiles
 export DOTFILES="$HOME/.dotfiles"
 
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
@@ -19,16 +19,17 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
-autoload -Uz compinit
-compinit
+# Initialize zsh complations with caching
+autoload -Uz compinit && compinit -C
+
+# Set the directory where we want to store zinit and plugins
+ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
 
 # Initialize zinit, downloading it if it's not done yet
-ZINIT_HOME="${XDG_DATA_HOME:-${DOTFILES}}/zinit/zinit.git"
 if [ ! -d "$ZINIT_HOME" ]; then
    mkdir -p "$(dirname $ZINIT_HOME)"
    git clone https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"
 fi
-
 source "${ZINIT_HOME}/zinit.zsh"
 
 zinit light ohmyzsh/ohmyzsh
@@ -37,7 +38,7 @@ zinit light zsh-users/zsh-completions
 zinit light zsh-users/zsh-autosuggestions
 zinit light zsh-users/zsh-syntax-highlighting
 
-# Load Powerlevel10k theme
+# Load Powerlevel10k theme.
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 source $DOTFILES/zsh/themes/p10k-lean.zsh
 
