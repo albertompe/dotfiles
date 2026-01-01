@@ -38,13 +38,16 @@ zinit light zsh-users/zsh-completions
 zinit light zsh-users/zsh-autosuggestions
 zinit light zsh-users/zsh-syntax-highlighting
 
+# fzf configuration
 export FZF_DEFAULT_OPTS='
     --height 40%
     --layout=reverse
-    --border
-'
+    --border'
 
 # Load fzf key-bindings and completion when installing
+# CTRL-T: Fuzzy find all files and subdirectories of the working directory, and output the selection to STDOUT
+# CTRL-R: Fuzzy find through your shell history, and output the selection to STDOUT
+# ALT-C (Esc + C if using macOS): Fuzzy find all subdirectories of the working directory, and run the command “cd” with the output as argument
 zinit ice wait lucid atinit"source shell/key-bindings.zsh; source shell/completion.zsh"
 zinit light junegunn/fzf
 
