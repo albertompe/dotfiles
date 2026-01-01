@@ -8,7 +8,7 @@ Includes:
 - zsh (customized using **oh my zsh!** + **powerlevel10k**)
 - vim
 - tmux
-- fzf
+- fzf configurations and key-bindings
 - terminator
 - required fonts
 
