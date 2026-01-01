@@ -1,16 +1,14 @@
 # dotfiles
 
-Zsh usint Zinit Plugin Manager (https://github.com/zdharma-continuum/zinit).
+Zsh using Zinit Plugin Manager (https://github.com/zdharma-continuum/zinit).
 
-Installs required system packages, uses git submodules and create symlinks with GNU Stow.
-
-Includes:
+Configurations included:
 - zsh (customized using **oh my zsh!** + **powerlevel10k**)
-- vim
+- wezterm
+- neovim
 - tmux
-- fzf configurations and key-bindings
+- fzf (configurations and key-bindings)
 - terminator
-- required fonts
 
 ## Usage
 
