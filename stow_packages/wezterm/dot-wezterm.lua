@@ -30,13 +30,20 @@ config.font = wezterm.font('JetBrains Mono', { weight = 'Regular' })
 -- Cursor
 config.default_cursor_style = "SteadyBar"
 
--- Color scheme
+-- Color scheme selection based on WEZTERM_THEME environment variable
 local themes = {
 	nord = "Nord (Gogh)",
 	onedark = "One Dark (Gogh)",
 }
-config.color_scheme = themes['onedark']
 config.window_background_opacity = 1
+local success, stdout, stderr = wezterm.run_child_process({ os.getenv("SHELL"), "-c", "printenv WEZTERM_THEME" })
+if not success then
+    wezterm.log_error("Failed to get WEZTERM_THEME environment variable: " .. stderr)
+    wezterm.log_info("Defaulting to onedark theme")
+    stdout = "onedark" -- Default to onedark theme if env var is not set
+end
+local selected_theme = stdout:gsub("%s+", "") -- Trim whitespace/newline
+config.color_scheme = themes[selected_theme]
 
 -- Do not skip close pane confirmation
 config.skip_close_confirmation_for_processes_named = {}
