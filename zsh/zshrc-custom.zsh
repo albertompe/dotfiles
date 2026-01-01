@@ -39,10 +39,13 @@ zinit light zsh-users/zsh-autosuggestions
 zinit light zsh-users/zsh-syntax-highlighting
 
 # fzf configuration
-export FZF_DEFAULT_OPTS='
+export FZF_DEFAULT_OPTS="
     --height 40%
-    --layout=reverse
-    --border'
+    --layout reverse
+    --border rounded
+    --prompt '∷ '
+    --pointer ▶
+    --marker ⇒"
 
 # Load fzf key-bindings and completion when installing
 # CTRL-T: Fuzzy find all files and subdirectories of the working directory, and output the selection to STDOUT
