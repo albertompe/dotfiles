@@ -103,6 +103,12 @@ unstow:		## Remove symlincs
 .PHONY: restow
 restow: backup unstow stow	## Reapply symlinks
 
+##@ Zinit management
+
+.PHONY: zinit-update
+zinit-update:		## Update zinit and zinit plugins
+	zsh -c 'source $${HOME}/.zshrc; zinit-update'	
+
 .PHONY: help
 help:
 	@echo ""

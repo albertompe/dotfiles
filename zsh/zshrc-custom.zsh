@@ -48,6 +48,16 @@ export FZF_DEFAULT_OPTS='
 zinit ice wait lucid atinit"source shell/key-bindings.zsh; source shell/completion.zsh"
 zinit light junegunn/fzf
 
+# Update zinit and plugins
+zinit-update() {
+    echo "🔄 Updating zinit..."
+    zinit self-update
+    echo "✅ zinit updated!"
+    echo "🔄 Updating zinit plugins..."
+    zinit update --all
+    echo "✅ All zinit plugins updated!"
+}
+
 # Load Powerlevel10k theme.
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 source $DOTFILES/zsh/themes/p10k-lean.zsh
