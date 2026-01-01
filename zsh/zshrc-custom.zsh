@@ -22,6 +22,12 @@ fi
 # Initialize zsh complations with caching
 autoload -Uz compinit && compinit -C
 
+# Zsh completion styles
+zstyle ':completion:*' menu select=long-list
+zstyle ':completion:*' group-name ''
+zstyle ':completion:*' list prompt '%S%M matches%s'
+zstyle ':completion:*' max-errors 5
+
 # Set the directory where we want to store zinit and plugins
 ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
 
