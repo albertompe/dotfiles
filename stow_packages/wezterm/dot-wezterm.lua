@@ -52,14 +52,14 @@ config.skip_close_confirmation_for_processes_named = {}
 config.keys = {
     -- Create a new horizontal split and run your default program inside it
     {
-        key = 'd',
-        mods = 'CMD',
+        key = 'b',
+        mods = 'OPT | CMD',
         action = wezterm.action.SplitHorizontal { domain = 'CurrentPaneDomain' },
     },
     -- Create a new vertical split and run your default program inside it
     {
-        key = 'd',
-        mods = 'CMD|SHIFT',
+        key = 'b',
+        mods = 'CTRL | OPT | CMD',
         action = wezterm.action.SplitVertical { domain = 'CurrentPaneDomain' },
     },
     -- Move between panes using arrow keys
@@ -109,7 +109,12 @@ config.keys = {
         key = 'w',
         mods = 'OPT | CMD',
         action = wezterm.action.CloseCurrentPane { confirm = true },
-  },
+    },
+    {
+        key = 'm',
+        mods = 'OPT | CMD',
+        action = wezterm.action.TogglePaneZoomState,
+    },
 }
 
 -- URLs in Markdown files are not handled properly by default
