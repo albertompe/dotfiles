@@ -5,9 +5,9 @@ OS := $(shell uname | tr "[:upper:]" "[:lower:]")
 
 # List of packages to manage with stow. Default: All packages in stow_packager directory
 ifeq ($(OS),linux)
-	PACKAGES := fonts nvim terminator tmux zsh
+	PACKAGES := fonts nvim terminator tmux zsh wezterm
 else ifeq ($(OS),darwin)
-	PACKAGES := nvim tmux zsh
+	PACKAGES := nvim tmux zsh wezterm
 else
 	@echo "No stow packages defined for OS: $(OS)"
 endif
