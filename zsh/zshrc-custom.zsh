@@ -39,6 +39,8 @@ zinit light zsh-users/zsh-autosuggestions
 zinit light zsh-users/zsh-syntax-highlighting
 
 # fzf configuration
+export FZF_BASE="$HOME/.fzf"
+export FZF_COMPLETION_TRIGGER='**'
 export FZF_DEFAULT_OPTS="
     --height 40%
     --layout reverse
@@ -53,6 +55,17 @@ export FZF_DEFAULT_OPTS="
 # ALT-C (Esc + C if using macOS): Fuzzy find all subdirectories of the working directory, and run the command “cd” with the output as argument
 zinit ice wait lucid atinit"source shell/key-bindings.zsh; source shell/completion.zsh"
 zinit light junegunn/fzf
+
+# Custom fzf command completion runner
+_fzf_comprun() {
+  local command=$1
+  shift
+
+  case "$command" in
+    tree)         find . -type d | fzf --preview 'tree -C {}' "$@";;
+    *)            fzf "$@" ;;
+  esac
+}
 
 # Update zinit and plugins
 zinit-update() {
