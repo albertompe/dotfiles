@@ -73,7 +73,6 @@ update-submodules: init-submodules
 
 .PHONY: extra-builds
 extra-builds:
-	fzf/install --no-key-bindings --no-completion --no-update-rc
 	cd $$(pwd)/tmux/tmux-mem-cpu-load && cmake . && make
 
 ##@ Symlinks management

@@ -1,6 +1,3 @@
-[submodule "fzf"]
-	path = fzf
-	url = https://github.com/junegunn/fzf.git
 [submodule "tmux/tmux-mem-cpu-load"]
 	path = tmux/tmux-mem-cpu-load
 	url = https://github.com/thewtex/tmux-mem-cpu-load.git

@@ -38,15 +38,22 @@ zinit light zsh-users/zsh-completions
 zinit light zsh-users/zsh-autosuggestions
 zinit light zsh-users/zsh-syntax-highlighting
 
+export FZF_DEFAULT_OPTS='
+    --height 40%
+    --layout=reverse
+    --border
+'
+
+# Load fzf key-bindings and completion when installing
+zinit ice wait lucid atinit"source shell/key-bindings.zsh; source shell/completion.zsh"
+zinit light junegunn/fzf
+
 # Load Powerlevel10k theme.
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 source $DOTFILES/zsh/themes/p10k-lean.zsh
 
 # Aliases definition
 source $DOTFILES/zsh/aliases.zsh
-
-# FZF settings
-source $DOTFILES/zsh/fzf.zsh
 
 # macOS and Linux specific settings
 local uname="$(uname -s)"
