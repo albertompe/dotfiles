@@ -110,6 +110,7 @@ config.keys = {
         mods = 'OPT | CMD',
         action = wezterm.action.CloseCurrentPane { confirm = true },
     },
+    -- Toggle pane zoom state
     {
         key = 'm',
         mods = 'OPT | CMD',
