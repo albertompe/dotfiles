@@ -93,6 +93,9 @@ zinit-update() {
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [ $SELECTED_PROMPT = "p10k" ] && source $DOTFILES/zsh/p10k-themes/p10k-lean.zsh
 
+# zoxide initialization
+eval "$(zoxide init zsh)"
+
 # Aliases definition
 source $DOTFILES/zsh/aliases.zsh
 
