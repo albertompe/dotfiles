@@ -24,6 +24,7 @@ Contains configurations for several tools and applications:
 - neovim
 - tmux
 - terminator
+- eza (https://github.com/eza-community/eza)
 
 ## Usage
 
