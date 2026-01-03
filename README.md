@@ -2,7 +2,7 @@
 
 Zsh using Zinit Plugin Manager (https://github.com/zdharma-continuum/zinit).
 
-Starship prompt (https://starship.rs/) as customizable shell prompt.
+Starship prompt (https://starship.rs/) as customizable shell prompt is used by default. But, you can also use Oh My Zsh (https://ohmyz.sh/) + Powerlevel10k(https://github.com/romkatv/powerlevel10k), enabling it through the `SELECTED_PROMPT` environment variable.
 
 Dotfiles linked using GNU Stow (https://www.gnu.org/software/stow/).
 
