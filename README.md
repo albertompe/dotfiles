@@ -25,6 +25,7 @@ Contains configurations for several tools and applications:
 - tmux
 - terminator
 - eza (https://github.com/eza-community/eza)
+- zoxide (https://github.com/ajeetdsouza/zoxide)
 
 ## Usage
 
