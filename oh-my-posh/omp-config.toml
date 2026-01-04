@@ -1,0 +1,148 @@
+"$schema" = "https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/main/themes/schema.json"
+
+version = 4
+final_space = true
+tooltips_action = 'extend'
+console_title_template = '{{ .Shell }} in {{ .Folder }}'
+
+[upgrade]
+  source = 'cdn'
+  interval = '168h'
+  auto = false
+  notice = false
+
+[palette]
+  black = '#262B44'
+  blue = '#64B5F6'
+  green = '#59C9A5'
+  orange = '#F07623'
+  red = '#D81E5B'
+  white = '#E0DEF4'
+  yellow = '#F3AE35'
+
+[transient_prompt]
+  foreground_templates = [
+    "{{if gt .Code 0}}p:red{{end}}",
+    "{{if eq .Code 0}}p:grey{{end}}",
+  ]
+  background = 'transparent'
+  template = '❯ '
+
+[secondary_prompt]
+  foreground = 'p:grey'
+  background = 'transparent'
+  template = '❯❯ '
+
+[[blocks]]
+  type = 'prompt'
+  alignment = 'left'
+  newline = true
+
+  [[blocks.segments]]
+    type = 'path'
+    style = 'plain'
+    background = 'transparent'
+    foreground = 'p:blue'
+    template = '{{ .Path }}'
+
+    [blocks.segments.properties]
+      style = 'mixed'
+      mixed_threshold = 10
+
+  [[blocks.segments]]
+    type = 'git'
+    style = 'plain'
+    foreground = 'p:grey'
+    background = 'transparent'
+    template = ' {{ .HEAD }}{{ if or (.Working.Changed) (.Staging.Changed) }}*{{ end }} <cyan>{{ if gt .Behind 0 }}⇣{{ end }}{{ if gt .Ahead 0 }}⇡{{ end }}</>'
+
+    [blocks.segments.properties]
+      branch_icon = ''
+      commit_icon = '@'
+      fetch_status = true
+
+[[blocks]]
+  type = 'prompt'
+  alignment = 'left'
+  newline = true
+
+  [[blocks.segments]]
+    type = 'text'
+    style = 'plain'
+    foreground_templates = [
+      "{{if gt .Code 0}}p:red{{end}}",
+      "{{if eq .Code 0}}p:grey{{end}}",
+    ]
+    background = 'transparent'
+    template = '❯'
+
+[[blocks]]
+  type = 'rprompt'
+  overflow = 'break'
+
+  [[blocks.segments]]
+    type = 'go'
+    style = 'plain'
+    foreground = 'p:blue'
+    background = 'transparent'
+    template = ' {{ .Full }} '
+
+  [blocks.segments.options]
+    home_enabled = true
+
+  [[blocks.segments]]
+    type = 'python'
+    style = 'plain'
+    foreground = 'p:green'
+    background = 'transparent'
+    template = ' {{ .Full }}{{ if .Venv}} ({{ .Venv }}){{ end }} '
+
+  [blocks.segments.options]
+    home_enabled = true
+    display_mode = 'context'
+    tooling = [ 'pyen', 'python', 'python3', 'py', 'uv' ]
+
+[[blocks.segments]]
+  type = 'rust'
+  style = 'plain'
+  foreground = 'p:green'
+  backgroung = 'transparent'
+  template = ' {{ .Full }} '
+
+  [blocks.segments.options]
+    home_enabled = true
+
+[[blocks.segments]]
+  type = 'node'
+  style = 'plain'
+  foreground = 'p:green'
+  background = 'transparent'
+  template = ' {{ if .PackageManagerIcon }}{{ .PackageManagerIcon }} {{ end }}{{ .Full }} '
+
+  [blocks.segments.options]
+    home_enabled = true
+    fetch_package_manager = true
+
+[[blocks.segments]]
+  type = 'executiontime'
+  style = 'plain'
+  foreground = 'p:yellow'
+  background = 'transparent'
+  template = '{{ .FormattedMs }}'
+
+  [blocks.segments.properties]
+    threshold = 5000
+
+[[tooltips]]
+  type = "git"
+  tips = [ "git", "g" ]
+  style = "diamond"
+  foreground = "p:black"
+  background = "p:yellow"
+  leading_diamond = ""
+  trailing_diamond = ""
+  template = "{{ .HEAD }}{{ if .Staging.Changed }}  {{ .Staging.String }}{{ end }}{{ if and (.Working.Changed) (.Staging.Changed) }} |{{ end }}{{ if .Working.Changed }}  {{ .Working.String }}{{ end }}"
+
+  [tooltips.options]
+    fetch_status = true
+    fetch_upstream_icon = true

@@ -6,8 +6,11 @@ else
   export GPG_TTY="$TTY"
 fi
 
-# Select prompt: "p10k" or "starship"
-export SELECTED_PROMPT="starship"
+# Select prompt:
+#   - "omp": Oh my posh
+#   - "omz": Oh my zsh + powerlevel10k
+#   - "starship"
+export SELECTED_PROMPT="omp"
 
 # Global theme: "onedark" or "nord"
 export DOTFILES_THEME="onedark"

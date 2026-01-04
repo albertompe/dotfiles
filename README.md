@@ -2,7 +2,7 @@
 
 Zsh using Zinit Plugin Manager (https://github.com/zdharma-continuum/zinit).
 
-Starship prompt (https://starship.rs/) as customizable shell prompt is used by default. But, you can also use Oh My Zsh (https://ohmyz.sh/) + Powerlevel10k(https://github.com/romkatv/powerlevel10k), enabling it through the `SELECTED_PROMPT` environment variable.
+Oh my posh (https://ohmyposh.dev/) engine is used by default, with its pleasant transient prompt and minimalist configuration inspired by DreamsOfAutonomy's Zen zsh (https://github.com/dreamsofautonomy/zen-omp). But, you can also useStarship prompt (https://starship.rs/) as customizable shell prompt, or Oh My Zsh (https://ohmyz.sh/) + Powerlevel10k(https://github.com/romkatv/powerlevel10k), enabling it through the `SELECTED_PROMPT` environment variable.
 
 Dotfiles linked using GNU Stow (https://www.gnu.org/software/stow/).
 
@@ -16,6 +16,7 @@ Contains configurations for several tools and applications:
 
 ## Prerequisites
 - zsh
+- Oh my posh (https://ohmyposh.dev/)
 - git
 - stow
 - starship
