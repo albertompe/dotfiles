@@ -48,10 +48,10 @@ Pane management and navigation:
 - Switch to next pane: `prefix + o`
 - Switch to previous pane: `prefix + ;`
 - Maximize/restore current pane: `prefix + m`
-- Switch to pane on top: `prefix + k`
-- Switch to pane on bottom: `prefix + j`
-- Switch to pane on left: `prefix + h`
-- Switch to pane on right: `prefix + l`
+- Switch to pane on top: `alt + k`
+- Switch to pane on bottom: `alt + j`
+- Switch to pane on left: `alt + h`
+- Switch to pane on right: `alt + l`
 - Swap current pane with main left pane: `prefix + a`
 
 Resize panes:
