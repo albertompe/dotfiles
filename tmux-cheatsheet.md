@@ -48,10 +48,10 @@ Pane management and navigation:
 - Switch to next pane: `prefix + o`
 - Switch to previous pane: `prefix + ;`
 - Maximize/restore current pane: `prefix + m`
-- Switch to pane on top: `CTRL + k`
-- Switch to pane on bottom: `CTRL + j`
-- Switch to pane on left: `CTRL + h`
-- Switch to pane on right: `CTRL + l`
+- Switch to pane on top: `prefix + k`
+- Switch to pane on bottom: `prefix + j`
+- Switch to pane on left: `prefix + h`
+- Switch to pane on right: `prefix + l`
 - Swap current pane with main left pane: `prefix + a`
 
 Resize panes:
@@ -59,10 +59,6 @@ Resize panes:
 - Resize pane to bottom: `prefix + j` (hold `CTRL` and press `j` multiple times)
 - Resize pane to left: `prefix + h` (hold `CTRL` and press `h` multiple times)
 - Resize pane to right: `prefix + l` (hold `CTRL` and press `l` multiple times)
-- Resize pane to top by 5: `prefix + k`
-- Resize pane to bottom by 5: `prefix + j`
-- Resize pane to left by 5: `prefix + h`
-- Resize pane to right by 5: `prefix + l`
 
 Window management:
 - Create new window: `prefix + c`
