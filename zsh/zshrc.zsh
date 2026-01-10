@@ -104,6 +104,9 @@ eval "$(zoxide init zsh)"
 # Aliases definition
 source $DOTFILES/zsh/aliases.zsh
 
+# Key bindings
+source $DOTFILES/zsh/keybindings.zsh
+
 # macOS and Linux specific settings
 local uname="$(uname -s)"
 [[ ${uname} == "Darwin" ]] && source $DOTFILES/zsh/macos.zsh
