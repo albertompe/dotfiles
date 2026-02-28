@@ -8,3 +8,6 @@ system-update() {
   zinit-update
   echo "🎉 Everything's fresh and clean!"
 }
+
+# Homebrew installed tools manpages
+export MANPATH="$MANPATH:$(brew --prefix)/share/man:$HOME/.local/share/mise/installs/**/share/man"
