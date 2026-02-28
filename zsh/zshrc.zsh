@@ -128,7 +128,7 @@ if [[ -d $HOME/scripts ]]; then
     export PATH=$PATH:$HOME/scripts
 fi
 
-# Add LM Studio bin dir to PATH
+# Add LM Studio bin dir to PATH (LM Studio CLI - lms)
 if [[ -d $HOME/.lmstudio/bin ]]; then
     export PATH="$PATH:$HOME/.lmstudio/bin"
 fi
