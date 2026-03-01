@@ -13,7 +13,7 @@ fi
 export SELECTED_PROMPT="omp"
 
 # Global theme: "onedark" or "nord"
-export DOTFILES_THEME="onedark"
+export DOTFILES_THEME="nord"
 
 # Wezterm theme. DOTFILES_THEME set by default. You can override it here if needed: "onedark" or "nord"
 export WEZTERM_THEME=$DOTFILES_THEME
