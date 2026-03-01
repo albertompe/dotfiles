@@ -57,6 +57,8 @@ update: tools restow zinit-update	## Update dotfiles
 ifeq ($(OS),linux)
 tools:
 	sudo apt -y install cmake make zsh neovim tmux python3-pip autojump fortune curl python3-pynvim stow
+else ifeq ($(OS),darwin)
+	brew install stow mise oh-my-posh starship
 else
 tools:
 	@echo "No tools installation defined for OS: $(OS)"
@@ -104,3 +106,16 @@ help:
 	@echo "  make \033[36mhelp\033[0m        Shows this help"
 	@awk 'BEGIN {FS = ":.*##"} /^[a-zA-Z_0-9-]+:.*?##/ { printf "  \033[36m%-15s\033[0m %s\n", $$1, $$2 } /^##@/ { printf "\n\033[1m%s\033[0m\n", substr($$0, 5) } ' $(MAKEFILE_LIST)
 	@echo ""
+
+##@ MacOS specific tools installation
+
+.PHONY: brew-tools
+ifeq ($(OS),darwin)
+brew-tools:		## Install Homebrew formulae and casks defined in Brewfile (MacOS only)
+	brew bundle --file=./Brewfile
+endif
+
+ifeq ($(OS),darwin)
+brew-update-dump:	## Dump Homebrew formulae and casks to Brewfile (MacOS only)
+	brew bundle dump --file=./Brewfile --no-vscode --no-go --force
+endif
