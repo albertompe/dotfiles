@@ -5,9 +5,9 @@ OS := $(shell uname | tr "[:upper:]" "[:lower:]")
 
 # List of packages to manage with stow. Default: All packages in stow_packager directory
 ifeq ($(OS),linux)
-	PACKAGES := fonts nvim terminator tmux zsh wezterm
+	PACKAGES := fonts nvim terminator tmux zsh wezterm mise
 else ifeq ($(OS),darwin)
-	PACKAGES := nvim tmux zsh wezterm
+	PACKAGES := nvim tmux zsh wezterm mise
 else
 	@echo "No stow packages defined for OS: $(OS)"
 endif
@@ -46,34 +46,21 @@ endef
 ##@ Dotfiles install
 
 .PHONY: install
-install: packages init-submodules extra-builds stow		## Install required system packages, configure dotfiles and create symlinks to all packages (default)	
+install: tools stow	## Install required system tools, configure dotfiles and create symlinks (default)
+	mise install
 
 .PHONY: update
-update: packages update-submodules extra-builds restow	## Update dotfiles
+update: tools restow zinit-update	## Update dotfiles
 
-# Install the required APT packages
-.PHONY: packages
+# Install the required APT tools
+.PHONY: tools
 ifeq ($(OS),linux)
-packages:
+tools:
 	sudo apt -y install cmake make zsh neovim tmux python3-pip autojump fortune curl python3-pynvim stow
 else
-packages:
-	@echo "No package installation defined for OS: $(OS)"
+tools:
+	@echo "No tools installation defined for OS: $(OS)"
 endif
-
-# Initialize git submodules
-.PHONY: init-submodules
-init-submodules:
-	git submodule update --init --recursive
-
-# Update git submodules
-.PHONY: update-submodules
-update-submodules: init-submodules
-	git submodule foreach git pull origin master
-
-.PHONY: extra-builds
-extra-builds:
-	cd $$(pwd)/tmux/tmux-mem-cpu-load && cmake . && make
 
 ##@ Symlinks management
 

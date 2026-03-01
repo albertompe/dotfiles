@@ -98,6 +98,9 @@ zinit-update() {
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [ $SELECTED_PROMPT = "omz" ] && source $DOTFILES/zsh/p10k-themes/p10k-lean.zsh
 
+# Mise initialization
+eval "$(mise activate zsh)"
+
 # zoxide initialization
 eval "$(zoxide init zsh)"
 
@@ -138,16 +141,6 @@ if [[ -d "${KREW_ROOT:-$HOME/.krew}/bin" ]]; then
     export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
 fi
 
-# goenv
-export GOENV_ROOT="$HOME/.goenv"
-export PATH="$GOENV_ROOT/bin:$PATH"
-eval "$(goenv init -)"
-
-# pyenv
-export PYENV_ROOT="$HOME/.pyenv"
-[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
-eval "$(pyenv init - zsh)"
-
 # oc autocompletion
 if command -v oc &> /dev/null; then
     source <(oc completion zsh)
@@ -176,13 +169,4 @@ fi
 if command -v terraform &> /dev/null; then
     autoload -U +X bashcompinit && bashcompinit
     complete -o nospace -C $(command -v terraform) terraform
-fi
-
-# nvm (Node Version Manager) 
-if [[ -d "/opt/homebrew/opt/nvm" ]]; then
-    export NVM_DIR="$HOME/.nvm"
-    # Load nvm
-    [ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"
-    # Load nvm bash_completion
-    [ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"
 fi
