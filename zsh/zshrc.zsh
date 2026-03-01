@@ -93,6 +93,14 @@ zinit-update() {
     echo "✅ All zinit plugins updated!"
 }
 
+# Update mise plugins and tools
+mise-update() {
+    echo "🔄 Updating mise plugins and tools..."
+    mise plugins upgrade
+    mise upgrade
+    echo "✅ All mise plugins and tools updated!"
+}
+
 # p10k conditional configuration
 # Load Powerlevel10k theme.
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
