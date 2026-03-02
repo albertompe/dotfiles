@@ -101,6 +101,13 @@ mise-update() {
     echo "✅ All mise plugins and tools updated!"
 }
 
+# Update krew plugins
+krew-plugins-update() {
+    echo "🔄 Updating krew plugins..."
+    krew upgrade
+    echo "✅ All krew plugins updated!"
+}
+
 # p10k conditional configuration
 # Load Powerlevel10k theme.
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
