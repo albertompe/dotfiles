@@ -9,6 +9,7 @@ system-update() {
   echo "✅ brew updated!"
   zinit-update
   mise-update
+  krew-plugins-update
   echo "🎉 Everything's fresh and clean!"
 }
 

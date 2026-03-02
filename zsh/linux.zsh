@@ -8,5 +8,6 @@ system-update() {
   echo "✅ apt packages updated!"
   zinit-update
   mise-update
+  krew-plugins-update
   echo "🎉 Everything's fresh and clean!"
 }

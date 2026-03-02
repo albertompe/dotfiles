@@ -12,6 +12,9 @@ else
 	@echo "No stow packages defined for OS: $(OS)"
 endif
 
+# List of krew plugins to be installed.
+KREW_PLUGINS := krew profefe neat edit-status rabbitmq
+
 # Directory where stow will look for packages
 STOW_SRC_DIR ?= $$(pwd)/stow_packages
 
@@ -46,11 +49,13 @@ endef
 ##@ Dotfiles install
 
 .PHONY: install
-install: tools stow	## Install required system tools, configure dotfiles and create symlinks (default)
-	mise install
+install: tools stow	mise-install krew-plugins-install	## Install required system tools, configure dotfiles and create symlinks (default)
 
 .PHONY: update
-update: tools restow zinit-update	## Update dotfiles
+update: tools restow zinit-update krew-plugins-update	## Update dotfiles
+
+mise-install:
+	mise install
 
 # Install the required APT tools
 .PHONY: tools
@@ -119,3 +124,11 @@ ifeq ($(OS),darwin)
 brew-update-dump:	## Dump Homebrew formulae and casks to Brewfile (MacOS only)
 	brew bundle dump --file=./Brewfile --no-vscode --no-go --force
 endif
+
+##@ Krew management
+
+krew-plugins-install:		## Install krew plugins defined in KREW_PLUGINS variable
+	krew install $(KREW_PLUGINS)
+
+krew-plugins-update:		## Update krew plugins defined in KREW_PLUGINS variable
+	krew upgrade
