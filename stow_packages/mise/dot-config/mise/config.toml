@@ -2,6 +2,7 @@
 ansible = "latest"
 bat = "latest"
 black = "latest"
+claude-code = "latest"
 cmake = "latest"
 conftest = "latest"
 ctop = "latest"
@@ -31,6 +32,7 @@ make = { version = "latest", install_env = { MAKE_CHECK_SIGNATURES = "no" } }
 minikube = "latest"
 neovim = "latest"
 oc = "latest"
+opencode = "latest"
 operator-sdk = "latest"
 pipx = "latest"
 podman = { version = "latest", matching = "podman-remote" }
