@@ -122,7 +122,7 @@ endif
 
 ifeq ($(OS),darwin)
 brew-update-dump:	## Dump Homebrew formulae and casks to Brewfile (MacOS only)
-	brew bundle dump --file=./Brewfile --no-vscode --no-go --force
+	brew bundle dump --file=./Brewfile --no-vscode --no-go --no-krew --force
 endif
 
 ##@ Krew management
