@@ -188,3 +188,16 @@ fi
 
 # Antigravity
 export PATH="/Users/amz/.antigravity/antigravity/bin:$PATH"
+
+# Fuzzy search in command history with up/down arrows
+# 1. Load the functions for searching through the command history
+autoload -U up-line-or-beginning-search
+autoload -U down-line-or-beginning-search
+
+# 2. Load the zle widgets for the up/down search functions
+zle -N up-line-or-beginning-search
+zle -N down-line-or-beginning-search
+
+# 3. Bind the keys (compatible with most terminals)
+bindkey "^[[A" up-line-or-beginning-search
+bindkey "^[[B" down-line-or-beginning-search
