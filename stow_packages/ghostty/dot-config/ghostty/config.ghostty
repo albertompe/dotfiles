@@ -1,0 +1,27 @@
+# Navegación entre paneles
+keybind = alt+arrow_up=goto_split:up
+keybind = alt+arrow_down=goto_split:down
+keybind = alt+arrow_left=goto_split:left
+keybind = alt+arrow_right=goto_split:right
+keybind = alt+k=goto_split:up
+keybind = alt+j=goto_split:down
+keybind = alt+h=goto_split:left
+keybind = alt+l=goto_split:right
+
+keybind = ctrl+shift+o=new_split:right
+keybind = ctrl+shift+e=new_split:down
+
+# Cerrar la superficie activa
+keybind = ctrl+shift+q=close_surface
+
+# Confirmar antes de cerrar cualquier superficie
+confirm-close-surface = always
+
+#font-family = "MesloLGS NF Regular"
+
+font-size = 11
+
+#theme = Nord
+#theme = Obsidian
+#theme = iTerm2 Solarized Dark
+theme = Atom One Dark
