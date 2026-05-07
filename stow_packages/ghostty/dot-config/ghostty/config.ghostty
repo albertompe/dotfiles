@@ -1,4 +1,4 @@
-# Navegación entre paneles
+# Pane navigation
 keybind = alt+arrow_up=goto_split:up
 keybind = alt+arrow_down=goto_split:down
 keybind = alt+arrow_left=goto_split:left
@@ -8,19 +8,21 @@ keybind = alt+j=goto_split:down
 keybind = alt+h=goto_split:left
 keybind = alt+l=goto_split:right
 
+# Window split
 keybind = ctrl+shift+o=new_split:right
 keybind = ctrl+shift+e=new_split:down
 
-# Cerrar la superficie activa
+# Close active surface
 keybind = ctrl+shift+q=close_surface
 
-# Confirmar antes de cerrar cualquier superficie
+# Ask for confirmation before closing any surface
 confirm-close-surface = always
 
+# Font configuration
 #font-family = "MesloLGS NF Regular"
-
 font-size = 11
 
+# Theme configuration
 #theme = Nord
 #theme = Obsidian
 #theme = iTerm2 Solarized Dark
