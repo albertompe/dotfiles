@@ -12,6 +12,12 @@ keybind = alt+l=goto_split:right
 keybind = ctrl+shift+o=new_split:right
 keybind = ctrl+shift+e=new_split:down
 
+# Split resizing
+keybind = super+ctrl+arrow_up=resize_split:up,10
+keybind = super+ctrl+arrow_down=resize_split:down,10
+keybind = super+ctrl+arrow_right=resize_split:right,10
+keybind = super+ctrl+arrow_left=resize_split:left,10
+
 # Close active surface
 keybind = ctrl+shift+q=close_surface
 
