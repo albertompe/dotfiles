@@ -11,9 +11,9 @@ config.check_for_updates = false
 -- Window configuration
 config.initial_cols = 120
 config.initial_rows = 28
-config.window_decorations = "RESIZE"
+-- config.window_decorations = "RESIZE"
 config.window_close_confirmation = "AlwaysPrompt"
-config.use_fancy_tab_bar = false
+config.use_fancy_tab_bar = true
 config.tab_bar_at_bottom = false
 config.window_padding = {
     left = 8,
