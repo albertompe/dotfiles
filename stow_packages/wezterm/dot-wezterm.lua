@@ -54,72 +54,29 @@ config.skip_close_confirmation_for_processes_named = {}
 -- Keybindings
 config.keys = {
     -- Create a new horizontal split and run your default program inside it
-    {
-        key = 'b',
-        mods = 'OPT | CMD',
-        action = wezterm.action.SplitHorizontal { domain = 'CurrentPaneDomain' },
-    },
+    { key = 'e', mods = 'CTRL | SHIFT', action = wezterm.action.SplitHorizontal { domain = 'CurrentPaneDomain' }, },
     -- Create a new vertical split and run your default program inside it
-    {
-        key = 'b',
-        mods = 'CTRL | OPT | CMD',
-        action = wezterm.action.SplitVertical { domain = 'CurrentPaneDomain' },
-    },
+    { key = 'o', mods = 'CTRL | SHIFT', action = wezterm.action.SplitVertical { domain = 'CurrentPaneDomain' }, },
     -- Move between panes using arrow keys
-    {
-        key = 'LeftArrow',
-        mods = 'OPT | CMD',
-        action = wezterm.action.ActivatePaneDirection 'Left',
-    },
-    {
-        key = 'RightArrow',
-        mods = 'OPT | CMD',
-        action = wezterm.action.ActivatePaneDirection 'Right',
-    },
-    {
-        key = 'UpArrow',
-        mods = 'OPT | CMD',
-        action = wezterm.action.ActivatePaneDirection 'Up',
-    },
-    {
-        key = 'DownArrow',
-        mods = 'OPT | CMD',
-        action = wezterm.action.ActivatePaneDirection 'Down',
-    },
+    { key = 'LeftArrow', mods = 'ALT', action = wezterm.action.ActivatePaneDirection 'Left', },
+    { key = 'RightArrow', mods = 'ALT', action = wezterm.action.ActivatePaneDirection 'Right', },
+    { key = 'UpArrow', mods = 'ALT', action = wezterm.action.ActivatePaneDirection 'Up', },
+    { key = 'DownArrow', mods = 'ALT', action = wezterm.action.ActivatePaneDirection 'Down', },
     -- Navigate between panes using hjkl keys
-    {
-        key = 'h',
-        mods = 'OPT | CMD',
-        action = wezterm.action.ActivatePaneDirection 'Left',
-    },
-    {
-        key = 'l',
-        mods = 'OPT | CMD',
-        action = wezterm.action.ActivatePaneDirection 'Right',
-    },
-    {
-        key = 'k',
-        mods = 'OPT | CMD',
-        action = wezterm.action.ActivatePaneDirection 'Up',
-    },
-    {
-        key = 'j',
-        mods = 'OPT | CMD',
-        action = wezterm.action.ActivatePaneDirection 'Down',
-    },
+    { key = 'h', mods = 'ALT', action = wezterm.action.ActivatePaneDirection 'Left', },
+    { key = 'l', mods = 'ALT', action = wezterm.action.ActivatePaneDirection 'Right', },
+    { key = 'k', mods = 'ALT', action = wezterm.action.ActivatePaneDirection 'Up', },
+    { key = 'j', mods = 'ALT', action = wezterm.action.ActivatePaneDirection 'Down', },
     -- Close current pane
-    {
-        key = 'w',
-        mods = 'OPT | CMD',
-        action = wezterm.action.CloseCurrentPane { confirm = true },
-    },
+    { key = 'w', mods = 'OPT | CMD', action = wezterm.action.CloseCurrentPane { confirm = true }, },
     -- Toggle pane zoom state
-    {
-        key = 'm',
-        mods = 'OPT | CMD',
-        action = wezterm.action.TogglePaneZoomState,
-    },
+    { key = 'm', mods = 'OPT | CMD', action = wezterm.action.TogglePaneZoomState, },
 }
+
+-- Navigate beteen tabs using ALT + 1-9
+for i = 1, 9 do
+  table.insert(config.keys, { key = tostring(i), mods = 'ALT', action = wezterm.action.ActivateTab(i - 1), })
+end
 
 -- URLs in Markdown files are not handled properly by default
 -- Source: https://github.com/wez/wezterm/issues/3803#issuecomment-1608954312
