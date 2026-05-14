@@ -180,6 +180,11 @@ if command -v docker &> /dev/null; then
     compinit
 fi
 
+# podman autocompletion
+if command -v podman &> /dev/null; then
+    source <(podman completion zsh)
+fi
+
 # terraform autocompletion
 if command -v terraform &> /dev/null; then
     autoload -U +X bashcompinit && bashcompinit
