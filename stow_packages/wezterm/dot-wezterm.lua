@@ -4,6 +4,9 @@ local wezterm = require 'wezterm'
 --This will hold the configuration
 local config = wezterm.config_builder()
 
+-- Disable native Wayland to avoid crashing on scaled displays
+config.enable_wayland = false
+
 -- Application behaviour
 config.automatically_reload_config = true
 config.check_for_updates = false
