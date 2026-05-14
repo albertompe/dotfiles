@@ -20,6 +20,14 @@ export WEZTERM_THEME=$DOTFILES_THEME
 # Starship theme. DOTFILES_THEME set by default. You can override it here if needed: "onedark" or "nord"
 export STARSHIP_THEME=$DOTFILES_THEME
 
-# Use Neovim as default editor
-export EDITOR="nvim"
-export VISUAL="nvim"
+# Set the default editor (Zed if installed and not in a ssh connection, nvim otherwise)
+if [ -n "$SSH_CONNECTION" ] || [ -n "$SSH_CLIENT" ]; then
+  export EDITOR="nvim"
+  export VISUAL="nvim"
+elif [ -x "/opt/homebrew/bin/zed" ] || [ -x "$HOME/.local/bin/zed" ] || [ -x "/usr/local/bin/zed" ]; then
+  export VISUAL="zed --wait"
+  export EDITOR="zed --wait"
+else
+  export EDITOR="nvim"
+  export VISUAL="nvim"
+fi
