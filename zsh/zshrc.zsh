@@ -185,6 +185,11 @@ if command -v podman &> /dev/null; then
     source <(podman completion zsh)
 fi
 
+# k3d autocompletion
+if command -v k3d &> /dev/null; then
+    source <(k3d completion zsh)
+fi
+
 # terraform autocompletion
 if command -v terraform &> /dev/null; then
     autoload -U +X bashcompinit && bashcompinit
