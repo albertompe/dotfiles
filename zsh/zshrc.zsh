@@ -39,6 +39,9 @@ zinit light zsh-users/zsh-completions
 zinit light zsh-users/zsh-autosuggestions
 zinit light zsh-users/zsh-syntax-highlighting
 
+# Mise initialization
+eval "$(mise activate zsh)"
+
 # Oh my posh conditional configuration
 if [ $SELECTED_PROMPT = "omp" ]; then
     eval "$(oh-my-posh init zsh --config $DOTFILES/oh-my-posh/omp-config.toml)"
@@ -115,9 +118,6 @@ krew-plugins-update() {
 # Load Powerlevel10k theme.
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [ $SELECTED_PROMPT = "omz" ] && source $DOTFILES/zsh/p10k-themes/p10k-lean.zsh
-
-# Mise initialization
-eval "$(mise activate zsh)"
 
 # zoxide initialization
 eval "$(zoxide init zsh)"
