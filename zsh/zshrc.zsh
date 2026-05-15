@@ -211,6 +211,8 @@ autoload -U down-line-or-beginning-search
 zle -N up-line-or-beginning-search
 zle -N down-line-or-beginning-search
 
-# 3. Bind the keys (compatible with most terminals)
+# 3. Bind the keys (Compatibilidad total Ubuntu, macOS y SSH)
 bindkey "^[[A" up-line-or-beginning-search
+bindkey "^[OA" up-line-or-beginning-search
 bindkey "^[[B" down-line-or-beginning-search
+bindkey "^[OB" down-line-or-beginning-search
