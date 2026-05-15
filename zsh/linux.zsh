@@ -9,5 +9,11 @@ system-update() {
   zinit-update
   mise-update
   krew-plugins-update
+  echo "🔄 Updating snaps..."
+  sudo snap refresh
+  echo "✅ snaps updated!"
+  echo "🔄 Updating flatpaks..."
+  sudo flatpack update -y
+  echo "✅ flatpaks updated!"
   echo "🎉 Everything's fresh and clean!"
 }
