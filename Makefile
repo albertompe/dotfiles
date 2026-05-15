@@ -57,11 +57,13 @@ update: tools restow zinit-update krew-plugins-update	## Update dotfiles
 mise-install:
 	mise install
 
-# Install the required APT tools
+# Install the required tools and apps
 .PHONY: tools
 ifeq ($(OS),linux)
 tools:
 	sudo apt -y install cmake make zsh neovim tmux python3-pip autojump fortune curl python3-pynvim stow
+	@echo "Installing Zed..."
+	curl -f https://zed.dev/install.sh | sh
 else ifeq ($(OS),darwin)
 	brew install stow mise oh-my-posh starship
 else
