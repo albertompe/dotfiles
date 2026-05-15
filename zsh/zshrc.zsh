@@ -14,8 +14,20 @@ setopt append_history         # Append commands to the file instead of overwriti
 setopt share_history          # Share history across tabs opened at the same time
 setopt hist_ignore_all_dups   # Do not save consecutive duplicate commands
 
-# Add local bin dir to PATH
-export PATH=$PATH:$HOME/.local/bin
+# Fuzzy search in command history with up/down arrows
+# 1. Load the functions for searching through the command history
+autoload -U up-line-or-beginning-search
+autoload -U down-line-or-beginning-search
+
+# 2. Load the zle widgets for the up/down search functions
+zle -N up-line-or-beginning-search
+zle -N down-line-or-beginning-search
+
+# 3. Bind the keys (Compatibilidad total Ubuntu, macOS y SSH)
+bindkey "^[[A" up-line-or-beginning-search
+bindkey "^[OA" up-line-or-beginning-search
+bindkey "^[[B" down-line-or-beginning-search
+bindkey "^[OB" down-line-or-beginning-search
 
 # p10k conditional configuration
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
@@ -34,6 +46,9 @@ zstyle ':completion:*' group-name ''
 zstyle ':completion:*' list prompt '%S%M matches%s'
 zstyle ':completion:*' max-errors 5
 
+
+## zinit configuration
+
 # Set the directory where we want to store zinit and plugins
 ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
 
@@ -49,7 +64,10 @@ zinit light zsh-users/zsh-completions
 zinit light zsh-users/zsh-autosuggestions
 zinit light zsh-users/zsh-syntax-highlighting
 
-# Mise initialization
+
+## Prompt configuration
+
+# Mise initialization (we need to initialize mise here to have omp available)
 eval "$(mise activate zsh)"
 
 # Oh my posh conditional configuration
@@ -70,7 +88,15 @@ if [ $SELECTED_PROMPT = "starship" ]; then
     starship config palette $STARSHIP_THEME
 fi
 
-# fzf configuration
+# p10k conditional configuration
+# Load Powerlevel10k theme.
+# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
+[ $SELECTED_PROMPT = "omz" ] && source $DOTFILES/zsh/p10k-themes/p10k-lean.zsh
+
+
+## fzf configuration
+
+# fzf base configuration
 export FZF_BASE="$HOME/.fzf"
 export FZF_COMPLETION_TRIGGER='**'
 export FZF_DEFAULT_OPTS="
@@ -99,35 +125,8 @@ _fzf_comprun() {
   esac
 }
 
-# Update zinit and plugins
-zinit-update() {
-    echo "🔄 Updating zinit..."
-    zinit self-update
-    echo "✅ zinit updated!"
-    echo "🔄 Updating zinit plugins..."
-    zinit update --all
-    echo "✅ All zinit plugins updated!"
-}
 
-# Update mise plugins and tools
-mise-update() {
-    echo "🔄 Updating mise plugins and tools..."
-    mise plugins upgrade
-    mise upgrade
-    echo "✅ All mise plugins and tools updated!"
-}
-
-# Update krew plugins
-krew-plugins-update() {
-    echo "🔄 Updating krew plugins..."
-    krew upgrade
-    echo "✅ All krew plugins updated!"
-}
-
-# p10k conditional configuration
-# Load Powerlevel10k theme.
-# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
-[ $SELECTED_PROMPT = "omz" ] && source $DOTFILES/zsh/p10k-themes/p10k-lean.zsh
+## Custom experience configuration
 
 # zoxide initialization
 eval "$(zoxide init zsh)"
@@ -144,10 +143,11 @@ local uname="$(uname -s)"
 [[ ${uname} == "Linux" ]] && source $DOTFILES/zsh/linux.zsh
 unset uname
 
-# batdiff: use bat to show git diffs
-batdiff() {
-    git diff --name-only --diff-filter=d | xargs bat --diff
-}
+
+## Configure the PATH
+
+# Add local bin dir to PATH
+export PATH=$PATH:$HOME/.local/bin
 
 # Add user development settings from dev-profile file
 if [[ -f $HOME/dev-tools/dev-profile ]]; then
@@ -168,6 +168,12 @@ fi
 if [[ -d "${KREW_ROOT:-$HOME/.krew}/bin" ]]; then
     export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
 fi
+
+# Antigravity
+export PATH="/Users/amz/.antigravity/antigravity/bin:$PATH"
+
+
+## Configure autocompletions
 
 # oc autocompletion
 if command -v oc &> /dev/null; then
@@ -209,20 +215,35 @@ if command -v terraform &> /dev/null; then
     complete -o nospace -C $(command -v terraform) terraform
 fi
 
-# Antigravity
-export PATH="/Users/amz/.antigravity/antigravity/bin:$PATH"
 
-# Fuzzy search in command history with up/down arrows
-# 1. Load the functions for searching through the command history
-autoload -U up-line-or-beginning-search
-autoload -U down-line-or-beginning-search
+## Functions definition
 
-# 2. Load the zle widgets for the up/down search functions
-zle -N up-line-or-beginning-search
-zle -N down-line-or-beginning-search
+# Update zinit and plugins
+zinit-update() {
+    echo "🔄 Updating zinit..."
+    zinit self-update
+    echo "✅ zinit updated!"
+    echo "🔄 Updating zinit plugins..."
+    zinit update --all
+    echo "✅ All zinit plugins updated!"
+}
 
-# 3. Bind the keys (Compatibilidad total Ubuntu, macOS y SSH)
-bindkey "^[[A" up-line-or-beginning-search
-bindkey "^[OA" up-line-or-beginning-search
-bindkey "^[[B" down-line-or-beginning-search
-bindkey "^[OB" down-line-or-beginning-search
+# Update mise plugins and tools
+mise-update() {
+    echo "🔄 Updating mise plugins and tools..."
+    mise plugins upgrade
+    mise upgrade
+    echo "✅ All mise plugins and tools updated!"
+}
+
+# Update krew plugins
+krew-plugins-update() {
+    echo "🔄 Updating krew plugins..."
+    krew upgrade
+    echo "✅ All krew plugins updated!"
+}
+
+# batdiff: use bat to show git diffs
+batdiff() {
+    git diff --name-only --diff-filter=d | xargs bat --diff
+}
