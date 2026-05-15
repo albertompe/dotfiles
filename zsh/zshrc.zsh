@@ -4,6 +4,16 @@ umask 077
 # Path to the dotfiles
 export DOTFILES="$HOME/.dotfiles"
 
+# Zsh history configuration
+HISTFILE=$HOME/.zsh_history   # Location of the history file
+HISTSIZE=10000                # Number of commands kept in internal memory
+SAVEHIST=10000                # Number of commands physically saved to the file
+
+# Advanced history options
+setopt append_history         # Append commands to the file instead of overwriting it
+setopt share_history          # Share history across tabs opened at the same time
+setopt hist_ignore_all_dups   # Do not save consecutive duplicate commands
+
 # Add local bin dir to PATH
 export PATH=$PATH:$HOME/.local/bin
 
