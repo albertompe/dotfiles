@@ -25,8 +25,8 @@ if [ -n "$SSH_CONNECTION" ] || [ -n "$SSH_CLIENT" ]; then
   export EDITOR="nvim"
   export VISUAL="nvim"
 elif [ -x "/opt/homebrew/bin/zed" ] || [ -x "$HOME/.local/bin/zed" ] || [ -x "/usr/local/bin/zed" ]; then
-  export VISUAL="zed --wait"
-  export EDITOR="zed --wait"
+  export VISUAL="zed --new --wait"
+  export EDITOR="zed --new --wait"
 else
   export EDITOR="nvim"
   export VISUAL="nvim"
