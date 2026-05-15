@@ -32,6 +32,7 @@ make = { version = "latest", install_env = { MAKE_CHECK_SIGNATURES = "no" } }
 minikube = "latest"
 neovim = "latest"
 oc = "latest"
+oh-my-posh = "latest"
 opencode = "latest"
 operator-sdk = "latest"
 pipx = "latest"
