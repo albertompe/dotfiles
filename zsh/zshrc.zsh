@@ -4,6 +4,9 @@ umask 077
 # Path to the dotfiles
 export DOTFILES="$HOME/.dotfiles"
 
+# Add local bin dir to PATH
+export PATH=$PATH:$HOME/.local/bin
+
 # p10k conditional configuration
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
