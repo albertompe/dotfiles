@@ -61,7 +61,12 @@ mise-install:
 .PHONY: tools
 ifeq ($(OS),linux)
 tools:
-	sudo apt -y install cmake make zsh neovim tmux python3-pip autojump fortune curl python3-pynvim stow
+	@echo "Adding Wezterm apt repository..."
+	curl -fsSL https://apt.fury.io/wez/gpg.key | sudo gpg --yes --dearmor -o /usr/share/keyrings/wezterm-fury.gpg
+	echo 'deb [signed-by=/usr/share/keyrings/wezterm-fury.gpg] https://apt.fury.io/wez/ * *' | sudo tee /etc/apt/sources.list.d/wezterm.list
+	sudo chmod 644 /usr/share/keyrings/wezterm-fury.gpg
+	@echo "Installing apt packages..."
+	sudo apt -y install cmake make zsh neovim tmux python3-pip autojump fortune curl python3-pynvim stow wezterm
 	@echo "Installing Zed..."
 	curl -f https://zed.dev/install.sh | sh
 else ifeq ($(OS),darwin)
