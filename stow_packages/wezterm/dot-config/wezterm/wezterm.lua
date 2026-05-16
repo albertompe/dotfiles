@@ -26,7 +26,7 @@ config.window_padding = {
 }
 
 -- Font
-config.font_size = 10
+config.font_size = 11
 config.adjust_window_size_when_changing_font_size = false
 config.font = wezterm.font('JetBrains Mono', { weight = 'Regular' })
 
