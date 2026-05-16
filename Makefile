@@ -140,3 +140,12 @@ krew-plugins-install:		## Install krew plugins defined in KREW_PLUGINS variable
 
 krew-plugins-update:		## Update krew plugins defined in KREW_PLUGINS variable
 	krew upgrade
+
+##@ Zed configuration
+
+ifeq ($(OS),linux)
+installed-plugins-list:	## Get the list of the installed plugins in the right format to include to the configuration to auto-installed
+	echo "{" && ls ~/.local/share/zed/extensions/installed/ | sed 's/.*/  "&": true,/' | sed '$$ s/,$$//' && echo "}"
+endif
+
+# RODO (macOS): echo "{" && ls ~/Library/"Application Support"/Zed/extensions/installed/ | sed 's/.*/  "&": true,/' | sed '$ s/,$//' && echo "}"
