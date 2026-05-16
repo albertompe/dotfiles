@@ -26,7 +26,7 @@ config.window_padding = {
 }
 
 -- Font
-config.font_size = 12
+config.font_size = 10
 config.adjust_window_size_when_changing_font_size = false
 config.font = wezterm.font('JetBrains Mono', { weight = 'Regular' })
 
@@ -35,15 +35,15 @@ config.default_cursor_style = "SteadyBar"
 
 -- Color scheme selection based on WEZTERM_THEME environment variable
 local themes = {
-	nord = "Nord (Gogh)",
-	onedark = "One Dark (Gogh)",
+    nord = "Nord (Gogh)",
+    onedark = "One Dark (Gogh)",
 }
 config.window_background_opacity = 1
 local success, stdout, stderr = wezterm.run_child_process({ os.getenv("SHELL"), "-c", "printenv WEZTERM_THEME" })
 if not success then
     wezterm.log_error("Failed to get WEZTERM_THEME environment variable: " .. stderr)
     wezterm.log_info("Defaulting to onedark theme")
-    stdout = "onedark" -- Default to onedark theme if env var is not set
+    stdout = "onedark"                        -- Default to onedark theme if env var is not set
 end
 local selected_theme = stdout:gsub("%s+", "") -- Trim whitespace/newline
 config.color_scheme = themes[selected_theme]
@@ -54,74 +54,73 @@ config.skip_close_confirmation_for_processes_named = {}
 -- Keybindings
 config.keys = {
     -- Create a new horizontal split and run your default program inside it
-    { key = 'e', mods = 'CTRL | SHIFT', action = wezterm.action.SplitHorizontal { domain = 'CurrentPaneDomain' }, },
+    { key = 'e',          mods = 'CTRL | SHIFT', action = wezterm.action.SplitHorizontal { domain = 'CurrentPaneDomain' }, },
     -- Create a new vertical split and run your default program inside it
-    { key = 'o', mods = 'CTRL | SHIFT', action = wezterm.action.SplitVertical { domain = 'CurrentPaneDomain' }, },
+    { key = 'o',          mods = 'CTRL | SHIFT', action = wezterm.action.SplitVertical { domain = 'CurrentPaneDomain' }, },
     -- Move between panes using arrow keys
-    { key = 'LeftArrow', mods = 'ALT', action = wezterm.action.ActivatePaneDirection 'Left', },
-    { key = 'RightArrow', mods = 'ALT', action = wezterm.action.ActivatePaneDirection 'Right', },
-    { key = 'UpArrow', mods = 'ALT', action = wezterm.action.ActivatePaneDirection 'Up', },
-    { key = 'DownArrow', mods = 'ALT', action = wezterm.action.ActivatePaneDirection 'Down', },
+    { key = 'LeftArrow',  mods = 'ALT',          action = wezterm.action.ActivatePaneDirection 'Left', },
+    { key = 'RightArrow', mods = 'ALT',          action = wezterm.action.ActivatePaneDirection 'Right', },
+    { key = 'UpArrow',    mods = 'ALT',          action = wezterm.action.ActivatePaneDirection 'Up', },
+    { key = 'DownArrow',  mods = 'ALT',          action = wezterm.action.ActivatePaneDirection 'Down', },
     -- Navigate between panes using hjkl keys
-    { key = 'h', mods = 'ALT', action = wezterm.action.ActivatePaneDirection 'Left', },
-    { key = 'l', mods = 'ALT', action = wezterm.action.ActivatePaneDirection 'Right', },
-    { key = 'k', mods = 'ALT', action = wezterm.action.ActivatePaneDirection 'Up', },
-    { key = 'j', mods = 'ALT', action = wezterm.action.ActivatePaneDirection 'Down', },
+    { key = 'h',          mods = 'ALT',          action = wezterm.action.ActivatePaneDirection 'Left', },
+    { key = 'l',          mods = 'ALT',          action = wezterm.action.ActivatePaneDirection 'Right', },
+    { key = 'k',          mods = 'ALT',          action = wezterm.action.ActivatePaneDirection 'Up', },
+    { key = 'j',          mods = 'ALT',          action = wezterm.action.ActivatePaneDirection 'Down', },
     -- Close current pane
-    { key = 'w', mods = 'OPT | CMD', action = wezterm.action.CloseCurrentPane { confirm = true }, },
+    { key = 'w',          mods = 'OPT | CMD',    action = wezterm.action.CloseCurrentPane { confirm = true }, },
     -- Toggle pane zoom state
-    { key = 'm', mods = 'OPT | CMD', action = wezterm.action.TogglePaneZoomState, },
+    { key = 'm',          mods = 'OPT | CMD',    action = wezterm.action.TogglePaneZoomState, },
 }
 
 -- Navigate beteen tabs using ALT + 1-9
 for i = 1, 9 do
-  table.insert(config.keys, { key = tostring(i), mods = 'ALT', action = wezterm.action.ActivateTab(i - 1), })
+    table.insert(config.keys, { key = tostring(i), mods = 'ALT', action = wezterm.action.ActivateTab(i - 1), })
 end
 
 -- URLs in Markdown files are not handled properly by default
 -- Source: https://github.com/wez/wezterm/issues/3803#issuecomment-1608954312
 config.hyperlink_rules = {
-  -- Matches: a URL in parens: (URL)
-  {
-    regex = '\\((\\w+://\\S+)\\)',
-    format = '$1',
-    highlight = 1,
-  },
-  -- Matches: a URL in brackets: [URL]
-  {
-    regex = '\\[(\\w+://\\S+)\\]',
-    format = '$1',
-    highlight = 1,
-  },
-  -- Matches: a URL in curly braces: {URL}
-  {
-    regex = '\\{(\\w+://\\S+)\\}',
-    format = '$1',
-    highlight = 1,
-  },
-  -- Matches: a URL in angle brackets: <URL>
-  {
-    regex = '<(\\w+://\\S+)>',
-    format = '$1',
-    highlight = 1,
-  },
-  -- Then handle URLs not wrapped in brackets
-  {
-    -- Before
-    --regex = '\\b\\w+://\\S+[)/a-zA-Z0-9-]+',
-    --format = '$0',
-    -- After
-    regex = '[^(]\\b(\\w+://\\S+[)/a-zA-Z0-9-]+)',
-    format = '$1',
-    highlight = 1,
-  },
-  -- implicit mailto link
-  {
-    regex = '\\b\\w+@[\\w-]+(\\.[\\w-]+)+\\b',
-    format = 'mailto:$0',
-  },
+    -- Matches: a URL in parens: (URL)
+    {
+        regex = '\\((\\w+://\\S+)\\)',
+        format = '$1',
+        highlight = 1,
+    },
+    -- Matches: a URL in brackets: [URL]
+    {
+        regex = '\\[(\\w+://\\S+)\\]',
+        format = '$1',
+        highlight = 1,
+    },
+    -- Matches: a URL in curly braces: {URL}
+    {
+        regex = '\\{(\\w+://\\S+)\\}',
+        format = '$1',
+        highlight = 1,
+    },
+    -- Matches: a URL in angle brackets: <URL>
+    {
+        regex = '<(\\w+://\\S+)>',
+        format = '$1',
+        highlight = 1,
+    },
+    -- Then handle URLs not wrapped in brackets
+    {
+        -- Before
+        --regex = '\\b\\w+://\\S+[)/a-zA-Z0-9-]+',
+        --format = '$0',
+        -- After
+        regex = '[^(]\\b(\\w+://\\S+[)/a-zA-Z0-9-]+)',
+        format = '$1',
+        highlight = 1,
+    },
+    -- implicit mailto link
+    {
+        regex = '\\b\\w+@[\\w-]+(\\.[\\w-]+)+\\b',
+        format = 'mailto:$0',
+    },
 }
 
 -- Finally, return the configuration to weztern
 return config
-
