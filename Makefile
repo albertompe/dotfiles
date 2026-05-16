@@ -5,9 +5,9 @@ OS := $(shell uname | tr "[:upper:]" "[:lower:]")
 
 # List of packages to manage with stow. Default: All packages in stow_packager directory
 ifeq ($(OS),linux)
-	PACKAGES := fonts nvim terminator tmux zsh wezterm mise ghostty
+	PACKAGES := fonts nvim terminator tmux zsh wezterm mise ghostty zed
 else ifeq ($(OS),darwin)
-	PACKAGES := nvim tmux zsh wezterm mise ghostty
+	PACKAGES := nvim tmux zsh wezterm mise ghostty zed
 else
 	@echo "No stow packages defined for OS: $(OS)"
 endif
@@ -109,7 +109,7 @@ restow: backup unstow stow	## Reapply symlinks
 
 .PHONY: zinit-update
 zinit-update:		## Update zinit and zinit plugins
-	zsh -c 'source $${HOME}/.zshrc; zinit-update'	
+	zsh -c 'source $${HOME}/.zshrc; zinit-update'
 
 .PHONY: help
 help:
