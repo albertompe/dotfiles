@@ -47,3 +47,6 @@ uv = "latest"
 velero = "latest"
 yq = "latest"
 zoxide = "latest"
+
+[settings]
+github_attestations = false
