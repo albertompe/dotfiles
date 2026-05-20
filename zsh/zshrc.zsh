@@ -172,6 +172,11 @@ fi
 # Antigravity
 export PATH="/Users/amz/.antigravity/antigravity/bin:$PATH"
 
+# Add Rancher Desktop bin dir to PATH
+if [[ -d "$HOME/.rd/bin" ]]; then
+    export PATH="$PATH:$HOME/.rd/bin"
+fi
+
 
 ## Configure autocompletions
 
