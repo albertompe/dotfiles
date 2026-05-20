@@ -21,22 +21,20 @@ STOW_SRC_DIR ?= $$(pwd)/stow_packages
 # Default location where stow will create symbolic links
 STOW_TARGET_DIR ?= ${HOME}
 
-# Stow command to create links
+# Stow command to create links. Packages use real dotfile names.
 STOW_CMD = stow \
 	--dir="${STOW_SRC_DIR}" \
 	--target="${STOW_TARGET_DIR}" \
 	--no-folding \
-	--dotfiles \
 	--verbose
 
-# Function to backup existing files for a specific package if they exist
-# egrep + sed combined is used instead of native grep -e syntax to be
-# compatible with non GNU grep on MacOS.
+# Function to backup existing files for a specific package if they exist.
+# grep + awk keeps the conflict parsing portable across GNU and BSD userlands.
 define backup_if_exists
 	echo "Backing up existing files for package: ${1}"; \
 	checks=$$(${STOW_CMD} --no ${1} 2>&1 | \
-		grep 'cannot stow' | \
-		sed -n 's/.*existing target \([^[:space:]]*\).*/\1/p'); \
+		grep 'existing target' | \
+		awk -F': ' '{print $$NF}'); \
 	for file in $$checks; do \
 		echo "Found existing file to backup: $$file"; \
 		filepath=${STOW_TARGET_DIR}/$$file; \
