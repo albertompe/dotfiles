@@ -13,7 +13,7 @@ system-update() {
   sudo snap refresh
   echo "✅ snaps updated!"
   echo "🔄 Updating flatpaks..."
-  sudo flatpack update -y
+  sudo flatpak update -y
   echo "✅ flatpaks updated!"
   echo "🎉 Everything's fresh and clean!"
 }
