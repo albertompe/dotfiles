@@ -75,7 +75,7 @@ config.keys = {
 
 -- Navigate beteen tabs using ALT + 1-9
 for i = 1, 9 do
-    table.insert(config.keys, { key = tostring(i), mods = 'ALT', action = wezterm.action.ActivateTab(i - 1), })
+    table.insert(config.keys, { key = tostring(i), mods = 'OPT | CMD', action = wezterm.action.ActivateTab(i - 1), })
 end
 
 -- URLs in Markdown files are not handled properly by default
