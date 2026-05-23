@@ -7,20 +7,66 @@
 // custom settings, run `zed: open default settings` from the
 // command palette (cmd-shift-p / ctrl-shift-p)
 {
-  "project_panel": {
-    "git_status_indicator": true,
-    "entry_spacing": "standard",
-  },
-  "base_keymap": "VSCode",
-  "ui_font_weight": 300.0,
-  "buffer_line_height": "standard",
-  "buffer_font_weight": 300.0,
-  "cli_default_open_behavior": "new_window",
-  "telemetry": {
-    "diagnostics": false,
-    "metrics": false,
-  },
-  "ui_font_size": 14.0,
-  "buffer_font_size": 14.0,
-  "theme": "One Dark",
+    "git_panel": {
+        "tree_view": true,
+    },
+    "project_panel": {
+        "git_status_indicator": true,
+        "entry_spacing": "standard",
+    },
+    "base_keymap": "VSCode",
+    "ui_font_weight": 300.0,
+    "buffer_line_height": "standard",
+    "buffer_font_weight": 300.0,
+    "cli_default_open_behavior": "new_window",
+    "telemetry": {
+        "diagnostics": false,
+        "metrics": false,
+    },
+    "ui_font_size": 14.0,
+    "buffer_font_size": 14.0,
+    "theme": "One Dark",
+    "tab_size": 4,
+    "file_types": {
+        "Shell Script": ["*.zsh"],
+    },
+    "languages": {
+        "Python": {
+            "tab_size": 2,
+        },
+        "Shell Script": {
+            "formatter": {
+                "external": {
+                    "command": "shfmt",
+                    "arguments": [
+                        "--filename",
+                        "{buffer_path}",
+                        "--indent",
+                        "4",
+                    ],
+                },
+            },
+        },
+    },
+    "agent_servers": {
+        "github-copilot-cli": {
+            "favorite_config_option_values": {
+                "model": ["claude-opus-4.6", "claude-sonnet-4.6", "gpt-5.4"],
+            },
+            "type": "registry",
+        },
+    },
+    "agent": {
+        "default_model": {
+            "provider": "lmstudio",
+            "model": "openai/gpt-oss-20b",
+            "enable_thinking": false,
+        },
+        "favorite_models": [],
+        "model_parameters": [],
+    },
+    "edit_predictions": {
+        "provider": "copilot",
+    },
+    "show_edit_predictions": true,
 }
