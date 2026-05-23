@@ -40,6 +40,7 @@ podman = { version = "latest", matching = "podman-remote" }
 python = "latest"
 redis = "latest"
 rust = "latest"
+shfmt = "latest"
 starship = "latest"
 terraform = "latest"
 tmux = "latest"
