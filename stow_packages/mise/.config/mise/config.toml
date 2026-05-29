@@ -39,6 +39,7 @@ pipx = "latest"
 podman = { version = "latest", matching = "podman-remote" }
 python = "latest"
 redis = "latest"
+rtk = "latest"
 rust = "latest"
 shfmt = "latest"
 starship = "latest"
