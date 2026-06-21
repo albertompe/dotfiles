@@ -5,14 +5,14 @@ umask 077
 export DOTFILES="$HOME/.dotfiles"
 
 # Zsh history configuration
-HISTFILE=$HOME/.zsh_history   # Location of the history file
-HISTSIZE=10000                # Number of commands kept in internal memory
-SAVEHIST=10000                # Number of commands physically saved to the file
+HISTFILE=$HOME/.zsh_history # Location of the history file
+HISTSIZE=10000              # Number of commands kept in internal memory
+SAVEHIST=10000              # Number of commands physically saved to the file
 
 # Advanced history options
-setopt append_history         # Append commands to the file instead of overwriting it
-setopt share_history          # Share history across tabs opened at the same time
-setopt hist_ignore_all_dups   # Do not save consecutive duplicate commands
+setopt append_history       # Append commands to the file instead of overwriting it
+setopt share_history        # Share history across tabs opened at the same time
+setopt hist_ignore_all_dups # Do not save consecutive duplicate commands
 
 # Fuzzy search in command history with up/down arrows
 # 1. Load the functions for searching through the command history
@@ -46,7 +46,6 @@ zstyle ':completion:*' group-name ''
 zstyle ':completion:*' list prompt '%S%M matches%s'
 zstyle ':completion:*' max-errors 5
 
-
 ## zinit configuration
 
 # Set the directory where we want to store zinit and plugins
@@ -54,8 +53,8 @@ ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
 
 # Initialize zinit, downloading it if it's not done yet
 if [ ! -d "$ZINIT_HOME" ]; then
-   mkdir -p "$(dirname $ZINIT_HOME)"
-   git clone https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"
+    mkdir -p "$(dirname $ZINIT_HOME)"
+    git clone https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"
 fi
 source "${ZINIT_HOME}/zinit.zsh"
 
@@ -63,6 +62,30 @@ source "${ZINIT_HOME}/zinit.zsh"
 zinit light zsh-users/zsh-completions
 zinit light zsh-users/zsh-autosuggestions
 zinit light zsh-users/zsh-syntax-highlighting
+
+# Replace zsh's default completion selection menu with fzf
+zinit light Aloxaf/fzf-tab
+# disable sort when completing `git checkout`
+zstyle ':completion:*:git-checkout:*' sort false
+# set descriptions format to enable group support
+# NOTE: don't use escape sequences (like '%F{red}%d%f') here, fzf-tab will ignore them
+zstyle ':completion:*:descriptions' format '[%d]'
+# set list-colors to enable filename colorizing
+zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
+# force zsh not to show completion menu, which allows fzf-tab to capture the unambiguous prefix
+zstyle ':completion:*' menu no
+# preview directory's content with eza when completing cd
+zstyle ':fzf-tab:complete:cd:*' fzf-preview 'eza -1 --color=always $realpath'
+# custom fzf flags
+# NOTE: fzf-tab does not follow FZF_DEFAULT_OPTS by default
+zstyle ':fzf-tab:*' fzf-flags --color=fg:1,fg+:2 --bind=tab:accept
+# To make fzf-tab follow FZF_DEFAULT_OPTS.
+# NOTE: This may lead to unexpected behavior since some flags break this plugin. See Aloxaf/fzf-tab#455.
+zstyle ':fzf-tab:*' use-fzf-default-opts yes
+# switch group using `<` and `>`
+zstyle ':fzf-tab:*' switch-group '<' '>'
+# Use fzf-tmux-popup to display fzf in a tmux popup window if inside tmux
+zstyle ':fzf-tab:*' fzf-command ftb-tmux-popup
 
 
 ## Prompt configuration
@@ -78,7 +101,8 @@ fi
 # p10k conditional configuration
 if [ $SELECTED_PROMPT = "omz" ]; then
     zinit light ohmyzsh/ohmyzsh
-    zinit ice depth=1; zinit light romkatv/powerlevel10k
+    zinit ice depth=1
+    zinit light romkatv/powerlevel10k
 fi
 
 # Starship conditional configuration
@@ -92,7 +116,6 @@ fi
 # Load Powerlevel10k theme.
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [ $SELECTED_PROMPT = "omz" ] && source $DOTFILES/zsh/p10k-themes/p10k-lean.zsh
-
 
 ## fzf configuration
 
@@ -116,15 +139,14 @@ zinit light junegunn/fzf
 
 # Custom fzf command completion runner
 _fzf_comprun() {
-  local command=$1
-  shift
+    local command=$1
+    shift
 
-  case "$command" in
-    tree)         find . -type d | fzf --preview 'tree -C {}' "$@";;
-    *)            fzf "$@" ;;
-  esac
+    case "$command" in
+    tree) find . -type d | fzf --preview 'tree -C {}' "$@" ;;
+    *) fzf "$@" ;;
+    esac
 }
-
 
 ## Custom experience configuration
 
@@ -142,7 +164,6 @@ local uname="$(uname -s)"
 [[ ${uname} == "Darwin" ]] && source $DOTFILES/zsh/macos.zsh
 [[ ${uname} == "Linux" ]] && source $DOTFILES/zsh/linux.zsh
 unset uname
-
 
 ## Configure the PATH
 
@@ -177,26 +198,25 @@ if [[ -d "$HOME/.rd/bin" ]]; then
     export PATH="$PATH:$HOME/.rd/bin"
 fi
 
-
 ## Configure autocompletions
 
 # oc autocompletion
-if command -v oc &> /dev/null; then
+if command -v oc &>/dev/null; then
     source <(oc completion zsh)
 fi
 
 # kubectl autocompletion
-if command -v kubectl &> /dev/null; then
+if command -v kubectl &>/dev/null; then
     source <(kubectl completion zsh)
 fi
 
 # docker autocompletion
-if command -v docker &> /dev/null; then
+if command -v docker &>/dev/null; then
     if [ ! -d ~/.docker/completions ]; then
         mkdir -p $HOME/.docker/completions
     fi
     if [ ! -f ~/.docker/completions/_docker ]; then
-        docker completion zsh > $HOME/.docker/completions/_docker
+        docker completion zsh >$HOME/.docker/completions/_docker
     fi
 
     FPATH="$HOME/.docker/completions:$FPATH"
@@ -205,21 +225,20 @@ if command -v docker &> /dev/null; then
 fi
 
 # podman autocompletion
-if command -v podman &> /dev/null; then
+if command -v podman &>/dev/null; then
     source <(podman completion zsh)
 fi
 
 # k3d autocompletion
-if command -v k3d &> /dev/null; then
+if command -v k3d &>/dev/null; then
     source <(k3d completion zsh)
 fi
 
 # terraform autocompletion
-if command -v terraform &> /dev/null; then
+if command -v terraform &>/dev/null; then
     autoload -U +X bashcompinit && bashcompinit
     complete -o nospace -C $(command -v terraform) terraform
 fi
-
 
 ## Functions definition imports
 
