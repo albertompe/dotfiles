@@ -53,3 +53,6 @@ zoxide = "latest"
 
 [settings]
 github_attestations = false
+
+[settings.python]
+compile = true
