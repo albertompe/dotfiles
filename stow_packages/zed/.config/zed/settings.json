@@ -26,13 +26,42 @@
     "ui_font_size": 14.0,
     "buffer_font_size": 14.0,
     "theme": "One Dark",
+    "hard_tabs": false,
     "tab_size": 4,
     "file_types": {
         "Shell Script": ["*.zsh"],
     },
+    "format_on_save": "on",
     "languages": {
         "Python": {
+            "hard_tabs": false,
             "tab_size": 2,
+        },
+        "YAML": {
+            "hard_tabs": false,
+            "tab_size": 2,
+        },
+        "JSON": {
+            "hard_tabs": false,
+            "tab_size": 2,
+        },
+        "Go": {
+            "hard_tabs": true,
+            "tab_size": 8,
+            "formatter": {
+                "language_server": {
+                    "name": "gopls",
+                },
+            },
+        },
+        "Rust": {
+            "hard_tabs": false,
+            "tab_size": 4,
+            "formatter": {
+                "language_server": {
+                    "name": "rust-analyzer",
+                },
+            },
         },
         "Shell Script": {
             "formatter": {
@@ -46,6 +75,10 @@
                     ],
                 },
             },
+        },
+        "JavaScript": {
+            "hard_tabs": false,
+            "tab_size": 2,
         },
     },
     "agent_servers": {
