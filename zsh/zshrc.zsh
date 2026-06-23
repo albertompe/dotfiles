@@ -87,7 +87,6 @@ zstyle ':fzf-tab:*' switch-group '<' '>'
 # Use fzf-tmux-popup to display fzf in a tmux popup window if inside tmux
 zstyle ':fzf-tab:*' fzf-command ftb-tmux-popup
 
-
 ## Prompt configuration
 
 # Mise initialization (we need to initialize mise here to have omp available)
@@ -244,3 +243,8 @@ fi
 
 source $DOTFILES/zsh/common-system.zsh
 source $DOTFILES/zsh/common-dev.zsh
+
+## Other tools
+
+# dirvenv
+eval "$(direnv hook zsh)"
