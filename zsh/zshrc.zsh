@@ -243,6 +243,7 @@ fi
 
 source $DOTFILES/zsh/common-system.zsh
 source $DOTFILES/zsh/common-dev.zsh
+source $DOTFILES/zsh/cleanup-functions.zsh
 
 ## Other tools
 
