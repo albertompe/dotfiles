@@ -190,7 +190,9 @@ if [[ -d "${KREW_ROOT:-$HOME/.krew}/bin" ]]; then
 fi
 
 # Antigravity
-export PATH="/Users/amz/.antigravity/antigravity/bin:$PATH"
+if [[ -d "$HOME/.antigravity/antigravity/bin" ]]; then
+    export PATH="$PATH:$HOME/.antigravity/antigravity/bin"
+fi
 
 # Add Rancher Desktop bin dir to PATH
 if [[ -d "$HOME/.rd/bin" ]]; then
