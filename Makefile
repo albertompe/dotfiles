@@ -3,9 +3,18 @@
 # Detect operating system
 OS := $(shell uname | tr "[:upper:]" "[:lower:]")
 
-# List of packages to manage with stow. Default: All packages in stow_packager directory
+# Headless mode (Linux only): skip graphical applications. Usage: make install HEADLESS=1
+HEADLESS ?= 0
+
+# List of packages to manage with stow. Default: All packages in stow_packages directory
 ifeq ($(OS),linux)
-	PACKAGES := fonts nvim terminator tmux zsh wezterm mise ghostty zed
+	BASE_PACKAGES := fonts nvim tmux zsh mise
+	GRAPHICAL_PACKAGES := terminator wezterm ghostty zed
+	ifeq ($(HEADLESS),1)
+		PACKAGES := $(BASE_PACKAGES)
+	else
+		PACKAGES := $(BASE_PACKAGES) $(GRAPHICAL_PACKAGES)
+	endif
 else ifeq ($(OS),darwin)
 	PACKAGES := nvim tmux zsh wezterm mise ghostty zed
 else
@@ -59,15 +68,20 @@ mise-install:
 .PHONY: tools
 ifeq ($(OS),linux)
 tools:
+	@echo "Installing apt packages..."
+	sudo apt update
+	sudo apt -y install --no-install-recommends cmake make zsh neovim tmux python3-pip autojump fortune curl python3-pynvim stow
+ifeq ($(HEADLESS),1)
+	# Headless: skip graphical applications (wezterm, zed) silently
+else
 	@echo "Adding Wezterm apt repository..."
 	curl -fsSL https://apt.fury.io/wez/gpg.key | sudo gpg --yes --dearmor -o /usr/share/keyrings/wezterm-fury.gpg
 	echo 'deb [signed-by=/usr/share/keyrings/wezterm-fury.gpg] https://apt.fury.io/wez/ * *' | sudo tee /etc/apt/sources.list.d/wezterm.list
 	sudo chmod 644 /usr/share/keyrings/wezterm-fury.gpg
-	@echo "Installing apt packages..."
-	sudo apt update
-	sudo apt -y install cmake make zsh neovim tmux python3-pip autojump fortune curl python3-pynvim stow wezterm
+	sudo apt -y install --no-install-recommends wezterm
 	@echo "Installing Zed..."
 	curl -f https://zed.dev/install.sh | sh
+endif
 else ifeq ($(OS),darwin)
 	brew install stow mise oh-my-posh starship
 else
