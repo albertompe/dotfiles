@@ -1,0 +1,6 @@
+# Machine-specific overrides sourced by ~/.zshenv (see zsh/zshenv.zsh).
+# Uncomment and adapt. Example used by the dev-container image:
+
+# export LANG=es_ES.UTF-8
+# export LANGUAGE=es_ES:es
+# export LC_ALL=es_ES.UTF-8

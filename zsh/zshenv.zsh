@@ -31,3 +31,6 @@ else
     export EDITOR="nvim"
     export VISUAL="nvim"
 fi
+
+# Load machine-specific overrides from ~/.zshenv.local if present
+[[ -f "$HOME/.zshenv.local" ]] && source "$HOME/.zshenv.local"
