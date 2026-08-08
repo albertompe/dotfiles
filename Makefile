@@ -70,7 +70,7 @@ ifeq ($(OS),linux)
 tools:
 	@echo "Installing apt packages..."
 	sudo apt update
-	sudo apt -y install --no-install-recommends cmake make zsh neovim tmux python3-pip autojump fortune curl python3-pynvim stow
+	sudo apt -y install --no-install-recommends cmake make zsh neovim tmux python3-pip autojump fortune curl python3-pynvim stow zlib1g-dev libssl-dev libbz2-dev liblzma-dev libreadline-dev libsqlite3-dev libffi-dev libncurses-dev
 ifeq ($(HEADLESS),1)
 	# Headless: skip graphical applications (wezterm, zed) silently
 else
