@@ -34,3 +34,9 @@ fi
 
 # Load machine-specific overrides from ~/.zshenv.local if present
 [[ -f "$HOME/.zshenv.local" ]] && source "$HOME/.zshenv.local"
+
+# Detect containers (Docker: /.dockerenv, Podman: /run/.containerenv) and expose
+# it to the prompt. Override DEV_CONTAINER to customize the label.
+if [ -f /.dockerenv ] || [ -f /run/.containerenv ]; then
+    export DEV_CONTAINER="${DEV_CONTAINER:-container}"
+fi
