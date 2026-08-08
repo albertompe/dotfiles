@@ -148,10 +148,10 @@ endif
 ##@ Krew management
 
 krew-plugins-install:		## Install krew plugins defined in KREW_PLUGINS variable
-	krew install $(KREW_PLUGINS)
+	mise exec krew -- krew install $(KREW_PLUGINS)
 
 krew-plugins-update:		## Update krew plugins defined in KREW_PLUGINS variable
-	krew upgrade
+	mise exec krew -- krew upgrade
 
 ##@ Zed configuration
 
