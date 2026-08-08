@@ -148,7 +148,7 @@ endif
 ##@ Krew management
 
 krew-plugins-install:		## Install krew plugins defined in KREW_PLUGINS variable
-	mise exec krew -- krew install $(KREW_PLUGINS)
+	mise exec krew -- krew install $(KREW_PLUGINS) || true
 
 krew-plugins-update:		## Update krew plugins defined in KREW_PLUGINS variable
 	mise exec krew -- krew upgrade
