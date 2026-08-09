@@ -5,7 +5,9 @@ umask 077
 export DOTFILES="$HOME/.dotfiles"
 
 # Zsh history configuration
-HISTFILE=$HOME/.zsh_history # Location of the history file
+# HISTFILE can be overridden (e.g. inside a container, via an env var or
+# ~/.zshenv.local) to point at a persistent mount; defaults to ~/.zsh_history.
+HISTFILE="${ZSH_HISTFILE:-$HOME/.zsh_history}" # Location of the history file
 HISTSIZE=10000              # Number of commands kept in internal memory
 SAVEHIST=10000              # Number of commands physically saved to the file
 
