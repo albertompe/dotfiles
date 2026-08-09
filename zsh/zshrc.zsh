@@ -8,8 +8,10 @@ export DOTFILES="$HOME/.dotfiles"
 # HISTFILE can be overridden (e.g. inside a container, via an env var or
 # ~/.zshenv.local) to point at a persistent mount; defaults to ~/.zsh_history.
 HISTFILE="${ZSH_HISTFILE:-$HOME/.zsh_history}" # Location of the history file
-HISTSIZE=10000              # Number of commands kept in internal memory
-SAVEHIST=10000              # Number of commands physically saved to the file
+# History sizes can be overridden via env vars (ZSH_HISTSIZE/ZSH_SAVEHIST),
+# e.g. per container or machine through ~/.zshenv.local.
+HISTSIZE="${ZSH_HISTSIZE:-10000}"  # Number of commands kept in internal memory
+SAVEHIST="${ZSH_SAVEHIST:-10000}"  # Number of commands physically saved to the file
 
 # Advanced history options
 setopt append_history       # Append commands to the file instead of overwriting it
