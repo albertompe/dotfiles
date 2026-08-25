@@ -10,10 +10,11 @@ zinit-update() {
 
 # Update mise plugins and tools
 mise-update() {
-    echo "🔄 Updating mise plugins and tools..."
+    echo "🔄 Updating mise, mise plugins and tools..."
     mise plugins upgrade
     mise upgrade
-    echo "✅ All mise plugins and tools updated!"
+    mise self-update
+    echo "✅ All mise, mise plugins and tools updated!"
 }
 
 # Update krew plugins
