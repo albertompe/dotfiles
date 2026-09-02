@@ -1,0 +1,20 @@
+{{ if and (eq .chezmoi.os "linux") (not .isHeadless) -}}
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+echo "==> Checking Zed editor installation..."
+
+# Asegurar que ~/.local/bin existe
+mkdir -p "$HOME/.local/bin"
+export PATH="$HOME/.local/bin:$PATH"
+
+if ! command -v zed &> /dev/null; then
+    echo "==> Installing Zed editor natively via official script..."
+    curl -f https://zed.dev/install.sh | sh
+else
+    echo "==> Zed editor is already installed."
+fi
+
+echo "==> Zed installation check completed."
+{{ end -}}

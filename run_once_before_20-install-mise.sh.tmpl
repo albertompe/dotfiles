@@ -1,0 +1,22 @@
+{{ if eq .chezmoi.os "linux" -}}
+#!/usr/bin/env bash
+
+# Exit immediately if a command exits with a non-zero status
+set -euo pipefail
+
+echo "==> Checking mise installation..."
+
+# Ensure ~/.local/bin exists and is in PATH
+mkdir -p "$HOME/.local/bin"
+export PATH="$HOME/.local/bin:$PATH"
+
+if ! command -v mise &> /dev/null; then
+    echo "==> Installing mise CLI..."
+    curl https://mise.run | sh
+else
+    echo "==> mise is already installed. Updating..."
+    mise self-update -y --quiet || true
+fi
+
+echo "==> mise installation completed successfully."
+{{ end -}}

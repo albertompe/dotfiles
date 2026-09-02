@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+echo "==> Provisioning tools with mise..."
+
+# Asegurar que mise esté en el PATH de la sesión actual del script según el sistema operativo
+if [[ -f "$HOME/.local/bin/mise" ]]; then
+    export PATH="$HOME/.local/bin:$PATH"
+elif [[ -f "/opt/homebrew/bin/mise" ]]; then
+    export PATH="/opt/homebrew/bin:$PATH"
+elif [[ -f "/usr/local/bin/mise" ]]; then
+    export PATH="/usr/local/bin:$PATH"
+fi
+
+if command -v mise &> /dev/null; then
+    # Evaluar la activación de mise en la subshell del script
+    eval "$(mise activate bash)"
+
+    echo "==> Installing all configured tools from ~/.config/mise/config.toml..."
+    mise install -y
+
+    echo "==> mise tools installation completed successfully."
+else
+    echo "==> Error: mise CLI not found in PATH. Skipping tool provisioning."
+    exit 1
+fi

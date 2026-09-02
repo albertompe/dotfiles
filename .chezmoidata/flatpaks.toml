@@ -3,11 +3,18 @@
         { name = "flathub", url = "https://dl.flathub.org/repo/flathub.flatpakrepo" }
     ]
 
-    # Applications to install only on desktop/GUI setups
+    # CLI / Server Flatpaks
+    cli_apps = []
+
+    # Desktop / GUI Flatpaks
     gui_apps = [
+        "com.brave.Browser",
         "com.spotify.Client",
+        "com.visualstudio.code",
+        "dev.zed.Zed",
+        "fr.handbrake.GHB",
+        "md.obsidian.Obsidian",
+        "org.gimp.GIMP",
+        "org.telegram.desktop",
         "org.videolan.VLC"
     ]
-
-    # Headless / CLI Flatpaks (usually empty)
-    cli_apps = []
