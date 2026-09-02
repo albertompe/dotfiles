@@ -32,7 +32,7 @@ FLATPAKS+=("{{ . }}")
 # 3. Install Applications
 if [ ${#FLATPAKS[@]} -gt 0 ]; then
     echo "==> Installing Flatpaks in user scope..."
-    flatpak install --user -y --noninteractive flathub "${FLATPAKS[@]}"
+    flatpak install --user -y --non-interactive flathub "${FLATPAKS[@]}"
 fi
 
 echo "==> Flatpak installation completed successfully."
