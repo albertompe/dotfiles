@@ -1,0 +1,44 @@
+{{ if eq .chezmoi.os "darwin" -}}
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+echo "==> Starting macOS Homebrew package installation..."
+
+# Install Homebrew if it's not present
+if ! command -v brew &> /dev/null; then
+    echo "==> Homebrew not found. Installing Homebrew..."
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    
+    # Ensure brew is in PATH for Apple Silicon / Intel Macs during execution
+    if [[ -f /opt/homebrew/bin/brew ]]; then
+        eval "$(/opt/homebrew/bin/brew shellenv)"
+    elif [[ -f /usr/local/bin/brew ]]; then
+        eval "$(/usr/local/bin/brew shellenv)"
+    fi
+fi
+
+# Update Homebrew formulas
+brew update
+
+# Install CLI formulas
+{{ range .packages.darwin.brews -}}
+if ! brew list {{ . }} &>/dev/null; then
+    echo "Installing brew formula: {{ . }}"
+    brew install {{ . }}
+fi
+{{ end -}}
+
+# Install GUI Casks (if not headless)
+{{ if not .isHeadless -}}
+{{ range .packages.darwin.casks -}}
+if ! brew list --cask {{ . }} &>/dev/null; then
+    echo "Installing brew cask: {{ . }}"
+    brew install --cask {{ . }}
+fi
+{{ end -}}
+{{ end -}}
+
+echo "==> macOS Homebrew installation completed successfully."
+{{ end -}}
+

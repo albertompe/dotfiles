@@ -1,0 +1,26 @@
+# ==============================================================================
+# .chezmoiremove.tmpl
+# ==============================================================================
+# Purpose:
+#   Defines files, directories, or patterns relative to $HOME that chezmoi
+#   must ensure DO NOT exist on the target system.
+#
+# Behavior:
+#   - Paths listed here are deleted from $HOME during 'chezmoi apply'.
+#   - Supports Go template logic to conditionally purge GUI/desktop artifacts
+#     when transitioning or deploying to headless or container environments.
+#   - Paths must be relative to $HOME (e.g., .config/app/config.json).
+# ==============================================================================
+
+# {{ if .isHeadless -}}
+# GUI application configs to purge on headless nodes
+# .config/dconf
+# .config/gtk-3.0
+# .config/gtk-4.0
+# .local/share/applications/custom-app.desktop
+# {{ end -}}
+
+# {{ if .isContainer -}}
+# Ephemeral container cleanups
+# .cache/fontconfig
+# {{ end -}}

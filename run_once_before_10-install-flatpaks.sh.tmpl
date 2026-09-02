@@ -1,0 +1,39 @@
+{{ if and (eq .chezmoi.os "linux") (not .isHeadless) -}}
+#!/usr/bin/env bash
+
+# Exit immediately if a command exits with a non-zero status
+set -euo pipefail
+
+# Fail hard if flatpak CLI is not installed on the host
+if ! command -v flatpak &> /dev/null; then
+    echo "ERROR: 'flatpak' binary not found in PATH." >&2
+    echo "Ensure 'flatpak' is included in packages.toml and successfully installed by script 00." >&2
+    exit 1
+fi
+
+echo "==> Setting up Flatpak remotes and applications..."
+
+# 1. Add Remotes
+{{ range .flatpak.remotes -}}
+flatpak remote-add --user --if-not-exists {{ .name }} {{ .url }}
+{{ end -}}
+
+# 2. Collect Flatpak IDs
+FLATPAKS=()
+
+{{ range .flatpak.gui_apps -}}
+FLATPAKS+=("{{ . }}")
+{{ end -}}
+
+{{ range .flatpak.cli_apps -}}
+FLATPAKS+=("{{ . }}")
+{{ end -}}
+
+# 3. Install Applications
+if [ ${#FLATPAKS[@]} -gt 0 ]; then
+    echo "==> Installing Flatpaks in user scope..."
+    flatpak install --user -y --noninteractive flathub "${FLATPAKS[@]}"
+fi
+
+echo "==> Flatpak installation completed successfully."
+{{ end -}}

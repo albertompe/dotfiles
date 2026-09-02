@@ -1,0 +1,66 @@
+{{ if eq .chezmoi.os "linux" -}}
+#!/usr/bin/env bash
+
+# Exit immediately if a command exits with a non-zero status
+set -euo pipefail
+
+# Soft check: If snap CLI/daemon is not present, skip cleanly
+if ! command -v snap &> /dev/null; then
+    echo "==> Snap package manager not found. Skipping Snap installation."
+    exit 0
+fi
+
+echo "==> Setting up Snap applications..."
+
+# 1. Collect standard Snaps
+SNAPS=()
+
+{{ range .snaps.cli_apps -}}
+SNAPS+=("{{ . }}")
+{{ end -}}
+
+{{ if not .isHeadless -}}
+{{ range .snaps.gui_apps -}}
+SNAPS+=("{{ . }}")
+{{ end -}}
+{{ end -}}
+
+# 2. Install Standard Snaps
+if [ ${#SNAPS[@]} -gt 0 ]; then
+    echo "==> Installing standard Snaps..."
+    for snap_app in "${SNAPS[@]}"; do
+        if ! snap list "$snap_app" &> /dev/null; then
+            echo "--> Installing $snap_app..."
+            sudo snap install "$snap_app"
+        else
+            echo "--> $snap_app is already installed."
+        fi
+    done
+fi
+
+# 3. Collect Classic Snaps (requiring --classic)
+CLASSIC_SNAPS=()
+
+{{ range .snaps.classic_apps -}}
+CLASSIC_SNAPS+=("{{ . }}")
+{{ end -}}
+
+# Install Classic Snaps
+if [ ${#CLASSIC_SNAPS[@]} -gt 0 ]; then
+    echo "==> Installing classic Snaps (--classic)..."
+    for snap_app in "${CLASSIC_SNAPS[@]}"; do
+        if ! snap list "$snap_app" &> /dev/null; then
+            echo "--> Installing $snap_app with --classic..."
+            sudo snap install --classic "$snap_app"
+        else
+            echo "--> $snap_app is already installed."
+        fi
+    done
+fi
+
+if [ ${#SNAPS[@]} -eq 0 ] && [ ${#CLASSIC_SNAPS[@]} -eq 0 ]; then
+    echo "==> No Snaps configured for this profile."
+fi
+
+echo "==> Snap installation completed successfully."
+{{ end -}}

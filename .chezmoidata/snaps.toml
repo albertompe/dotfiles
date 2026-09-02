@@ -1,0 +1,17 @@
+[snaps]
+    # Classic snaps often require '--classic' (e.g. IDEs, CLI tools)
+    # You can structure them as simple strings or objects if needed.
+
+    # CLI / Headless Snaps
+    cli_apps = []
+
+    # Desktop / GUI Snaps
+    gui_apps = [
+        # "code",
+        # "canonical-livepatch"
+    ]
+
+    # Snaps requiring the --classic flag
+    classic_apps = [
+        # "code"
+    ]

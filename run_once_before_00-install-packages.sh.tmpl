@@ -1,0 +1,71 @@
+{{ if eq .chezmoi.os "linux" -}}
+#!/usr/bin/env bash
+
+# Exit immediately if a command exits with a non-zero status
+set -euo pipefail
+
+echo "==> Starting Linux package installation..."
+
+# Initialize package collection array
+PACKAGES=()
+
+# 1. Add Common CLI packages
+{{ range .packages.common_cli -}}
+PACKAGES+=("{{ . }}")
+{{ end -}}
+
+# 2. Add Common GUI packages (if not headless)
+{{ if not .isHeadless -}}
+{{ range .packages.common_gui -}}
+PACKAGES+=("{{ . }}")
+{{ end -}}
+{{ end -}}
+
+# 3. Add OS-specific packages
+{{ if or (eq .chezmoi.osRelease.id "debian") (eq .chezmoi.osRelease.id "ubuntu") -}}
+
+    {{ if eq .chezmoi.osRelease.id "debian" -}}
+        {{ range .packages.debian.cli -}}
+        PACKAGES+=("{{ . }}")
+        {{ end -}}
+        {{ if not .isHeadless -}}
+            {{ range .packages.debian.gui -}}
+            PACKAGES+=("{{ . }}")
+            {{ end -}}
+        {{ end -}}
+    {{ else if eq .chezmoi.osRelease.id "ubuntu" -}}
+        {{ range .packages.ubuntu.cli -}}
+        PACKAGES+=("{{ . }}")
+        {{ end -}}
+        {{ if not .isHeadless -}}
+            {{ range .packages.ubuntu.gui -}}
+            PACKAGES+=("{{ . }}")
+            {{ end -}}
+        {{ end -}}
+    {{ end -}}
+
+    echo "==> Updating APT repositories and installing packages..."
+    sudo apt-get update -y
+    sudo apt-get install -y --no-install-recommends "${PACKAGES[@]}"
+
+{{ else if eq .chezmoi.osRelease.id "fedora" -}}
+
+    {{ range .packages.fedora.cli -}}
+    PACKAGES+=("{{ . }}")
+    {{ end -}}
+    {{ if not .isHeadless -}}
+        {{ range .packages.fedora.gui -}}
+        PACKAGES+=("{{ . }}")
+        {{ end -}}
+    {{ end -}}
+
+    echo "==> Installing packages via DNF..."
+    sudo dnf install -y "${PACKAGES[@]}"
+
+{{ else -}}
+    echo "Unsupported Linux distribution: {{ .chezmoi.osRelease.id }}"
+    exit 1
+{{ end -}}
+
+echo "==> Linux package installation completed successfully."
+{{ end -}}

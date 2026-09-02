@@ -1,0 +1,63 @@
+[packages]
+    # Linux Common Packages
+    common_cli = [
+        "flatpak",  # do not remove -> required by the flatpaks install script
+        "curl",
+        "git",
+        "htop",
+        "tmux",
+        "unzip",
+        "vim",
+        "wget",
+        "zsh"
+    ]
+    
+    common_gui = [
+        "alacritty",
+        "mpv"
+    ]
+
+[packages.debian]
+    cli = [
+        "build-essential",
+        "fd-find",
+        "ripgrep"
+    ]
+    gui = [
+        "fonts-font-awesome"
+    ]
+
+[packages.ubuntu]
+    cli = [
+        "build-essential",
+        "ripgrep"
+    ]
+    gui = [
+        "fonts-font-awesome"
+    ]
+
+[packages.fedora]
+    cli = [
+        "Development Tools",
+        "fd-find",
+        "ripgrep"
+    ]
+    gui = [
+        "fontawesome-fonts"
+    ]
+
+[packages.darwin]
+    brews = [
+        "fd",
+        "fzf",
+        "htop",
+        "mise",
+        "neovim",
+        "ripgrep",
+        "tmux",
+        "zsh"
+    ]
+    casks = [
+        "alacritty",
+        "font-hack-nerd-font"
+    ]
