@@ -21,9 +21,21 @@ elif [[ -f "/usr/local/bin/mise" ]]; then
 fi
 
 if [[ -n "$MISE_BIN" ]]; then
-    echo "==> Installing all configured tools from ~/.config/mise/config.toml..."
-    # Global flags like --config must precede the 'install' subcommand in mise
-    "$MISE_BIN" --config "$HOME/.config/mise/config.toml" install -y
+    MISE_CONFIG="$HOME/.config/mise/config.toml"
+
+    # mise already loads ~/.config/mise/config.toml as the global config and
+    # installs every tool listed in it, so no --config/--path flag is needed.
+    # Trust the chezmoi-managed config so nothing is skipped for being untrusted.
+    echo "==> Trusting mise config: $MISE_CONFIG ..."
+    "$MISE_BIN" trust "$MISE_CONFIG" || true
+
+    echo "==> Installing all configured tools from $MISE_CONFIG ..."
+    # -v shows per-tool install output so failures are visible instead of the
+    # misleading "all tools are installed" summary.
+    "$MISE_BIN" install -v
+
+    echo "==> Verifying installed tools with 'mise ls --installed' ..."
+    "$MISE_BIN" ls --installed || true
 
     echo "==> mise tools installation completed successfully."
 else
