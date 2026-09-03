@@ -1,0 +1,24 @@
+{{ if eq .chezmoi.os "linux" -}}
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+echo "==> Configuring Podman..."
+
+REGISTRIES_CONF="/etc/containers/registries.conf"
+SEARCH_REGISTRIES='unqualified-search-registries = ["docker.io", "quay.io", "ghcr.io", "registry.fedoraproject.org", "registry.access.redhat.com"]'
+
+# Configure unqualified search registries so short names (e.g. "nginx") resolve correctly
+if grep -q "^unqualified-search-registries" "$REGISTRIES_CONF" 2>/dev/null; then
+    echo "    Search registries already configured, skipping."
+else
+    echo "    Setting unqualified-search-registries in $REGISTRIES_CONF"
+    sudo sed -i 's/^# *unqualified-search-registries.*/'"$SEARCH_REGISTRIES"'/' "$REGISTRIES_CONF"
+    # If the line was commented out and sed didn't replace it, append it
+    if ! grep -q "^unqualified-search-registries" "$REGISTRIES_CONF"; then
+        echo "$SEARCH_REGISTRIES" | sudo tee -a "$REGISTRIES_CONF" > /dev/null
+    fi
+fi
+
+echo "==> Podman configuration completed."
+{{ end -}}
