@@ -5,7 +5,6 @@ remotes = [{ name = "flathub", url = "https://dl.flathub.org/repo/flathub.flatpa
 cli_apps = []
 
 gui_apps = [  # Desktop / GUI Flatpaks
-  "org.wezfurlong.wezterm",
   "com.brave.Browser",
   "com.spotify.Client",
   "com.visualstudio.code",
