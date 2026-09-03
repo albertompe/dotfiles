@@ -80,6 +80,10 @@
             "hard_tabs": false,
             "tab_size": 2,
         },
+        "TOML": {
+            "hard_tabs": false,
+            "tab_size": 2,
+        },
     },
     "agent_servers": {
         "github-copilot-cli": {
