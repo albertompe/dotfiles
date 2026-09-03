@@ -30,13 +30,16 @@ docker-enable()  { sudo systemctl enable --now docker.service docker.socket; ech
 docker-disable() { sudo systemctl disable --now docker.service docker.socket; echo "Docker disabled on boot"; }
 docker-status()  { echo "active:   $(systemctl is-active docker.service)"; echo "enabled:  $(systemctl is-enabled docker.service)"; }
 
-podman-start()  { systemctl --user start podman.socket;  echo "Podman socket started"; }
-podman-stop()   { systemctl --user stop podman.socket;   echo "Podman socket stopped"; }
-podman-status() { systemctl --user is-active podman.socket; }
+podman-start()   { systemctl --user start podman.socket;  echo "Podman socket started"; }
+podman-stop()    { systemctl --user stop podman.socket;   echo "Podman socket stopped"; }
+podman-enable()  { systemctl --user enable --now podman.socket; echo "Podman socket enabled"; }
+podman-disable() { systemctl --user disable --now podman.socket; echo "Podman socket disabled"; }
+podman-status()  { echo "active:   $(systemctl --user is-active podman.socket)"; echo "enabled:  $(systemctl --user is-enabled podman.socket)"; }
 
 cstatus() {
     echo "Docker:"
     docker-status | sed 's/^/    /'
-    echo "Podman socket: $(podman-status)"
+    echo "Podman socket:"
+    podman-status | sed 's/^/    /'
     echo "Engine:        $CONTAINER_ENGINE"
 }
