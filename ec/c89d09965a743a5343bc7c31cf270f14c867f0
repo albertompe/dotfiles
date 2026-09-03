@@ -1,0 +1,14 @@
+dot_config/zed/settings.json
+  h_17fb23fc771800 35-42
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "ecc89d09965a743a5343bc7c31cf270f14c867f0",
+  "prompts": {},
+  "humans": {
+    "h_17fb23fc771800": {
+      "author": "Alberto Martínez Pérez <106817741+albertompe@users.noreply.github.com>"
+    }
+  }
+}
