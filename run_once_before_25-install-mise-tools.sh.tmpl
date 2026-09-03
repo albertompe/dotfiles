@@ -4,7 +4,13 @@ set -euo pipefail
 
 echo "==> Provisioning tools with mise..."
 
-# Asegurar que mise esté en el PATH de la sesión actual del script según el sistema operativo
+# Inherit and export GITHUB_TOKEN for mise API authentication during installation
+if [[ -n "${GITHUB_TOKEN:-}" ]]; then
+    export GITHUB_TOKEN="${GITHUB_TOKEN}"
+    echo "==> Using GITHUB_TOKEN for API authentication."
+fi
+
+# Ensure mise is in the current script session's PATH depending on the operating system
 if [[ -f "$HOME/.local/bin/mise" ]]; then
     export PATH="$HOME/.local/bin:$PATH"
 elif [[ -f "/opt/homebrew/bin/mise" ]]; then
@@ -14,7 +20,7 @@ elif [[ -f "/usr/local/bin/mise" ]]; then
 fi
 
 if command -v mise &> /dev/null; then
-    # Evaluar la activación de mise en la subshell del script
+    # Evaluate mise activation within the script's subshell
     eval "$(mise activate bash)"
 
     echo "==> Installing all configured tools from ~/.config/mise/config.toml..."
