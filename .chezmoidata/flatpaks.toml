@@ -9,7 +9,6 @@ gui_apps = [  # Desktop / GUI Flatpaks
   "com.brave.Browser",
   "com.spotify.Client",
   "com.visualstudio.code",
-  "dev.zed.Zed",
   "fr.handbrake.ghb",
   "md.obsidian.Obsidian",
   "org.gimp.GIMP",
