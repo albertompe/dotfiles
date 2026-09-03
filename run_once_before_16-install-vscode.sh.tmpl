@@ -1,0 +1,51 @@
+{{ if and (eq .chezmoi.os "linux") (not .isHeadless) -}}
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+echo "==> Checking VS Code installation..."
+
+if command -v code &> /dev/null; then
+    echo "==> VS Code is already installed."
+else
+{{ if or (eq .chezmoi.osRelease.id "debian") (eq .chezmoi.osRelease.id "ubuntu") -}}
+    echo "==> Installing VS Code via official Microsoft APT repository..."
+
+    echo "==> Importing Microsoft GPG key..."
+    curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | sudo gpg --yes --dearmor -o /usr/share/keyrings/packages.microsoft.gpg
+
+    echo "==> Adding VS Code APT repository..."
+    echo "deb [arch=amd64,arm64 signed-by=/usr/share/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main" | sudo tee /etc/apt/sources.list.d/vscode.list
+
+    echo "==> Updating APT repositories..."
+    sudo apt update -y
+
+    echo "==> Installing VS Code (stable + Insiders)..."
+    sudo apt install -y code code-insiders
+
+{{ else if eq .chezmoi.osRelease.id "fedora" -}}
+    echo "==> Installing VS Code via official Microsoft DNF repository..."
+
+    sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
+
+    echo "==> Adding VS Code DNF repository..."
+    sudo tee /etc/yum.repos.d/vscode.repo <<'EOF'
+[code]
+name=Visual Studio Code
+baseurl=https://packages.microsoft.com/yumrepos/vscode
+enabled=1
+gpgcheck=1
+gpgkey=https://packages.microsoft.com/keys/microsoft.asc
+EOF
+
+    echo "==> Installing VS Code (stable + Insiders)..."
+    sudo dnf install -y code code-insiders
+
+{{ else -}}
+    echo "==> Error: VS Code installation is not supported on {{ .chezmoi.osRelease.id }}."
+    exit 1
+{{ end -}}
+fi
+
+echo "==> VS Code installation check completed."
+{{ end -}}
