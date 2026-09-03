@@ -28,7 +28,7 @@ docker-start()   { sudo systemctl start docker.service docker.socket;   echo "Do
 docker-stop()    { sudo systemctl stop docker.service docker.socket;    echo "Docker stopped"; }
 docker-enable()  { sudo systemctl enable --now docker.service docker.socket; echo "Docker enabled on boot"; }
 docker-disable() { sudo systemctl disable --now docker.service docker.socket; echo "Docker disabled on boot"; }
-docker-status()  { systemctl is-active docker.service; }
+docker-status()  { echo "active:   $(systemctl is-active docker.service)"; echo "enabled:  $(systemctl is-enabled docker.service)"; }
 
 podman-start()  { systemctl --user start podman.socket;  echo "Podman socket started"; }
 podman-stop()   { systemctl --user stop podman.socket;   echo "Podman socket stopped"; }
