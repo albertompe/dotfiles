@@ -1,0 +1,48 @@
+{{ if and (eq .chezmoi.os "linux") (not .isHeadless) -}}
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+echo "==> Checking Google Chrome installation..."
+
+if command -v google-chrome &> /dev/null; then
+    echo "==> Google Chrome is already installed."
+else
+{{ if or (eq .chezmoi.osRelease.id "debian") (eq .chezmoi.osRelease.id "ubuntu") -}}
+    echo "==> Installing Google Chrome via official DEB package..."
+
+    # Detect architecture to pick the correct .deb package
+    case "$(uname -m)" in
+        x86_64)  CHROME_DEB="google-chrome-stable_current_amd64.deb" ;;
+        aarch64) CHROME_DEB="google-chrome-stable_current_arm64.deb" ;;
+        *)       echo "Error: Unsupported architecture."; exit 1 ;;
+    esac
+
+    echo "==> Downloading $CHROME_DEB..."
+    curl -fL -o /tmp/google-chrome.deb "https://dl.google.com/linux/direct/$CHROME_DEB"
+
+    echo "==> Installing Google Chrome..."
+    sudo dpkg -i /tmp/google-chrome.deb
+    sudo apt-get install -fy
+
+    rm -f /tmp/google-chrome.deb
+
+{{ else if eq .chezmoi.osRelease.id "fedora" -}}
+    echo "==> Installing Google Chrome via official RPM package..."
+
+    echo "==> Downloading google-chrome-stable_current_x86_64.rpm..."
+    curl -fL -o /tmp/google-chrome.rpm "https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm"
+
+    echo "==> Installing Google Chrome..."
+    sudo dnf install -y /tmp/google-chrome.rpm
+
+    rm -f /tmp/google-chrome.rpm
+
+{{ else -}}
+    echo "==> Error: Chrome installation is not supported on {{ .chezmoi.osRelease.id }}."
+    exit 1
+{{ end -}}
+fi
+
+echo "==> Chrome installation check completed."
+{{ end -}}
