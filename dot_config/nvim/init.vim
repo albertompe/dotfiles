@@ -147,7 +147,27 @@ nnoremap <silent> <leader>tml :tabm +1<CR>
 " -------------------------------------
 let data_dir = has('nvim') ? stdpath('data') . '/site' : '~/.vim'
 if empty(glob(data_dir . '/autoload/plug.vim'))
-  silent execute '!curl -fLo '.data_dir.'/autoload/plug.vim --create-dirs  https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
+  echo '==> Installing vim-plug...'
+  let plug_url = 'https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
+  if has('nvim')
+    let plugdir = stdpath('data') . '/site/autoload'
+  else
+    let plugdir = expand('~/.vim/autoload')
+  endif
+  call system('mkdir -p ' . shellescape(plugdir))
+  if executable('curl')
+    call system('curl -fsSL -o ' . shellescape(plugdir . '/plug.vim') . ' ' . shellescape(plug_url))
+    if v:shell_error != 0
+      echohl ErrorMsg | echo '==> Failed to download vim-plug with curl.' | echohl None
+    endif
+  elseif executable('wget')
+    call system('wget -q -O ' . shellescape(plugdir . '/plug.vim') . ' ' . shellescape(plug_url))
+    if v:shell_error != 0
+      echohl ErrorMsg | echo '==> Failed to download vim-plug with wget.' | echohl None
+    endif
+  else
+    echohl ErrorMsg | echo '==> No curl or wget available to install vim-plug.' | echohl None
+  endif
   autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
 endif
 
