@@ -1,4 +1,4 @@
-.PHONY: help init apply force-scripts test-headless clean-state diff audit-brew audit-zed-extensions
+.PHONY: help init apply force-scripts test-headless clean-state diff audit-brew audit-flatpaks audit-zed-extensions
 
 # audit goals rely on bash process substitution (<(...))
 SHELL := /bin/bash
@@ -78,6 +78,31 @@ audit-brew: ## Compare installed Homebrew packages against dotfiles manifest
 		echo "    (none - all tracked casks are installed)"; \
 	else \
 		echo "$$STALE_CASKS" | sed 's/^/    - /'; \
+	fi
+	@echo ""
+	@echo "$(BLUE)==================================================$(RESET)"
+
+audit-flatpaks: ## Compare installed Flatpak apps against dotfiles manifest
+	@command -v yq >/dev/null 2>&1 || { echo "$(YELLOW)==> Error: 'yq' is required for auditing. Install it via 'mise' or 'brew install yq'.$(RESET)"; exit 1; }
+	@command -v flatpak >/dev/null 2>&1 || { echo "$(YELLOW)==> Error: 'flatpak' is required for auditing.$(RESET)"; exit 1; }
+	@echo "$(BLUE)==================================================$(RESET)"
+	@echo "$(BLUE)  FLATPAK DRIFT AUDIT (Local vs. Dotfiles)        $(RESET)"
+	@echo "$(BLUE)==================================================$(RESET)"
+	@echo ""
+	@echo "$(GREEN)[+] Installed locally but missing from chezmoi:$(RESET)"
+	@MISSING=$$(comm -23 <(flatpak list --app --columns=application | sort) <(yq '.flatpak.gui_apps[]' .chezmoidata/flatpaks.toml 2>/dev/null | sort)); \
+	if [ -z "$$MISSING" ]; then \
+		echo "    (none - all Flatpak apps are tracked)"; \
+	else \
+		echo "$$MISSING" | sed 's/^/    - /'; \
+	fi
+	@echo ""
+	@echo "$(RED)[-] In chezmoi but not installed locally:$(RESET)"
+	@STALE=$$(comm -13 <(flatpak list --app --columns=application | sort) <(yq '.flatpak.gui_apps[]' .chezmoidata/flatpaks.toml 2>/dev/null | sort)); \
+	if [ -z "$$STALE" ]; then \
+		echo "    (none - all tracked Flatpak apps are installed)"; \
+	else \
+		echo "$$STALE" | sed 's/^/    - /'; \
 	fi
 	@echo ""
 	@echo "$(BLUE)==================================================$(RESET)"
