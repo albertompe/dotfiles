@@ -60,7 +60,6 @@ zoxide = "latest"
 [settings]
 github_attestations = false
 auto_install = true
-fetch_remote_versions = false
 
 [settings.python]
 compile = true
