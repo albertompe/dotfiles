@@ -22,8 +22,8 @@ fi
 
 if [[ -n "$MISE_BIN" ]]; then
     echo "==> Installing all configured tools from ~/.config/mise/config.toml..."
-    # Execute mise directly via binary path with explicit config file reference
-    "$MISE_BIN" install --config "$HOME/.config/mise/config.toml" -y
+    # Global flags like --config must precede the 'install' subcommand in mise
+    "$MISE_BIN" --config "$HOME/.config/mise/config.toml" install -y
 
     echo "==> mise tools installation completed successfully."
 else
