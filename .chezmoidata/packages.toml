@@ -1,7 +1,6 @@
 [packages]
-# Linux Common Packages (Debian, Ubuntu, Fedora)
-common_cli = [
-  "flatpak",  # do not remove
+common_cli = [  # Linux common CLI packages
+  "flatpak",  # do not remove -> required by the flatpaks install script
   "autoconf",
   "btop",
   "curl",
@@ -30,21 +29,152 @@ common_cli = [
   "zsh"
 ]
 
-common_gui = ["alacritty", "gparted", "mpv", "solaar", "terminator"]
+common_gui = [  # Linux common GUI packages
+  "alacritty",
+  "gparted",
+  "mpv",
+  "solaar",
+  "terminator"
+]
 
 [packages.debian]
-cli = ["7zip", "acpi", "bridge-utils", "build-essential", "exfatprogs", "fd-find", "libcurl4-openssl-dev", "libffi-dev", "libssl-dev", "powertop", "python3-pip", "python3-venv", "ripgrep", "xz-utils", "zlib1g-dev"]
-gui = ["fonts-font-awesome", "gnome-tweaks", "gufw", "lshw-gtk"]
+cli = [  # Debian-specific CLI packages
+  "7zip",
+  "acpi",
+  "bridge-utils",
+  "build-essential",
+  "exfatprogs",
+  "fd-find",
+  "libcurl4-openssl-dev",
+  "libffi-dev",
+  "libssl-dev",
+  "powertop",
+  "python3-pip",
+  "python3-venv",
+  "ripgrep",
+  "xz-utils",
+  "zlib1g-dev"
+]
+gui = [  # Debian-specific GUI packages
+  "fonts-font-awesome",
+  "gnome-tweaks",
+  "gufw",
+  "lshw-gtk"
+]
 
 [packages.ubuntu]
-cli = ["7zip", "acpi", "bridge-utils", "build-essential", "exfatprogs", "libcurl4-openssl-dev", "libffi-dev", "libssl-dev", "powertop", "python3-pip", "python3-venv", "ripgrep", "xz-utils", "zlib1g-dev"]
-gui = ["fonts-font-awesome", "gnome-tweaks", "gufw", "lshw-gtk"]
+cli = [  # Ubuntu-specific CLI packages
+  "7zip",
+  "acpi",
+  "bridge-utils",
+  "build-essential",
+  "exfatprogs",
+  "libcurl4-openssl-dev",
+  "libffi-dev",
+  "libssl-dev",
+  "powertop",
+  "python3-pip",
+  "python3-venv",
+  "ripgrep",
+  "xz-utils",
+  "zlib1g-dev"
+]
+gui = [  # Ubuntu-specific GUI packages
+  "fonts-font-awesome",
+  "gnome-tweaks",
+  "gufw",
+  "lshw-gtk"
+]
 
 [packages.fedora]
-cli = ["p7zip", "p7zip-plugins", "acpicli", "bridge-utils", "Development Tools", "exfatprogs", "fd-find", "libcurl-devel", "powertop", "python3-pip", "ripgrep"]
-gui = ["fontawesome-fonts", "gnome-tweaks", "lshw-gui"]
+cli = [  # Fedora-specific CLI packages
+  "p7zip",
+  "p7zip-plugins",
+  "acpicli",
+  "bridge-utils",
+  "Development Tools",
+  "exfatprogs",
+  "fd-find",
+  "libcurl-devel",
+  "powertop",
+  "python3-pip",
+  "ripgrep"
+]
+gui = [  # Fedora-specific GUI packages
+  "fontawesome-fonts",
+  "gnome-tweaks",
+  "lshw-gui"
+]
 
 [packages.darwin]
-taps = ["libkrun/krun"]
-brews = ["7zip", "btop", "container", "curl", "fastfetch", "fd", "fortune", "gemini-cli", "gettext", "git", "git-filter-repo", "gnu-sed", "gnupg", "graphviz", "htop", "mactop", "mise", "mosh", "ncdu", "pinentry-mac", "ripgrep", "stow", "telnet", "tree", "unar", "unzip", "wget", "zsh"]
-casks = ["alacritty", "alt-tab", "antigravity", "appcleaner", "brave-browser", "copilot-cli", "daisydisk", "font-hack-nerd-font", "font-meslo-lg-nerd-font", "ghostty", "gimp", "handbrake", "iterm2", "lm-studio", "microsoft-teams", "monitorcontrol", "obsidian", "opencode-desktop", "openvpn-connect", "orbstack", "podman-desktop", "rancher", "rectangle", "spotify", "stats", "synology-drive", "telegram-desktop", "terminator", "utm", "vagrant", "visual-studio-code", "visual-studio-code@insiders", "vlc", "wezterm", "whatsapp", "zed"]
+taps = [  # Homebrew taps
+  "libkrun/krun"
+]
+brews = [  # Hombrew brews
+  "7zip",
+  "btop",
+  "container",
+  "curl",
+  "fastfetch",
+  "fd",
+  "fortune",
+  "gemini-cli",
+  "gettext",
+  "git",
+  "git-filter-repo",
+  "gnu-sed",
+  "gnupg",
+  "graphviz",
+  "htop",
+  "mactop",
+  "mise",
+  "mosh",
+  "ncdu",
+  "pinentry-mac",
+  "ripgrep",
+  "stow",
+  "telnet",
+  "tree",
+  "unar",
+  "unzip",
+  "wget",
+  "zsh"
+]
+casks = [  # Homrebrew casks
+  "alacritty",
+  "alt-tab",
+  "antigravity",
+  "appcleaner",
+  "brave-browser",
+  "copilot-cli",
+  "daisydisk",
+  "font-hack-nerd-font",
+  "font-meslo-lg-nerd-font",
+  "ghostty",
+  "gimp",
+  "handbrake",
+  "iterm2",
+  "lm-studio",
+  "microsoft-teams",
+  "monitorcontrol",
+  "obsidian",
+  "opencode-desktop",
+  "openvpn-connect",
+  "orbstack",
+  "podman-desktop",
+  "rancher",
+  "rectangle",
+  "spotify",
+  "stats",
+  "synology-drive",
+  "telegram-desktop",
+  "terminator",
+  "utm",
+  "vagrant",
+  "visual-studio-code",
+  "visual-studio-code@insiders",
+  "vlc",
+  "wezterm",
+  "whatsapp",
+  "zed"
+]
