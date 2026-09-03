@@ -1,0 +1,20 @@
+.chezmoi.toml.tmpl
+  h_17fb23fc771800 6,14,20,43-45,48,50,52,63-64
+dot_zshrc
+  h_17fb23fc771800 1-17
+run_once_before_31-setup-podman.sh.tmpl
+  h_17fb23fc771800 23-28
+run_once_before_32-setup-docker.sh.tmpl
+  h_17fb23fc771800 1-58
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "44b907039fd0f0e5147d2337d1c8c0c2726a1fac",
+  "prompts": {},
+  "humans": {
+    "h_17fb23fc771800": {
+      "author": "Alberto Martínez Pérez <106817741+albertompe@users.noreply.github.com>"
+    }
+  }
+}
