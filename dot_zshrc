@@ -1,26 +1,6 @@
-# Container engine switching
-_CE_STATE_FILE="${XDG_CONFIG_HOME:-$HOME/.config}/container-engine"
-DOCKER_SOCK="unix:///var/run/docker.sock"
-PODMAN_SOCK="unix:///run/user/$(id -u)/podman/podman.sock"
-
-ce() {
-    case "${1:-}" in
-    docker|podman)
-        CONTAINER_ENGINE="$1"
-        [ "$1" = "docker" ] && export DOCKER_HOST="$DOCKER_SOCK" || export DOCKER_HOST="$PODMAN_SOCK"
-        echo "$CONTAINER_ENGINE" > "$_CE_STATE_FILE"
-        echo "Engine: $CONTAINER_ENGINE"
-        ;;
-    "")
-        echo "Engine: $CONTAINER_ENGINE"
-        ;;
-    *)
-        echo "Usage: ce [docker|podman]"
-        ;;
-    esac
-}
-
-CONTAINER_ENGINE="$(cat "$_CE_STATE_FILE" 2>/dev/null || echo docker)"
-[ "$CONTAINER_ENGINE" = "docker" ] && export DOCKER_HOST="$DOCKER_SOCK" || export DOCKER_HOST="$PODMAN_SOCK"
+# Source all zsh configuration files from ~/.config/zsh
+for file in "${XDG_CONFIG_HOME:-$HOME/.config}"/zsh/*.zsh(N); do
+    source "$file"
+done
 
 eval "$(~/.local/bin/mise activate zsh)"
