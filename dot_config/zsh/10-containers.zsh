@@ -35,7 +35,8 @@ podman-stop()   { systemctl --user stop podman.socket;   echo "Podman socket sto
 podman-status() { systemctl --user is-active podman.socket; }
 
 cstatus() {
-    echo "Docker:        $(docker-status)"
+    echo "Docker:"
+    docker-status | sed 's/^/    /'
     echo "Podman socket: $(podman-status)"
     echo "Engine:        $CONTAINER_ENGINE"
 }
