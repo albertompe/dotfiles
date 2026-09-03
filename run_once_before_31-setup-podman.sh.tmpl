@@ -20,5 +20,11 @@ else
     fi
 fi
 
+# Enable Podman socket for Docker API compatibility
+{{ if .enableContainerServices -}}
+echo "    Enabling podman.socket..."
+systemctl --user enable --now podman.socket
+{{ end -}}
+
 echo "==> Podman configuration completed."
 {{ end -}}

@@ -1,0 +1,17 @@
+# Container engine switching
+CONTAINER_ENGINE="${CONTAINER_ENGINE:-docker}"
+DOCKER_SOCK="unix:///var/run/docker.sock"
+PODMAN_SOCK="unix:///run/user/$(id -u)/podman/podman.sock"
+
+ce() {
+    case "${1:-}" in
+    docker) export CONTAINER_ENGINE=docker && export DOCKER_HOST="$DOCKER_SOCK" ;;
+    podman) export CONTAINER_ENGINE=podman && export DOCKER_HOST="$PODMAN_SOCK" ;;
+    "") echo "Engine: $CONTAINER_ENGINE" ;;
+    *) echo "Usage: ce [docker|podman]" ;;
+    esac
+}
+
+ce "$CONTAINER_ENGINE"
+
+eval "$(~/.local/bin/mise activate zsh)"

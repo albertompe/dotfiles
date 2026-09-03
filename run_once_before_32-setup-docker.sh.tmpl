@@ -1,0 +1,58 @@
+{{ if eq .chezmoi.os "linux" -}}
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+echo "==> Installing Docker from official repositories..."
+
+{{ if or (eq .chezmoi.osRelease.id "debian") (eq .chezmoi.osRelease.id "ubuntu") -}}
+
+# Prerequisites
+sudo apt-get update
+sudo apt-get install -y ca-certificates curl gnupg
+
+# Docker GPG key
+sudo install -m 0755 -d /etc/apt/keyrings
+curl -fsSL "https://download.docker.com/linux/{{ .chezmoi.osRelease.id }}/gpg" \
+    | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+sudo chmod a+r /etc/apt/keyrings/docker.gpg
+
+# Docker repository
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] \
+https://download.docker.com/linux/{{ .chezmoi.osRelease.id }} \
+{{ .chezmoi.osRelease.version.codename }} stable" \
+    | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+# Install Docker packages
+sudo apt-get update
+sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
+
+{{ else if eq .chezmoi.osRelease.id "fedora" -}}
+
+# Add Docker repository
+sudo dnf config-manager --add-repo https://download.docker.com/linux/fedora/docker-ce.repo
+
+# Install Docker packages
+sudo dnf install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
+
+{{ else -}}
+
+echo "    Unsupported distro: {{ .chezmoi.osRelease.id }} — skipping Docker install."
+echo "    Docker CLI will not be available. Install manually: https://docs.docker.com/engine/install/"
+
+{{ end -}}
+
+# Add user to docker group (requires re-login to take effect)
+if ! groups "$USER" | grep -qw docker; then
+    echo "    Adding $USER to docker group..."
+    sudo usermod -aG docker "$USER"
+fi
+
+# Enable Docker services
+{{ if .enableContainerServices -}}
+echo "    Enabling Docker services..."
+sudo systemctl enable --now docker.service docker.socket
+{{ end -}}
+
+echo "==> Docker installation completed."
+{{ end -}}

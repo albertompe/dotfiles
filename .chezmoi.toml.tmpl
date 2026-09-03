@@ -3,7 +3,7 @@
 # ==============================================================================
 # Purpose:
 #   Generates the local chezmoi configuration file (~/.config/chezmoi/chezmoi.toml).
-#   Determines system state flags (isContainer, isHeadless, enableServices) to
+#   Determines system state flags (isContainer, isHeadless, enableContainerServices) to
 #   dynamically drive template rendering and script execution across environments.
 #
 # Environment Variable Overrides:
@@ -11,13 +11,13 @@
 #   variables before running 'chezmoi init':
 #
 #     CHEZMOI_HEADLESS        Explicitly set headless state ("true"/"1" or "false"/"0").
-#     CHEZMOI_ENABLE_SERVICES Explicitly set systemd service management ("true"/"1" or "false"/"0").
+#     CHEZMOI_ENABLE_CONTAINER_SERVICES Explicitly enable container services ("true"/"1" or "false"/"0").
 #
 # Usage Examples:
 #   - Interactive setup:
 #       chezmoi init
 #   - Automated/Non-interactive deployment (CI/CD / Headless Server):
-#       CHEZMOI_HEADLESS=true CHEZMOI_ENABLE_SERVICES=false chezmoi init --apply
+#       CHEZMOI_HEADLESS=true CHEZMOI_ENABLE_CONTAINER_SERVICES=false chezmoi init --apply
 #   - Re-evaluate configuration from scratch:
 #       rm -f ~/.config/chezmoi/chezmoi.toml && chezmoi init
 # ==============================================================================
@@ -40,16 +40,16 @@
 {{-   $isHeadless = promptBoolOnce . "isHeadless" "Is this a headless machine (no graphical user interface)?" false -}}
 {{- end -}}
 
-{{/* 2. Evaluate enableServices */}}
-{{- $enableServices := false -}}
-{{- $envServices := env "CHEZMOI_ENABLE_SERVICES" -}}
+{{/* 2. Evaluate enableContainerServices */}}
+{{- $enableContainerServices := false -}}
+{{- $envServices := env "CHEZMOI_ENABLE_CONTAINER_SERVICES" -}}
 
 {{- if $isContainer -}}
-{{-   $enableServices = false -}}
+{{-   $enableContainerServices = false -}}
 {{- else if ne $envServices "" -}}
-{{-   $enableServices = (eq $envServices "true" "1") -}}
+{{-   $enableContainerServices = (eq $envServices "true" "1") -}}
 {{- else -}}
-{{-   $enableServices = promptBoolOnce . "enableServices" "Do you want to enable systemd services (Docker/Podman)?" true -}}
+{{-   $enableContainerServices = promptBoolOnce . "enableContainerServices" "Do you want to enable container services (Docker daemon, Podman socket)?" true -}}
 {{- end }}
 
 # Target Environment State Variables
@@ -60,6 +60,6 @@
     # Indicates if the host lacks a graphical interface (GUI)
     isHeadless = {{ $isHeadless }}
 
-    # Determines if systemd background services (e.g., Docker, Podman) should be started
-    enableServices = {{ $enableServices }}
+    # Determines if container-related systemd services (Docker daemon, Podman socket) should be started
+    enableContainerServices = {{ $enableContainerServices }}
 
