@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+echo "==> Provisioning tools with mise..."
+
+if [[ -n "${GITHUB_TOKEN:-}" ]]; then
+    export GITHUB_TOKEN="${GITHUB_TOKEN}"
+    echo "==> Using GITHUB_TOKEN for API authentication."
+fi
+
+MISE_BIN=""
+if [[ -f "$HOME/.local/bin/mise" ]]; then
+    MISE_BIN="$HOME/.local/bin/mise"
+elif [[ -f "/opt/homebrew/bin/mise" ]]; then
+    MISE_BIN="/opt/homebrew/bin/mise"
+elif [[ -f "/usr/local/bin/mise" ]]; then
+    MISE_BIN="/usr/local/bin/mise"
+fi
+
+if [[ -z "$MISE_BIN" ]]; then
+    echo "==> Error: mise CLI not found. Skipping tool provisioning." >&2
+    exit 1
+fi
+
+MISE_CONFIG="$HOME/.config/mise/config.toml"
+
+# This is a run_once_after script, so the dotfiles (including the mise config)
+# are already applied. Abort loudly rather than letting mise no-op with its
+# misleading "all tools are installed" summary.
+if [[ ! -f "$MISE_CONFIG" ]]; then
+    echo "==> Error: $MISE_CONFIG not found. mise tools skipped." >&2
+    exit 1
+fi
+
+# mise auto-loads ~/.config/mise/config.toml and installs every tool listed.
+# -v shows per-tool install output so failures are visible.
+echo "==> Installing all configured tools from $MISE_CONFIG ..."
+"$MISE_BIN" install -v
+
+echo "==> mise tools installation completed successfully."
