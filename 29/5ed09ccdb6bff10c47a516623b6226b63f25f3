@@ -1,0 +1,14 @@
+dot_config/zsh/10-containers.zsh
+  h_17fb23fc771800 33-37,42-43
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "295ed09ccdb6bff10c47a516623b6226b63f25f3",
+  "prompts": {},
+  "humans": {
+    "h_17fb23fc771800": {
+      "author": "Alberto Martínez Pérez <106817741+albertompe@users.noreply.github.com>"
+    }
+  }
+}
