@@ -16,6 +16,7 @@ common_cli = [  # Linux common CLI packages
   "mosh",
   "ncdu",
   "net-tools",
+  "podman",
   "stow",
   "tmux",
   "tree",
