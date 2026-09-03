@@ -170,9 +170,12 @@ if empty(glob(data_dir . '/autoload/plug.vim'))
   endif
 endif
 
-" nvim indexes autoload scripts at startup; a freshly downloaded plug.vim is
-" not registered until it is loaded explicitly, so force it here.
-runtime! autoload/plug.vim
+" Source vim-plug directly by path so it is available in the same session even
+" it was just downloaded (nvim does not re-index autoload plugins mid-startup).
+let plugged = has('nvim') ? stdpath('data') . '/site/autoload/plug.vim' : expand('~/.vim/autoload/plug.vim')
+if filereadable(plugged)
+  execute 'source ' . fnameescape(plugged)
+endif
 
 call plug#begin('~/.vim/plugged')
 " Airline
