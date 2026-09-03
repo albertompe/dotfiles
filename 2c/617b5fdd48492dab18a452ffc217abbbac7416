@@ -1,0 +1,14 @@
+dot_zshrc
+  h_17fb23fc771800 2,8-19,23-24
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "2c617b5fdd48492dab18a452ffc217abbbac7416",
+  "prompts": {},
+  "humans": {
+    "h_17fb23fc771800": {
+      "author": "Alberto Martínez Pérez <106817741+albertompe@users.noreply.github.com>"
+    }
+  }
+}
