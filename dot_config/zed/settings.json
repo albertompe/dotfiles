@@ -32,6 +32,14 @@
         "Shell Script": ["*.zsh"],
     },
     "format_on_save": "on",
+    "auto_install_extensions": {
+        "git-firefly": true,
+        "html": true,
+        "lua": true,
+        "make": true,
+        "tombi": true,
+        "toml": true,
+    },
     "languages": {
         "Python": {
             "hard_tabs": false,
