@@ -1,0 +1,14 @@
+run_once_before_17-install-chrome.sh.tmpl
+  h_17fb23fc771800 1-48
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "fd5d81d30b327a2ca64fa301bf9d5ee6ebfaba6c",
+  "prompts": {},
+  "humans": {
+    "h_17fb23fc771800": {
+      "author": "Alberto Martínez Pérez <106817741+albertompe@users.noreply.github.com>"
+    }
+  }
+}
