@@ -10,21 +10,20 @@ if [[ -n "${GITHUB_TOKEN:-}" ]]; then
     echo "==> Using GITHUB_TOKEN for API authentication."
 fi
 
-# Ensure mise is in the current script session's PATH depending on the operating system
+# Ensure mise is in PATH
+MISE_BIN=""
 if [[ -f "$HOME/.local/bin/mise" ]]; then
-    export PATH="$HOME/.local/bin:$PATH"
+    MISE_BIN="$HOME/.local/bin/mise"
 elif [[ -f "/opt/homebrew/bin/mise" ]]; then
-    export PATH="/opt/homebrew/bin:$PATH"
+    MISE_BIN="/opt/homebrew/bin/mise"
 elif [[ -f "/usr/local/bin/mise" ]]; then
-    export PATH="/usr/local/bin:$PATH"
+    MISE_BIN="/usr/local/bin/mise"
 fi
 
-if command -v mise &> /dev/null; then
-    # Evaluate mise activation within the script's subshell
-    eval "$(mise activate bash)"
-
+if [[ -n "$MISE_BIN" ]]; then
     echo "==> Installing all configured tools from ~/.config/mise/config.toml..."
-    mise install -y
+    # Execute mise directly via binary path with explicit config file reference
+    "$MISE_BIN" install --config "$HOME/.config/mise/config.toml" -y
 
     echo "==> mise tools installation completed successfully."
 else
