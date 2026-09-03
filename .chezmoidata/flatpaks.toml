@@ -7,7 +7,6 @@ cli_apps = []
 gui_apps = [  # Desktop / GUI Flatpaks
   "com.brave.Browser",
   "com.spotify.Client",
-  "com.visualstudio.code",
   "fr.handbrake.ghb",
   "md.obsidian.Obsidian",
   "org.gimp.GIMP",
