@@ -13,5 +13,7 @@ gui_apps = [  # Desktop / GUI Flatpaks
   "md.obsidian.Obsidian",
   "org.gimp.GIMP",
   "org.telegram.desktop",
-  "org.videolan.VLC"
+  "org.videolan.VLC",
+  "com.getpostman.Postman",
+  "com.usebruno.Bruno"
 ]
