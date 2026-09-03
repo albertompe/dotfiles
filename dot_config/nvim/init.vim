@@ -168,8 +168,11 @@ if empty(glob(data_dir . '/autoload/plug.vim'))
   else
     echohl ErrorMsg | echo '==> No curl or wget available to install vim-plug.' | echohl None
   endif
-  autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
 endif
+
+" nvim indexes autoload scripts at startup; a freshly downloaded plug.vim is
+" not registered until it is loaded explicitly, so force it here.
+runtime! autoload/plug.vim
 
 call plug#begin('~/.vim/plugged')
 " Airline
