@@ -40,9 +40,16 @@ docker-disable() {
     sudo systemctl disable --now docker.service docker.socket
     echo "Docker disabled on boot"
 }
+_status_icon() {
+    if [[ "$1" == "active" || "$1" == "enabled" ]]; then
+        print -P "%F{green}✔%f"
+    else
+        print -P "%F{red}✘%f"
+    fi
+}
 docker-status() {
-    echo "active:   $(systemctl is-active docker.service)"
-    echo "enabled:  $(systemctl is-enabled docker.service)"
+    echo "active:   $(_status_icon "$(systemctl is-active docker.service)") $(systemctl is-active docker.service)"
+    echo "enabled:  $(_status_icon "$(systemctl is-enabled docker.service)") $(systemctl is-enabled docker.service)"
 }
 
 podman-start() {
@@ -62,8 +69,8 @@ podman-disable() {
     echo "Podman socket disabled"
 }
 podman-status() {
-    echo "active:   $(systemctl --user is-active podman.socket)"
-    echo "enabled:  $(systemctl --user is-enabled podman.socket)"
+    echo "active:   $(_status_icon "$(systemctl --user is-active podman.socket)") $(systemctl --user is-active podman.socket)"
+    echo "enabled:  $(_status_icon "$(systemctl --user is-enabled podman.socket)") $(systemctl --user is-enabled podman.socket)"
 }
 
 ce-status() {
