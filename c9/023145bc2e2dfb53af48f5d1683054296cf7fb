@@ -1,0 +1,14 @@
+.chezmoidata/flatpaks.toml
+  h_17fb23fc771800 2,4-5,7-18
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "c9023145bc2e2dfb53af48f5d1683054296cf7fb",
+  "prompts": {},
+  "humans": {
+    "h_17fb23fc771800": {
+      "author": "Alberto Martínez Pérez <106817741+albertompe@users.noreply.github.com>"
+    }
+  }
+}
