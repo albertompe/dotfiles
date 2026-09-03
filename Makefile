@@ -34,7 +34,7 @@ force-scripts: ## Force full re-execution of ALL run_once_ scripts
 
 test-headless: ## Simulate initialization on a headless server (no GUI)
 	rm -f ~/.config/chezmoi/chezmoi.toml
-	CHEZMOI_HEADLESS=true CHEZMOI_ENABLE_SERVICES=false chezmoi init
+	CHEZMOI_HEADLESS=true CHEZMOI_ENABLE_CONTAINER_SERVICES=false chezmoi init
 	chezmoi apply --dry-run --verbose
 
 clean-state: ## Purge local chezmoi state database buckets
