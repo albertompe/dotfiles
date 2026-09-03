@@ -20,7 +20,7 @@ sudo chmod a+r /etc/apt/keyrings/docker.gpg
 # Docker repository
 echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] \
 https://download.docker.com/linux/{{ .chezmoi.osRelease.id }} \
-{{ .chezmoi.osRelease.version.codename }} stable" \
+{{ .chezmoi.osRelease.versionCodename }} stable" \
     | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 
 # Install Docker packages
