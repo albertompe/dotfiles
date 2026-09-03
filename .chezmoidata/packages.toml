@@ -46,10 +46,14 @@
         "exfatprogs",
         "fd-find",
         "libcurl4-openssl-dev",
+        "libffi-dev",
+        "libssl-dev",
         "powertop",
         "python3-pip",
         "python3-venv",
-        "ripgrep"
+        "ripgrep",
+        "xz-utils",
+        "zlib1g-dev"
     ]
     gui = [
         "fonts-font-awesome",
@@ -66,10 +70,14 @@
         "build-essential",
         "exfatprogs",
         "libcurl4-openssl-dev",
+        "libffi-dev",
+        "libssl-dev",
         "powertop",
         "python3-pip",
         "python3-venv",
-        "ripgrep"
+        "ripgrep",
+        "xz-utils",
+        "zlib1g-dev"
     ]
     gui = [
         "fonts-font-awesome",

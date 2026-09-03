@@ -46,24 +46,31 @@ PACKAGES+=("{{ . }}")
 
     echo "==> Updating APT repositories and installing packages..."
     sudo apt-get update -y
-    sudo apt-get install -y --no-install-recommends "${PACKAGES[@]}"
+    sudo apt-get install -y "${PACKAGES[@]}"
 
 {{ else if eq .chezmoi.osRelease.id "fedora" -}}
 
+    # Install Fedora Development Tools group separately to avoid DNF package resolution errors
+    echo "==> Installing Fedora Development Tools group..."
+    sudo dnf groupinstall -y "Development Tools" || sudo dnf install -y @development-tools
+
     {{ range .packages.fedora.cli -}}
+    {{ if ne . "Development Tools" -}}
     PACKAGES+=("{{ . }}")
     {{ end -}}
+    {{ end -}}
+
     {{ if not .isHeadless -}}
         {{ range .packages.fedora.gui -}}
         PACKAGES+=("{{ . }}")
         {{ end -}}
     {{ end -}}
 
-    echo "==> Installing packages via DNF..."
+    echo "==> Installing individual packages via DNF..."
     sudo dnf install -y "${PACKAGES[@]}"
 
 {{ else -}}
-    echo "Unsupported Linux distribution: {{ .chezmoi.osRelease.id }}"
+    echo "==> Error: Unsupported Linux distribution: {{ .chezmoi.osRelease.id }}"
     exit 1
 {{ end -}}
 
