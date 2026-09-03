@@ -1,21 +1,18 @@
 [flatpak]
-    remotes = [
-        { name = "flathub", url = "https://dl.flathub.org/repo/flathub.flatpakrepo" }
-    ]
+remotes = [{ name = "flathub", url = "https://dl.flathub.org/repo/flathub.flatpakrepo" }]
 
-    # CLI / Server Flatpaks
-    cli_apps = []
+# CLI / Server Flatpaks
+cli_apps = []
 
-    # Desktop / GUI Flatpaks
-    gui_apps = [
-        "org.wezfurlong.wezterm",
-        "com.brave.Browser",
-        "com.spotify.Client",
-        "com.visualstudio.code",
-        "dev.zed.Zed",
-        "fr.handbrake.ghb",
-        "md.obsidian.Obsidian",
-        "org.gimp.GIMP",
-        "org.telegram.desktop",
-        "org.videolan.VLC"
-    ]
+gui_apps = [  # Desktop / GUI Flatpaks
+  "org.wezfurlong.wezterm",
+  "com.brave.Browser",
+  "com.spotify.Client",
+  "com.visualstudio.code",
+  "dev.zed.Zed",
+  "fr.handbrake.ghb",
+  "md.obsidian.Obsidian",
+  "org.gimp.GIMP",
+  "org.telegram.desktop",
+  "org.videolan.VLC"
+]
