@@ -71,5 +71,5 @@ ce-status() {
     docker-status | sed 's/^/    /'
     echo "Podman socket:"
     podman-status | sed 's/^/    /'
-    echo "Engine:        $CONTAINER_ENGINE"
+    echo "Engine:       $CONTAINER_ENGINE"
 }
