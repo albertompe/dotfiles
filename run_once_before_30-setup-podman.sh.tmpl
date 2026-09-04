@@ -22,8 +22,13 @@ fi
 
 # Enable Podman socket for Docker API compatibility
 {{ if .enableContainerServices -}}
-echo "    Enabling podman.socket..."
-systemctl --user enable --now podman.socket
+if command -v systemctl > /dev/null 2>&1; then
+    echo "    Enabling podman.socket..."
+    systemctl --user enable --now podman.socket || \
+        echo "    Warning: could not enable podman.socket (no active user session/systemd). Continue; start it manually later."
+else
+    echo "    Warning: systemd not available; skipping podman.socket activation."
+fi
 {{ end -}}
 
 echo "==> Podman configuration completed."

@@ -46,10 +46,10 @@
 {{- $enableContainerServices := false -}}
 {{- $envServices := env "CHEZMOI_ENABLE_CONTAINER_SERVICES" -}}
 
-{{- if $isContainer -}}
-{{-   $enableContainerServices = false -}}
-{{- else if ne $envServices "" -}}
+{{- if ne $envServices "" -}}
 {{-   $enableContainerServices = (eq $envServices "true" "1") -}}
+{{- else if $isContainer -}}
+{{-   $enableContainerServices = promptBoolOnce . "enableContainerServices" "In a container: enable container services (Docker daemon, Podman socket)? Useful for LXC with systemd." false -}}
 {{- else -}}
 {{-   $enableContainerServices = promptBoolOnce . "enableContainerServices" "Do you want to enable container services (Docker daemon, Podman socket)?" true -}}
 {{- end }}

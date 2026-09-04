@@ -52,8 +52,13 @@ fi
 
 # Enable Docker services
 {{ if .enableContainerServices -}}
-echo "    Enabling Docker services..."
-sudo systemctl enable --now docker.service docker.socket
+if command -v systemctl > /dev/null 2>&1; then
+    echo "    Enabling Docker services..."
+    sudo systemctl enable --now docker.service docker.socket || \
+        echo "    Warning: could not enable/start Docker services (systemd may be unavailable). Continue; start them manually later."
+else
+    echo "    Warning: systemd not available; skipping Docker service activation. Start Docker manually if needed."
+fi
 {{ end -}}
 
 echo "==> Docker installation completed."
