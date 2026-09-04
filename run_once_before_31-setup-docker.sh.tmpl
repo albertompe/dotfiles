@@ -43,10 +43,12 @@ echo "    Docker CLI will not be available. Install manually: https://docs.docke
 {{ end -}}
 
 # Add user to docker group (requires re-login to take effect)
+{{ if not .isContainer -}}
 if ! groups "$USER" | grep -qw docker; then
     echo "    Adding $USER to docker group..."
     sudo usermod -aG docker "$USER"
 fi
+{{ end -}}
 
 # Enable Docker services
 {{ if .enableContainerServices -}}
