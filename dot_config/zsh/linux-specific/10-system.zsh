@@ -5,6 +5,7 @@ system-update() {
     sudo apt update && sudo apt upgrade -y
     echo "✅ apt packages updated!"
     zinit-update
+    chezmoi-update
     mise-update
     krew-plugins-update
     echo "🔄 Updating snaps..."

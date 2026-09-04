@@ -6,6 +6,7 @@ system-update() {
     brew upgrade --cask --greedy
     echo "✅ brew updated!"
     zinit-update
+    chezmoi-update
     mise-update
     krew-plugins-update
     echo "🎉 Everything's fresh and clean!"

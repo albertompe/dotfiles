@@ -8,6 +8,13 @@ zinit-update() {
     echo "✅ All zinit plugins updated!"
 }
 
+# Update chezmoi
+chezmoi-update() {
+    echo "🔄 Updating chezmoi..."
+    chezmoi upgrade
+    echo "✅ chezmoi updated!"
+}
+
 # Update mise plugins and tools
 mise-update() {
     echo "🔄 Updating mise, mise plugins and tools..."
