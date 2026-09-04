@@ -1,0 +1,233 @@
+# Set a secure umask
+umask 077
+
+# Path to the zsh config files
+export ZSH_CONFIG_FILES="${XDG_CONFIG_HOME:-$HOME/.config}/zsh"
+
+# Zsh history configuration
+HISTFILE=$HOME/.zsh_history # Location of the history file
+HISTSIZE=10000              # Number of commands kept in internal memory
+SAVEHIST=10000              # Number of commands physically saved to the file
+
+# Advanced history options
+setopt append_history       # Append commands to the file instead of overwriting it
+setopt share_history        # Share history across tabs opened at the same time
+setopt hist_ignore_all_dups # Do not save consecutive duplicate commands
+
+# Fuzzy search in command history with up/down arrows
+# 1. Load the functions for searching through the command history
+autoload -U up-line-or-beginning-search
+autoload -U down-line-or-beginning-search
+
+# 2. Load the zle widgets for the up/down search functions
+zle -N up-line-or-beginning-search
+zle -N down-line-or-beginning-search
+
+# 3. Bind the keys (Compatibilidad total Ubuntu, macOS y SSH)
+bindkey "^[[A" up-line-or-beginning-search
+bindkey "^[OA" up-line-or-beginning-search
+bindkey "^[[B" down-line-or-beginning-search
+bindkey "^[OB" down-line-or-beginning-search
+
+# p10k conditional configuration
+# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
+# Initialization code that may require console input (password prompts, [y/n]
+# confirmations, etc.) must go above this block; everything else may go below.
+if [ $SELECTED_PROMPT = "omz" ] && [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+    source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+fi
+
+# Initialize zsh complations with caching
+autoload -Uz compinit && compinit -C
+
+# Zsh completion styles
+zstyle ':completion:*' menu select=long-list
+zstyle ':completion:*' group-name ''
+zstyle ':completion:*' list prompt '%S%M matches%s'
+zstyle ':completion:*' max-errors 5
+
+## zinit configuration
+
+# Set the directory where we want to store zinit and plugins
+ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
+
+# Initialize zinit, downloading it if it's not done yet
+if [ ! -d "$ZINIT_HOME" ]; then
+    mkdir -p "$(dirname $ZINIT_HOME)"
+    git clone https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"
+fi
+source "${ZINIT_HOME}/zinit.zsh"
+
+# Load zsh plugins
+zinit light zsh-users/zsh-completions
+zinit light zsh-users/zsh-autosuggestions
+zinit light zsh-users/zsh-syntax-highlighting
+
+# Replace zsh's default completion selection menu with fzf
+zinit light Aloxaf/fzf-tab
+# disable sort when completing `git checkout`
+zstyle ':completion:*:git-checkout:*' sort false
+# set descriptions format to enable group support
+# NOTE: don't use escape sequences (like '%F{red}%d%f') here, fzf-tab will ignore them
+zstyle ':completion:*:descriptions' format '[%d]'
+# set list-colors to enable filename colorizing
+zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
+# force zsh not to show completion menu, which allows fzf-tab to capture the unambiguous prefix
+zstyle ':completion:*' menu no
+# preview directory's content with eza when completing cd
+zstyle ':fzf-tab:complete:cd:*' fzf-preview 'eza -1 --color=always $realpath'
+# custom fzf flags
+# NOTE: fzf-tab does not follow FZF_DEFAULT_OPTS by default
+zstyle ':fzf-tab:*' fzf-flags --color=fg:1,fg+:2 --bind=tab:accept
+# To make fzf-tab follow FZF_DEFAULT_OPTS.
+# NOTE: This may lead to unexpected behavior since some flags break this plugin. See Aloxaf/fzf-tab#455.
+zstyle ':fzf-tab:*' use-fzf-default-opts yes
+# switch group using `<` and `>`
+zstyle ':fzf-tab:*' switch-group '<' '>'
+# Use fzf-tmux-popup to display fzf in a tmux popup window if inside tmux
+zstyle ':fzf-tab:*' fzf-command ftb-tmux-popup
+
+## Prompt configuration
+
+# Mise initialization (we need to initialize mise here to have omp available)
+eval "$(mise activate zsh)"
+
+# Oh my posh conditional configuration
+if [ $SELECTED_PROMPT = "omp" ]; then
+    eval "$(oh-my-posh init zsh --config $ZSH_CONFIG_FILES/oh-my-posh/omp-config.toml)"
+fi
+
+# p10k conditional configuration
+if [ $SELECTED_PROMPT = "omz" ]; then
+    zinit light ohmyzsh/ohmyzsh
+    zinit ice depth=1
+    zinit light romkatv/powerlevel10k
+fi
+
+# Starship conditional configuration
+if [ $SELECTED_PROMPT = "starship" ]; then
+    export STARSHIP_CONFIG="${ZSH_CONFIG_FILES}/starship/starship.toml"
+    eval "$(starship init zsh)"
+    starship config palette $STARSHIP_THEME
+fi
+
+# p10k conditional configuration
+# Load Powerlevel10k theme.
+# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
+[ $SELECTED_PROMPT = "omz" ] && source $ZSH_CONFIG_FILES/p10k-themes/p10k-lean.zsh
+
+## fzf configuration
+
+# fzf base configuration
+export FZF_BASE="$HOME/.fzf"
+export FZF_COMPLETION_TRIGGER='**'
+export FZF_DEFAULT_OPTS="
+    --height 40%
+    --layout reverse
+    --border rounded
+    --prompt '∷ '
+    --pointer ▶
+    --marker ⇒"
+
+# Load fzf key-bindings and completion when installing
+# CTRL-T: Fuzzy find all files and subdirectories of the working directory, and output the selection to STDOUT
+# CTRL-R: Fuzzy find through your shell history, and output the selection to STDOUT
+# ALT-C (Esc + C if using macOS): Fuzzy find all subdirectories of the working directory, and run the command “cd” with the output as argument
+zinit ice wait lucid atinit"source shell/key-bindings.zsh; source shell/completion.zsh"
+zinit light junegunn/fzf
+
+# Custom fzf command completion runner
+_fzf_comprun() {
+    local command=$1
+    shift
+
+    case "$command" in
+    tree) find . -type d | fzf --preview 'tree -C {}' "$@" ;;
+    *) fzf "$@" ;;
+    esac
+}
+
+## Custom experience configuration
+
+# zoxide initialization
+eval "$(zoxide init zsh)"
+
+## Configure the PATH
+
+# Add local bin dir to PATH
+export PATH=$PATH:$HOME/.local/bin
+
+# Add user development settings from dev-profile file
+if [[ -f $HOME/dev-tools/dev-profile ]]; then
+    source $HOME/dev-tools/dev-profile
+fi
+
+# Add custom scripts dir to PATH
+if [[ -d $HOME/scripts ]]; then
+    export PATH=$PATH:$HOME/scripts
+fi
+
+# Add LM Studio bin dir to PATH (LM Studio CLI - lms)
+if [[ -d $HOME/.lmstudio/bin ]]; then
+    export PATH="$PATH:$HOME/.lmstudio/bin"
+fi
+
+# Add krew (kubectl plugin manager) bin dir to PATH
+if [[ -d "${KREW_ROOT:-$HOME/.krew}/bin" ]]; then
+    export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
+fi
+
+# Antigravity
+export PATH="$HOME/.antigravity/antigravity/bin:$PATH"
+
+# Add Rancher Desktop bin dir to PATH
+if [[ -d "$HOME/.rd/bin" ]]; then
+    export PATH="$PATH:$HOME/.rd/bin"
+fi
+
+## Configure autocompletions
+
+# oc autocompletion
+if command -v oc &>/dev/null; then
+    source <(oc completion zsh)
+fi
+
+# kubectl autocompletion
+if command -v kubectl &>/dev/null; then
+    source <(kubectl completion zsh)
+fi
+
+# docker autocompletion
+if command -v docker &>/dev/null; then
+    if [ ! -d ~/.docker/completions ]; then
+        mkdir -p $HOME/.docker/completions
+    fi
+    if [ ! -f ~/.docker/completions/_docker ]; then
+        docker completion zsh >$HOME/.docker/completions/_docker
+    fi
+
+    FPATH="$HOME/.docker/completions:$FPATH"
+    autoload -Uz compinit
+    compinit
+fi
+
+# podman autocompletion
+if command -v podman &>/dev/null; then
+    source <(podman completion zsh)
+fi
+
+# k3d autocompletion
+if command -v k3d &>/dev/null; then
+    source <(k3d completion zsh)
+fi
+
+# terraform autocompletion
+if command -v terraform &>/dev/null; then
+    autoload -U +X bashcompinit && bashcompinit
+    complete -o nospace -C $(command -v terraform) terraform
+fi
+
+## Other tools
+
+# dirvenv
+eval "$(direnv hook zsh)"

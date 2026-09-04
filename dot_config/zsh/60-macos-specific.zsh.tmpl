@@ -1,0 +1,6 @@
+{{ if eq .chezmoi.os "darwin" -}}
+# Source all zsh configuration files from ~/.config/zsh/macos-specific
+for file in "${XDG_CONFIG_HOME:-$HOME/.config}"/zsh/macos-specific/*.zsh(N); do
+    source "$file"
+done
+{{ end -}}

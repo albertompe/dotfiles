@@ -1,0 +1,6 @@
+{{ if eq .chezmoi.os "linux" -}}
+# Source all zsh configuration files from ~/.config/zsh/linux-specific
+for file in "${XDG_CONFIG_HOME:-$HOME/.config}"/zsh/linux-specific/*.zsh(N); do
+    source "$file"
+done
+{{ end -}}

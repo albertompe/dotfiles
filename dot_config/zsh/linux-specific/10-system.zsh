@@ -1,0 +1,17 @@
+# Update system tools function
+system-update() {
+    echo "🛠️ Updating system tools..."
+    echo "🔄 Updating apt packages..."
+    sudo apt update && sudo apt upgrade -y
+    echo "✅ apt packages updated!"
+    zinit-update
+    mise-update
+    krew-plugins-update
+    echo "🔄 Updating snaps..."
+    sudo snap refresh
+    echo "✅ snaps updated!"
+    echo "🔄 Updating flatpaks..."
+    sudo flatpak update -y
+    echo "✅ flatpaks updated!"
+    echo "🎉 Everything's fresh and clean!"
+}
