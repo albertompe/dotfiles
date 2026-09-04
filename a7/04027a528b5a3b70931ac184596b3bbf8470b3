@@ -1,0 +1,18 @@
+run_once_before_16-install-wezterm.sh.tmpl
+  h_17fb23fc771800 15
+run_once_before_17-install-vscode.sh.tmpl
+  h_17fb23fc771800 15
+run_once_before_31-setup-docker.sh.tmpl
+  h_17fb23fc771800 17
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "a704027a528b5a3b70931ac184596b3bbf8470b3",
+  "prompts": {},
+  "humans": {
+    "h_17fb23fc771800": {
+      "author": "Alberto Martínez Pérez <106817741+albertompe@users.noreply.github.com>"
+    }
+  }
+}
