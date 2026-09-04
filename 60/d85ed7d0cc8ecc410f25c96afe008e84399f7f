@@ -1,0 +1,19 @@
+dot_gitconfig.tmpl
+  s_75f9772e5cf8fa::t_4fdd5d9ea108b3 1-53
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "60d85ed7d0cc8ecc410f25c96afe008e84399f7f",
+  "prompts": {},
+  "sessions": {
+    "s_75f9772e5cf8fa": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_f917ca4dbffeNIp5t3jZ2JXCje",
+        "model": "big-pickle"
+      },
+      "human_author": "Alberto Martínez Pérez <106817741+albertompe@users.noreply.github.com>"
+    }
+  }
+}
