@@ -1,0 +1,18 @@
+dot_config/zsh/25-common-system.zsh
+  h_17fb23fc771800 11-17
+dot_config/zsh/linux-specific/10-system.zsh
+  h_17fb23fc771800 8
+dot_config/zsh/macos-specific/10-system.zsh
+  h_17fb23fc771800 9
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "dcde23964548ba8763d657a6a11d14b39bbabdb9",
+  "prompts": {},
+  "humans": {
+    "h_17fb23fc771800": {
+      "author": "Alberto Martínez Pérez <106817741+albertompe@users.noreply.github.com>"
+    }
+  }
+}
