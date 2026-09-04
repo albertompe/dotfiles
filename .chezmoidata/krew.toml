@@ -1,0 +1,7 @@
+[krew]
+plugins = [  # kubectl plugins instalados por krew
+  "edit-status",
+  "krew",  # habilita `kubectl krew`
+  "neat",
+  "profefe"
+]
