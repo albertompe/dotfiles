@@ -1,0 +1,88 @@
+{{ if and (eq .chezmoi.os "linux") .enableKvm -}}
+#!/usr/bin/env bash
+
+# Exit immediately if a command exits with a non-zero status
+set -euo pipefail
+
+echo "==> Setting up KVM/libvirt (hypervisor and VMs)..."
+
+# Collect KVM packages
+KVM_PACKAGES=()
+
+{{ if or (eq .chezmoi.osRelease.id "debian") (eq .chezmoi.osRelease.id "ubuntu") -}}
+
+{{ range .packages.debian.kvm_cli -}}
+KVM_PACKAGES+=("{{ . }}")
+{{ end -}}
+{{ if not .isHeadless -}}
+{{ range .packages.debian.kvm_gui -}}
+KVM_PACKAGES+=("{{ . }}")
+{{ end -}}
+{{ end -}}
+
+echo "==> Installing KVM packages via APT..."
+sudo apt-get update -y
+sudo apt-get install -y "${KVM_PACKAGES[@]}"
+
+# Add user to libvirt groups
+GROUPS=("libvirt" "kvm" "libvirt-qemu")
+for grp in "${GROUPS[@]}"; do
+    if ! getent group "$grp" > /dev/null 2>&1; then
+        echo "    Creating group $grp..."
+        sudo groupadd "$grp"
+    fi
+done
+echo "    Adding $USER to groups: ${GROUPS[*]}"
+sudo usermod -aG "$(IFS=,; echo "${GROUPS[*]}")" "$USER"
+
+# Verify KVM is available
+echo "==> Checking KVM availability..."
+kvm-ok
+
+{{ else if eq .chezmoi.osRelease.id "fedora" -}}
+
+{{ range .packages.fedora.kvm_cli -}}
+KVM_PACKAGES+=("{{ . }}")
+{{ end -}}
+{{ if not .isHeadless -}}
+{{ range .packages.fedora.kvm_gui -}}
+KVM_PACKAGES+=("{{ . }}")
+{{ end -}}
+{{ end -}}
+
+echo "==> Installing KVM packages via DNF..."
+sudo dnf install -y "${KVM_PACKAGES[@]}"
+
+# Add user to libvirt groups
+GROUPS=("libvirt" "qemu")
+for grp in "${GROUPS[@]}"; do
+    if ! getent group "$grp" > /dev/null 2>&1; then
+        echo "    Creating group $grp..."
+        sudo groupadd "$grp"
+    fi
+done
+echo "    Adding $USER to groups: ${GROUPS[*]}"
+sudo usermod -aG "$(IFS=,; echo "${GROUPS[*]}")" "$USER"
+
+{{ else -}}
+
+echo "==> Error: Unsupported Linux distribution: {{ .chezmoi.osRelease.id }}"
+exit 1
+
+{{ end -}}
+
+# Start libvirtd if systemd is available
+if command -v systemctl > /dev/null 2>&1; then
+    echo "==> Enabling and starting libvirtd..."
+    sudo systemctl enable --now libvirtd || true
+fi
+
+# Note: user needs to re-login for group membership changes to take effect
+echo "    NOTE: Re-login (or 'newgrp libvirt') required for group changes to apply."
+
+# Verify libvirt is responding
+echo "==> Verifying libvirt..."
+sudo virsh list --all 2>/dev/null || virsh list --all 2>/dev/null || echo "    virsh failed to connect; check that libvirtd is running."
+
+echo "==> KVM/libvirt setup completed."
+{{ end -}}

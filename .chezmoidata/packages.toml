@@ -62,6 +62,21 @@ gui = [  # Debian-specific GUI packages
   "gufw",
   "lshw-gtk"
 ]
+kvm_cli = [  # Debian-specific KVM/hypervisor CLI packages
+  "qemu-system-x86",
+  "qemu-utils",
+  "libvirt-daemon-system",
+  "libvirt-daemon",
+  "libvirt-clients",
+  "virtinst",
+  "cpu-checker",
+  "ovmf"
+]
+kvm_gui = [  # Debian-specific KVM GUI packages
+  "virt-manager",
+  "virt-viewer",
+  "qemu-system-gui"
+]
 
 [packages.ubuntu]
 cli = [  # Ubuntu-specific CLI packages
@@ -86,6 +101,21 @@ gui = [  # Ubuntu-specific GUI packages
   "gufw",
   "lshw-gtk"
 ]
+kvm_cli = [  # Ubuntu-specific KVM/hypervisor CLI packages
+  "qemu-system-x86",
+  "qemu-utils",
+  "libvirt-daemon-system",
+  "libvirt-daemon",
+  "libvirt-clients",
+  "virtinst",
+  "cpu-checker",
+  "ovmf"
+]
+kvm_gui = [  # Ubuntu-specific KVM GUI packages
+  "virt-manager",
+  "virt-viewer",
+  "qemu-system-gui"
+]
 
 [packages.fedora]
 cli = [  # Fedora-specific CLI packages
@@ -105,6 +135,19 @@ gui = [  # Fedora-specific GUI packages
   "fontawesome-fonts",
   "gnome-tweaks",
   "lshw-gui"
+]
+kvm_cli = [  # Fedora-specific KVM/hypervisor CLI packages
+  "qemu-system-x86",
+  "qemu-utils",
+  "libvirt",
+  "libvirt-client",
+  "virt-install",
+  "edk2-ovmf"
+]
+kvm_gui = [  # Fedora-specific KVM GUI packages
+  "virt-manager",
+  "virt-viewer",
+  "qemu-ui-gtk"
 ]
 
 [packages.darwin]

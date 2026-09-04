@@ -3,8 +3,9 @@
 # ==============================================================================
 # Purpose:
 #   Generates the local chezmoi configuration file (~/.config/chezmoi/chezmoi.toml).
-#   Determines system state flags (isContainer, isHeadless, enableContainerServices) to
-#   dynamically drive template rendering and script execution across environments.
+#   Determines system state flags (isContainer, isHeadless, enableContainerServices,
+#   enableKvm) to dynamically drive template rendering and script execution across
+#   environments.
 #
 # Environment Variable Overrides:
 #   You can bypass interactive prompts by setting the following environment
@@ -12,12 +13,13 @@
 #
 #     CHEZMOI_HEADLESS        Explicitly set headless state ("true"/"1" or "false"/"0").
 #     CHEZMOI_ENABLE_CONTAINER_SERVICES Explicitly enable container services ("true"/"1" or "false"/"0").
+#     CHEZMOI_ENABLE_KVM      Explicitly enable KVM/hypervisor setup ("true"/"1" or "false"/"0").
 #
 # Usage Examples:
 #   - Interactive setup:
 #       chezmoi init
 #   - Automated/Non-interactive deployment (CI/CD / Headless Server):
-#       CHEZMOI_HEADLESS=true CHEZMOI_ENABLE_CONTAINER_SERVICES=false chezmoi init --apply
+#       CHEZMOI_HEADLESS=true CHEZMOI_ENABLE_CONTAINER_SERVICES=false CHEZMOI_ENABLE_KVM=false chezmoi init --apply
 #   - Re-evaluate configuration from scratch:
 #       rm -f ~/.config/chezmoi/chezmoi.toml && chezmoi init
 # ==============================================================================
@@ -52,6 +54,18 @@
 {{-   $enableContainerServices = promptBoolOnce . "enableContainerServices" "Do you want to enable container services (Docker daemon, Podman socket)?" true -}}
 {{- end }}
 
+{{/* 3. Evaluate enableKvm */}}
+{{- $enableKvm := true -}}
+{{- $envKvm := env "CHEZMOI_ENABLE_KVM" -}}
+
+{{- if $isContainer -}}
+{{-   $enableKvm = false -}}
+{{- else if ne $envKvm "" -}}
+{{-   $enableKvm = (eq $envKvm "true" "1") -}}
+{{- else -}}
+{{-   $enableKvm = promptBoolOnce . "enableKvm" "Do you want to set up KVM/libvirt (hypervisor and VMs)?" true -}}
+{{- end }}
+
 # Target Environment State Variables
 [data]
     # Indicates if execution is taking place inside a Docker/LXC container
@@ -62,4 +76,7 @@
 
     # Determines if container-related systemd services (Docker daemon, Podman socket) should be started
     enableContainerServices = {{ $enableContainerServices }}
+
+    # Determines if the KVM/libvirt hypervisor and VM management should be set up
+    enableKvm = {{ $enableKvm }}
 
