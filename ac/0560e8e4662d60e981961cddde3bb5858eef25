@@ -1,0 +1,14 @@
+run_once_before_32-setup-kvm.sh.tmpl
+  h_17fb23fc771800 28-29,35-36,40-45,62-63,69-70
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "ac0560e8e4662d60e981961cddde3bb5858eef25",
+  "prompts": {},
+  "humans": {
+    "h_17fb23fc771800": {
+      "author": "Alberto Martínez Pérez <106817741+albertompe@users.noreply.github.com>"
+    }
+  }
+}
