@@ -1,0 +1,16 @@
+.chezmoidata/krew.toml
+  h_17fb23fc771800 1-7
+run_once_after_20-install-krew-plugins.sh.tmpl
+  h_17fb23fc771800 1-34
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "eaa4b09c0656c7ad84152732dac326e613468383",
+  "prompts": {},
+  "humans": {
+    "h_17fb23fc771800": {
+      "author": "Alberto Martínez Pérez <106817741+albertompe@users.noreply.github.com>"
+    }
+  }
+}
