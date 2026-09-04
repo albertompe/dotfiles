@@ -1,0 +1,42 @@
+dot_config/zsh/10-main.zsh
+  h_17fb23fc771800 1-233
+dot_config/zsh/20-keybindings.zsh
+  h_17fb23fc771800 1-4
+dot_config/zsh/25-common-system.zsh
+  h_17fb23fc771800 1-30
+dot_config/zsh/30-common-dev.zsh
+  h_17fb23fc771800 1-99
+dot_config/zsh/35-cleanup.zsh
+  h_17fb23fc771800 1-277
+dot_config/zsh/50-linux-specific.zsh.tmpl
+  h_17fb23fc771800 1-6
+dot_config/zsh/60-macos-specific.zsh.tmpl
+  h_17fb23fc771800 1-6
+dot_config/zsh/linux-specific/10-system.zsh
+  h_17fb23fc771800 1-17
+dot_config/zsh/macos-specific/10-system.zsh
+  h_17fb23fc771800 1-15
+dot_config/zsh/macos-specific/20-containers.zsh
+  h_17fb23fc771800 1-63
+dot_config/zsh/oh-my-posh/omp-config.toml
+  h_17fb23fc771800 1-151
+dot_config/zsh/p10k-themes/p10k-lean.zsh
+  h_17fb23fc771800 1-1568
+dot_config/zsh/p10k-themes/p10k-pure.zsh
+  h_17fb23fc771800 1-199
+dot_config/zsh/starship/starship.toml
+  h_17fb23fc771800 1-140
+dot_zshenv
+  h_17fb23fc771800 1-33
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "3244ac5eaf88fc66395731108e35cb03f0f8de3c",
+  "prompts": {},
+  "humans": {
+    "h_17fb23fc771800": {
+      "author": "Alberto Martínez Pérez <106817741+albertompe@users.noreply.github.com>"
+    }
+  }
+}
