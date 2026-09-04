@@ -1,0 +1,14 @@
+dot_config/zsh/starship/starship.toml
+  h_17fb23fc771800 25-26,28,32-35,38-40,43-44,47,50-51,54,57-58,61-62,65-67,70-71,74-75,78-79,82,85-86,90-94,98-99,103-104,106,110-111,114-125,128-139
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "a4fbc80325417f0bcbfcb606352feb54838f3423",
+  "prompts": {},
+  "humans": {
+    "h_17fb23fc771800": {
+      "author": "Alberto Martínez Pérez <106817741+albertompe@users.noreply.github.com>"
+    }
+  }
+}
