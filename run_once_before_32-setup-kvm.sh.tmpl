@@ -25,19 +25,24 @@ sudo apt-get update -y
 sudo apt-get install -y "${KVM_PACKAGES[@]}"
 
 # Add user to libvirt groups
-GROUPS=("libvirt" "kvm" "libvirt-qemu")
-for grp in "${GROUPS[@]}"; do
+KVM_GROUPS=("libvirt" "kvm" "libvirt-qemu")
+for grp in "${KVM_GROUPS[@]}"; do
     if ! getent group "$grp" > /dev/null 2>&1; then
         echo "    Creating group $grp..."
         sudo groupadd "$grp"
     fi
 done
-echo "    Adding $USER to groups: ${GROUPS[*]}"
-sudo usermod -aG "$(IFS=,; echo "${GROUPS[*]}")" "$USER"
+echo "    Adding $USER to groups: ${KVM_GROUPS[*]}"
+sudo usermod -aG "$(IFS=,; echo "${KVM_GROUPS[*]}")" "$USER"
 
 # Verify KVM is available
 echo "==> Checking KVM availability..."
-kvm-ok
+if [[ -e /dev/kvm ]]; then
+    echo "    KVM is available (/dev/kvm present)."
+else
+    echo "    Warning: /dev/kvm not found. Hardware acceleration unavailable."
+fi
+kvm-ok 2>/dev/null || true
 
 {{ else if eq .chezmoi.osRelease.id "fedora" -}}
 
@@ -54,15 +59,15 @@ echo "==> Installing KVM packages via DNF..."
 sudo dnf install -y "${KVM_PACKAGES[@]}"
 
 # Add user to libvirt groups
-GROUPS=("libvirt" "qemu")
-for grp in "${GROUPS[@]}"; do
+KVM_GROUPS=("libvirt" "qemu")
+for grp in "${KVM_GROUPS[@]}"; do
     if ! getent group "$grp" > /dev/null 2>&1; then
         echo "    Creating group $grp..."
         sudo groupadd "$grp"
     fi
 done
-echo "    Adding $USER to groups: ${GROUPS[*]}"
-sudo usermod -aG "$(IFS=,; echo "${GROUPS[*]}")" "$USER"
+echo "    Adding $USER to groups: ${KVM_GROUPS[*]}"
+sudo usermod -aG "$(IFS=,; echo "${KVM_GROUPS[*]}")" "$USER"
 
 {{ else -}}
 
