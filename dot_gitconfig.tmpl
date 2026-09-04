@@ -39,6 +39,7 @@
     user = {{ $githubUser }}
 [core]
     sshCommand = "ssh -i ~/.ssh/{{ $sshKey }}"
+    excludesfile = ~/.config/git/ignore
 {{- if $sshSignKey }}
 [gpg]
     format = ssh
@@ -47,6 +48,32 @@
 [commit]
     gpgSign = true
 {{- end }}
+[init]
+    defaultBranch = main
+[fetch]
+    prune = true
+[pull]
+    rebase = true
+    autostash = true
+[push]
+    autoSetupRemote = true
+[rebase]
+    autosquash = true
+[rerere]
+    enabled = true
+[merge]
+    conflictStyle = zdiff3
+[diff]
+    algorithm = histogram
+    colorMoved = zebra
+[alias]
+    st = status -sb
+    co = checkout
+    br = branch
+    lg = log --oneline --graph --decorate -15
+    unstage = reset HEAD --
+    last = log -1 HEAD
+    amend = commit --amend --no-edit
 [url "git@github.com:"]
     insteadOf = https://github.com/
 [include]

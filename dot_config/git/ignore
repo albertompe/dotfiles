@@ -1,0 +1,42 @@
+# Global git ignore file (core.excludesfile)
+# Applies to every repository on this machine. For project-specific
+# exclusions use .gitignore in each repository instead.
+
+# Infrastructure / OS
+.DS_Store
+.AppleDouble
+.LSOverride
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+._*
+
+# Editors / IDEs
+.idea/
+*.iml
+.vscode/
+*.swp
+*.swo
+*~
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+
+# Node
+node_modules/
+
+# Go
+bin/
+
+# Rust
+target/
+
+# Misc
+*.log
