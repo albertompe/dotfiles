@@ -1,0 +1,16 @@
+# Example for ~/.private.zsh
+# Copy this file to ~/.private.zsh and fill in your own values.
+# It is read by chezmoi when rendering dot_gitconfig.tmpl — it is NOT sourced
+# by the shell, so nothing is exposed to the environment.
+# Extra per-machine git config (other accounts, corporate tooling, ...) goes
+# in ~/.gitconfig.local, not here.
+export GIT_USER_NAME="Your Full Name"
+export GIT_USER_EMAIL="you@example.com"
+export GIT_GITHUB_USER="yourgithubuser"
+export GIT_SSH_KEY="id_ed25519"
+
+# Optional commit signing. Uncomment the one you use.
+# GPG signing key:
+# export GIT_SIGNING_KEY="FD83...INSERTYOURGPGKEY"
+# SSH signing key (takes precedence over GIT_SIGNING_KEY if both are set):
+# export GIT_SSH_SIGNING_KEY="id_ed25519"

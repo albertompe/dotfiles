@@ -1,0 +1,53 @@
+# =============================================================================
+# Base git configuration, shared across machines (OS-independent).
+# Values are read by chezmoi directly from the machine-private file
+# ~/.private.zsh (not exported to the shell). If that file does not exist yet
+# (e.g. first apply on a new machine), values render empty and can be filled
+# by re-running `chezmoi apply` after creating it. Per-machine additions
+# (extra accounts, corporate tooling, ...) belong in ~/.gitconfig.local,
+# included at the bottom.
+# =============================================================================
+{{- $priv := printf "%s/.private.zsh" (env "HOME") -}}
+{{- $secrets := "" -}}
+{{- if eq (output "sh" "-c" (printf "test -r '%s' && printf yes || printf no" $priv)) "yes" -}}
+{{-   $secrets = include $priv -}}
+{{- end -}}
+{{- $userName   := "" -}}
+{{- $userEmail  := "" -}}
+{{- $githubUser := "" -}}
+{{- $sshKey     := "" -}}
+{{- $gpgKey     := "" -}}
+{{- $sshSignKey := "" -}}
+{{- if $secrets -}}
+{{-   $userName   = regexFind "GIT_USER_NAME=[^\r\n]+" $secrets | trimPrefix "GIT_USER_NAME=" | trim | trimAll "\"" -}}
+{{-   $userEmail  = regexFind "GIT_USER_EMAIL=[^\r\n]+" $secrets | trimPrefix "GIT_USER_EMAIL=" | trim | trimAll "\"" -}}
+{{-   $githubUser = regexFind "GIT_GITHUB_USER=[^\r\n]+" $secrets | trimPrefix "GIT_GITHUB_USER=" | trim | trimAll "\"" -}}
+{{-   $sshKey     = regexFind "GIT_SSH_KEY=[^\r\n]+" $secrets | trimPrefix "GIT_SSH_KEY=" | trim | trimAll "\"" -}}
+{{-   $gpgKey     = regexFind "GIT_SIGNING_KEY=[^\r\n]+" $secrets | trimPrefix "GIT_SIGNING_KEY=" | trim | trimAll "\"" -}}
+{{-   $sshSignKey = regexFind "GIT_SSH_SIGNING_KEY=[^\r\n]+" $secrets | trimPrefix "GIT_SSH_SIGNING_KEY=" | trim | trimAll "\"" -}}
+{{- end }}
+
+[user]
+    name = {{ $userName }}
+    email = {{ $userEmail }}
+{{- if $sshSignKey }}
+    signingkey = ~/.ssh/{{ $sshSignKey }}.pub
+{{- else if $gpgKey }}
+    signingkey = {{ $gpgKey }}
+{{- end }}
+[github]
+    user = {{ $githubUser }}
+[core]
+    sshCommand = "ssh -i ~/.ssh/{{ $sshKey }}"
+{{- if $sshSignKey }}
+[gpg]
+    format = ssh
+{{- end }}
+{{- if or $sshSignKey $gpgKey }}
+[commit]
+    gpgSign = true
+{{- end }}
+[url "git@github.com:"]
+    insteadOf = https://github.com/
+[include]
+    path = ~/.gitconfig.local
