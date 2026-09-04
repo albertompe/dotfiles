@@ -12,7 +12,7 @@ else
     echo "==> Installing VS Code via official Microsoft APT repository..."
 
     echo "==> Importing Microsoft GPG key..."
-    curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | sudo gpg --yes --dearmor -o /usr/share/keyrings/packages.microsoft.gpg
+    curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | sudo gpg --batch --yes --dearmor -o /usr/share/keyrings/packages.microsoft.gpg
 
     echo "==> Adding VS Code APT repository..."
     echo "deb [arch=amd64,arm64 signed-by=/usr/share/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main" | sudo tee /etc/apt/sources.list.d/vscode.list
