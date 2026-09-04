@@ -66,6 +66,9 @@
 {{-   $enableKvm = promptBoolOnce . "enableKvm" "Do you want to set up KVM/libvirt (hypervisor and VMs)?" true -}}
 {{- end }}
 
+# File mode policy — explicit and independent of the invoking shell's umask
+umask = 0o077
+
 # Target Environment State Variables
 [data]
     # Indicates if execution is taking place inside a Docker/LXC container
@@ -79,4 +82,3 @@
 
     # Determines if the KVM/libvirt hypervisor and VM management should be set up
     enableKvm = {{ $enableKvm }}
-
