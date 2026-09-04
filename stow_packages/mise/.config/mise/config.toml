@@ -40,7 +40,6 @@ ollama = "latest"
 opencode = "latest"
 operator-sdk = "latest"
 pipx = "latest"
-podman = { version = "latest", matching = "podman-remote" }
 python = "latest"
 redis = "latest"
 rust = "latest"
