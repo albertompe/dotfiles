@@ -12,6 +12,13 @@ alias ll='ls -lh'
 alias k=kubectl
 alias kcc=kubectx
 alias kns=kubens
+alias kg='kubectl get'
+alias kgp='kubectl get pod'
+alias kgcm='kubectl get configmaps'
+alias kgst='kubectl get statefulsets'
+alias kgd='kubectl get deployments'
+alias kgsvc='kubectl get services'
+alias kgsec='kubectl get secrets'
 
 # eza aliases
 alias eza='eza -g --icons'
