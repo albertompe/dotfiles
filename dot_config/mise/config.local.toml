@@ -1,0 +1,9 @@
+# Global mise settings.
+# Kept separate from config.toml so they apply even on machines where the
+# default mise tools are disabled (enableDefaultMiseTools=false).
+[settings]
+github_attestations = false
+auto_install = true
+
+[settings.python]
+compile = true

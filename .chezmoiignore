@@ -1,1 +1,5 @@
 Makefile
+{{- if not .enableDefaultMiseTools }}
+.config/mise/config.toml
+{{- end }}
+

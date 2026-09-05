@@ -12,6 +12,7 @@
 #   variables before running 'chezmoi init':
 #
 #     CHEZMOI_HEADLESS        Explicitly set headless state ("true"/"1" or "false"/"0").
+#     CHEZMOI_MISE_TOOLS      Install the default mise tools from config.toml ("true"/"1" or "false"/"0"). Disable for a bare mise: only per-project mise.toml tools are installed.
 #     CHEZMOI_ENABLE_CONTAINER_SERVICES Explicitly enable container services ("true"/"1" or "false"/"0").
 #     CHEZMOI_ENABLE_KVM      Explicitly enable KVM/hypervisor setup ("true"/"1" or "false"/"0").
 #
@@ -20,6 +21,8 @@
 #       chezmoi init
 #   - Automated/Non-interactive deployment (CI/CD / Headless Server):
 #       CHEZMOI_HEADLESS=true CHEZMOI_ENABLE_CONTAINER_SERVICES=false CHEZMOI_ENABLE_KVM=false chezmoi init --apply
+#   - Minimal/bare mise (no default tools; per-project mise.toml only):
+#       CHEZMOI_MISE_TOOLS=false chezmoi init --apply
 #   - Re-evaluate configuration from scratch:
 #       rm -f ~/.config/chezmoi/chezmoi.toml && chezmoi init
 # ==============================================================================
@@ -42,7 +45,17 @@
 {{-   $isHeadless = promptBoolOnce . "isHeadless" "Is this a headless machine (no graphical user interface)?" false -}}
 {{- end -}}
 
-{{/* 2. Evaluate enableContainerServices */}}
+{{/* 2. Evaluate enableDefaultMiseTools */}}
+{{- $enableDefaultMiseTools := true -}}
+{{- $envMiseTools := env "CHEZMOI_MISE_TOOLS" -}}
+
+{{- if ne $envMiseTools "" -}}
+{{-   $enableDefaultMiseTools = (eq $envMiseTools "true" "1") -}}
+{{- else -}}
+{{-   $enableDefaultMiseTools = promptBoolOnce . "enableDefaultMiseTools" "Install the default mise tools (from config.toml)? Disable for a bare mise (per-project mise.toml only)." true -}}
+{{- end -}}
+
+{{/* 3. Evaluate enableContainerServices */}}
 {{- $enableContainerServices := false -}}
 {{- $envServices := env "CHEZMOI_ENABLE_CONTAINER_SERVICES" -}}
 
@@ -54,7 +67,7 @@
 {{-   $enableContainerServices = promptBoolOnce . "enableContainerServices" "Do you want to enable container services (Docker daemon, Podman socket)?" true -}}
 {{- end }}
 
-{{/* 3. Evaluate enableKvm */}}
+{{/* 4. Evaluate enableKvm */}}
 {{- $enableKvm := true -}}
 {{- $envKvm := env "CHEZMOI_ENABLE_KVM" -}}
 
@@ -76,6 +89,10 @@ umask = 0o077
 
     # Indicates if the host lacks a graphical interface (GUI)
     isHeadless = {{ $isHeadless }}
+
+    # Determines if the default mise tools (from config.toml) should be installed.
+    # Disabled → bare mise: only per-project mise.toml tools are installed.
+    enableDefaultMiseTools = {{ $enableDefaultMiseTools }}
 
     # Determines if container-related systemd services (Docker daemon, Podman socket) should be started
     enableContainerServices = {{ $enableContainerServices }}

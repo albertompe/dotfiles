@@ -2,6 +2,12 @@
 
 set -euo pipefail
 
+{{ if not .enableDefaultMiseTools -}}
+echo "==> Skipping default mise tools (enableDefaultMiseTools=false)."
+echo "==> Only per-project mise.toml tools will be installed on demand."
+exit 0
+{{ else -}}
+
 echo "==> Provisioning tools with mise..."
 
 if [[ -n "${GITHUB_TOKEN:-}" ]]; then
@@ -39,3 +45,4 @@ echo "==> Installing all configured tools from $MISE_CONFIG ..."
 "$MISE_BIN" install -v
 
 echo "==> mise tools installation completed successfully."
+{{ end -}}

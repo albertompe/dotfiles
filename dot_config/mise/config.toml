@@ -54,10 +54,3 @@ uv = "latest"
 velero = "latest"
 yq = "latest"
 zoxide = "latest"
-
-[settings]
-github_attestations = false
-auto_install = true
-
-[settings.python]
-compile = true
