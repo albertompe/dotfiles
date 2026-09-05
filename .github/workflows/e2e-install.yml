@@ -2,6 +2,11 @@ name: e2e-install
 
 on:
   workflow_dispatch:
+  # TEMPORARY — eliminates the default-branch requirement for workflow_dispatch.
+  # Fires only when this workflow file changes. Remove once merged to main.
+  push:
+    paths:
+      - .github/workflows/e2e-install.yml
 
 permissions:
   contents: read
