@@ -197,7 +197,36 @@ those account directories work out of the box.
 
 ## Requirements
 
-- Git, curl, zsh (installed by the setup when missing).
+Before running the installation you need **Git** and **curl** on the target
+machine: `curl` fetches the installer and `git` clones the source repository,
+so they must be present *before* the bootstrap one-liner runs. Everything else
+(shell, tools, packages, including zsh) is installed by the setup itself.
+
+If they are missing, install them with your package manager:
+
+- **Debian / Ubuntu** (APT):
+
+  ```sh
+  sudo apt-get update && sudo apt-get install -y git curl
+  ```
+
+- **Fedora / RHEL family** (DNF):
+
+  ```sh
+  sudo dnf install -y git curl
+  ```
+
+- **macOS** (Homebrew):
+
+  ```sh
+  brew install git curl
+  ```
+
+  macOS ships a system `curl` and `git` (from the Command Line Tools), so this
+  is only needed if you prefer the Homebrew-managed versions.
+
+There are also two runtime requirements:
+
 - A GitHub token with permission to read public repositories for the tool
   downloads; see [below](#github-token).
 - An interactive terminal for the prompts during `chezmoi init`. For automated
