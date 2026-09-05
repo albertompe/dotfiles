@@ -1,6 +1,7 @@
 Makefile
 README.md
 LICENSE
+.github
 {{- if not .enableDefaultMiseTools }}
 .config/mise/config.toml
 {{- end }}
