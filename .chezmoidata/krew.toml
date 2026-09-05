@@ -1,8 +1,11 @@
 [krew]
-plugins = [  # kubectl plugins instalados por krew
+common_plugins = [  # kubectl plugins instalados por krew (todas las plataformas)
   "edit-status",
   "krew",  # habilita `kubectl krew`
   "neat",
-  "profefe",
   "rabbitmq"
 ]
+linux_plugins = [  # kubectl plugins solo disponibles para Linux
+  "profefe"
+]
+darwin_plugins = []  # kubectl plugins solo disponibles para macOS

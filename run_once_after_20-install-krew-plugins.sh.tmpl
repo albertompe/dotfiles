@@ -17,8 +17,17 @@ if [[ -z "$KREW_BIN" ]]; then
 fi
 
 KREW_PLUGINS=()
-{{ range .krew.plugins -}}
+{{ range .krew.common_plugins -}}
 KREW_PLUGINS+=("{{ . }}")
+{{ end -}}
+{{ if eq .chezmoi.os "linux" -}}
+{{ range .krew.linux_plugins -}}
+KREW_PLUGINS+=("{{ . }}")
+{{ end -}}
+{{ else if eq .chezmoi.os "darwin" -}}
+{{ range .krew.darwin_plugins -}}
+KREW_PLUGINS+=("{{ . }}")
+{{ end -}}
 {{ end -}}
 
 echo "==> Installing krew plugins..."

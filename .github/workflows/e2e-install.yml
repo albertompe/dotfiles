@@ -8,9 +8,12 @@ on:
     paths:
       - .github/workflows/e2e-install.yml
       - .chezmoidata/**
-      - run_once_before_00-install-packages-linux.sh.tmpl
-      - run_once_after_10-install-mise-tools.sh.tmpl
+      - run_once_*
       - dot_config/mise/config.toml
+
+concurrency:
+  group: e2e-install-${{ github.ref }}
+  cancel-in-progress: true
 
 permissions:
   contents: read
