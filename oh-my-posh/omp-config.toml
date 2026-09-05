@@ -72,6 +72,13 @@ console_title_template = '{{ .Shell }} in {{ .Folder }}'
   [[blocks.segments]]
     type = 'text'
     style = 'plain'
+    foreground = 'p:orange'
+    background = 'transparent'
+    template = '{{ if .Env.DEV_CONTAINER }}({{ .Env.DEV_CONTAINER }}) {{ end }}'
+
+  [[blocks.segments]]
+    type = 'text'
+    style = 'plain'
     foreground_templates = [
       "{{if gt .Code 0}}p:red{{end}}",
       "{{if eq .Code 0}}p:grey{{end}}",

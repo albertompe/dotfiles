@@ -5,9 +5,13 @@ umask 077
 export DOTFILES="$HOME/.dotfiles"
 
 # Zsh history configuration
-HISTFILE=$HOME/.zsh_history # Location of the history file
-HISTSIZE=10000              # Number of commands kept in internal memory
-SAVEHIST=10000              # Number of commands physically saved to the file
+# HISTFILE can be overridden (e.g. inside a container, via an env var or
+# ~/.zshenv.local) to point at a persistent mount; defaults to ~/.zsh_history.
+HISTFILE="${ZSH_HISTFILE:-$HOME/.zsh_history}" # Location of the history file
+# History sizes can be overridden via env vars (ZSH_HISTSIZE/ZSH_SAVEHIST),
+# e.g. per container or machine through ~/.zshenv.local.
+HISTSIZE="${ZSH_HISTSIZE:-10000}"  # Number of commands kept in internal memory
+SAVEHIST="${ZSH_SAVEHIST:-10000}"  # Number of commands physically saved to the file
 
 # Advanced history options
 setopt append_history       # Append commands to the file instead of overwriting it
@@ -190,7 +194,9 @@ if [[ -d "${KREW_ROOT:-$HOME/.krew}/bin" ]]; then
 fi
 
 # Antigravity
-export PATH="/Users/amz/.antigravity/antigravity/bin:$PATH"
+if [[ -d "$HOME/.antigravity/antigravity/bin" ]]; then
+    export PATH="$PATH:$HOME/.antigravity/antigravity/bin"
+fi
 
 # Add Rancher Desktop bin dir to PATH
 if [[ -d "$HOME/.rd/bin" ]]; then

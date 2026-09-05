@@ -1,0 +1,6 @@
+# Machine-specific overrides sourced by ~/.zshenv (see zsh/zshenv.zsh).
+# Uncomment and adapt.
+
+# export LANG=es_ES.UTF-8
+# export LANGUAGE=es_ES:es
+# export LC_ALL=es_ES.UTF-8

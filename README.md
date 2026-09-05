@@ -36,6 +36,17 @@ Contains configurations for several tools and applications:
 git clone git@github.com/albertompe/dotfiles.git ${HOME}/.dotfiles
 cd ${HOME}/.dotfiles
 make install
+```
+
+### Headless mode (Linux only)
+
+For machines without a graphical environment (e.g. Docker images), set the `HEADLESS` variable to `1`:
+
+```shell
+make install HEADLESS=1
+```
+
+In headless mode the graphical applications are skipped: their configurations are not linked with stow (terminator, wezterm, ghostty and zed) and they are not installed (`wezterm` via apt and `zed` via curl). The flag has no effect on macOS.
 
 ## Github saturation fix
 
