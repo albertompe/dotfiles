@@ -24,17 +24,21 @@ jobs:
           - label: debian (apt)
             os: ubuntu-latest
             container: debian:bookworm
+            kvm: 'false'
           - label: fedora (dnf)
             os: ubuntu-latest
             container: fedora:latest
+            kvm: 'false'
           - label: ubuntu (apt)
             os: ubuntu-latest
+            kvm: 'true'
           - label: macos (homebrew)
             os: macos-latest
+            kvm: 'false'
     env:
       CHEZMOI_HEADLESS: 'true'
       CHEZMOI_ENABLE_CONTAINER_SERVICES: 'false'
-      CHEZMOI_ENABLE_KVM: 'false'
+      CHEZMOI_ENABLE_KVM: ${{ matrix.kvm }}
       CHEZMOI_MISE_TOOLS: 'true'
     steps:
       - uses: actions/checkout@v4
@@ -102,6 +106,65 @@ jobs:
         run: |
           export PATH="$HOME/.local/bin:$PATH"
           chezmoi verify --exclude scripts
+
+      - name: Simulate a Fedora host install and run the KVM script (regression for dnf5 already-installed / qemu-img)
+        if: matrix.container == 'fedora:latest'
+        run: |
+          export PATH="$HOME/.local/bin:$PATH"
+          sudo dnf install -y qemu-system-x86 libvirt-client
+          sed -i 's/isContainer = true/isContainer = false/; s/enableKvm = false/enableKvm = true/' "$HOME/.config/chezmoi/chezmoi.toml"
+          chezmoi apply
+
+      - name: Verify Podman configured
+        if: runner.os == 'Linux'
+        run: |
+          command -v podman >/dev/null || { echo "FAIL: podman missing"; exit 1; }
+          podman --version
+          grep -q '^unqualified-search-registries' /etc/containers/registries.conf || { echo "FAIL: registries.conf not configured"; exit 1; }
+          echo "OK podman"
+
+      - name: Verify Docker installed
+        if: runner.os == 'Linux'
+        run: |
+          command -v docker >/dev/null || { echo "FAIL: docker CLI missing"; exit 1; }
+          docker --version
+          if command -v dpkg >/dev/null 2>&1; then
+            for pkg in docker-ce docker-ce-cli containerd.io docker-compose-plugin; do
+              dpkg -s "$pkg" >/dev/null 2>&1 || { echo "FAIL: $pkg not installed"; exit 1; }
+            done
+            [ -f /etc/apt/sources.list.d/docker.list ] || { echo "FAIL: docker.list missing"; exit 1; }
+          elif command -v rpm >/dev/null 2>&1; then
+            for pkg in docker-ce docker-ce-cli containerd.io docker-compose-plugin; do
+              rpm -q "$pkg" >/dev/null 2>&1 || { echo "FAIL: $pkg not installed"; exit 1; }
+            done
+            [ -f /etc/yum.repos.d/docker-ce.repo ] || { echo "FAIL: docker-ce.repo missing"; exit 1; }
+          fi
+          echo "OK docker"
+
+      - name: Verify KVM packages installed
+        if: runner.os == 'Linux' && (matrix.kvm == 'true' || matrix.container == 'fedora:latest')
+        run: |
+          if command -v dpkg >/dev/null 2>&1; then
+            for pkg in qemu-system-x86 qemu-utils libvirt-daemon-system libvirt-clients virtinst ovmf; do
+              dpkg -s "$pkg" >/dev/null 2>&1 || { echo "FAIL: $pkg not installed"; exit 1; }
+              echo "OK $pkg"
+            done
+          elif command -v rpm >/dev/null 2>&1; then
+            for pkg in qemu-system-x86 qemu-img libvirt libvirt-client virt-install edk2-ovmf; do
+              rpm -q "$pkg" >/dev/null 2>&1 || { echo "FAIL: $pkg not installed"; exit 1; }
+              echo "OK $pkg"
+            done
+          fi
+
+      - name: Check libvirtd service (informational)
+        if: matrix.kvm == 'true'
+        run: |
+          if sudo systemctl is-active libvirtd >/dev/null 2>&1; then
+            echo "libvirtd is active"
+            sudo virsh list --all
+          else
+            echo "libvirtd not active on this runner (nested virt may be unavailable) — informational only"
+          fi
 
       - name: Report installed mise tools
         run: |

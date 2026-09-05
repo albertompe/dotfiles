@@ -6,6 +6,10 @@ set -euo pipefail
 
 echo "==> Setting up KVM/libvirt (hypervisor and VMs)..."
 
+# Resolve the invoking user (do not rely on the $USER env var, which is unset
+# in non-interactive/container shells under `set -u`)
+CURRENT_USER="$(id -un)"
+
 # Collect KVM packages
 KVM_PACKAGES=()
 
@@ -32,8 +36,8 @@ for grp in "${KVM_GROUPS[@]}"; do
         sudo groupadd "$grp"
     fi
 done
-echo "    Adding $USER to groups: ${KVM_GROUPS[*]}"
-sudo usermod -aG "$(IFS=,; echo "${KVM_GROUPS[*]}")" "$USER"
+echo "    Adding $CURRENT_USER to groups: ${KVM_GROUPS[*]}"
+sudo usermod -aG "$(IFS=,; echo "${KVM_GROUPS[*]}")" "$CURRENT_USER"
 
 # Verify KVM is available
 echo "==> Checking KVM availability..."
@@ -81,8 +85,8 @@ for grp in "${KVM_GROUPS[@]}"; do
         sudo groupadd "$grp"
     fi
 done
-echo "    Adding $USER to groups: ${KVM_GROUPS[*]}"
-sudo usermod -aG "$(IFS=,; echo "${KVM_GROUPS[*]}")" "$USER"
+echo "    Adding $CURRENT_USER to groups: ${KVM_GROUPS[*]}"
+sudo usermod -aG "$(IFS=,; echo "${KVM_GROUPS[*]}")" "$CURRENT_USER"
 
 {{ else -}}
 
