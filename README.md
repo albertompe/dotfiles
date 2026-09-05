@@ -190,6 +190,8 @@ those account directories work out of the box.
 | `.chezmoi.toml.tmpl`              | Generates `~/.config/chezmoi/chezmoi.toml`     |
 | `.chezmoiignore`                  | Conditional ignores (e.g. default mise tools)  |
 | `.chezmoidata/*.toml`             | Declarative data: packages, flatpaks, snaps, krew |
+| `dot_gitconfig.tmpl`              | Generates `~/.gitconfig` (identity from `~/.private.zsh`) |
+| `dot_private.zsh.example`         | Reference for the private `~/.private.zsh` file   |
 | `run_once_before_*` / `run_once_after_*` | One-time install scripts            |
 | `Makefile`                        | Convenience targets (not installed)            |
 
