@@ -1,15 +1,8 @@
 name: e2e-install
 
 on:
-  workflow_dispatch:
-  # TEMPORARY — eliminates the default-branch requirement for workflow_dispatch.
-  # Fires when install-relevant files change. Remove once merged to main.
   push:
-    paths:
-      - .github/workflows/e2e-install.yml
-      - .chezmoidata/**
-      - run_once_*
-      - dot_config/mise/config.toml
+  workflow_dispatch:
 
 concurrency:
   group: e2e-install-${{ github.ref }}
