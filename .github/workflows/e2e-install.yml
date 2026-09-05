@@ -35,11 +35,16 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Install chezmoi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          mkdir -p "$HOME/.local/bin"
           sh -c "$(curl -fsLS get.chezmoi.io)" -- -b "$HOME/.local/bin"
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+          echo "PATH=$HOME/.local/bin:$PATH" >> "$GITHUB_ENV"
+          "$HOME/.local/bin/chezmoi" --version
 
-      - name: Ensure sudo is available (container jobs)
+      - name: Ensure sudo and python3 (container jobs)
         if: runner.os == 'Linux'
         run: |
           if ! command -v sudo >/dev/null 2>&1; then
@@ -49,32 +54,47 @@ jobs:
               dnf install -y sudo
             fi
           fi
+          if ! command -v python3 >/dev/null 2>&1; then
+            if command -v apt-get >/dev/null 2>&1; then
+              apt-get update -y && apt-get install -y python3
+            elif command -v dnf >/dev/null 2>&1; then
+              dnf install -y python3
+            fi
+          fi
+          command -v sudo >/dev/null && command -v python3 >/dev/null
 
       - name: Prepare home layout
         run: |
+          export PATH="$HOME/.local/bin:$PATH"
           mkdir -p "$HOME/.local/share/chezmoi" "$HOME/.config/chezmoi"
           tar --exclude=.git -C . -cf - . | tar -C "$HOME/.local/share/chezmoi" -xf -
 
       - name: Render chezmoi config
         run: |
+          export PATH="$HOME/.local/bin:$PATH"
           chezmoi execute-template --init < .chezmoi.toml.tmpl > "$HOME/.config/chezmoi/chezmoi.toml"
 
       - name: Apply dotfiles (real install)
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: chezmoi apply
+        run: |
+          export PATH="$HOME/.local/bin:$PATH"
+          chezmoi apply
 
       - name: Verify target state
-        run: chezmoi verify --exclude scripts
+        run: |
+          export PATH="$HOME/.local/bin:$PATH"
+          chezmoi verify --exclude scripts
 
       - name: Report installed mise tools
         run: |
-          if [[ -x "$HOME/.local/bin/mise" ]]; then
+          export PATH="$HOME/.local/bin:$PATH"
+          if [ -x "$HOME/.local/bin/mise" ]; then
             MISE_BIN="$HOME/.local/bin/mise"
-          elif [[ -x /opt/homebrew/bin/mise ]]; then
+          elif [ -x /opt/homebrew/bin/mise ]; then
             MISE_BIN=/opt/homebrew/bin/mise
           fi
-          if [[ -n "${MISE_BIN:-}" ]]; then
+          if [ -n "${MISE_BIN:-}" ]; then
             "$MISE_BIN" ls
           else
             echo "mise not found in expected locations"

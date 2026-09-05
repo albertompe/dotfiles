@@ -53,9 +53,14 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Install chezmoi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          mkdir -p "$HOME/.local/bin"
           sh -c "$(curl -fsLS get.chezmoi.io)" -- -b "$HOME/.local/bin"
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+          echo "PATH=$HOME/.local/bin:$PATH" >> "$GITHUB_ENV"
+          "$HOME/.local/bin/chezmoi" --version
 
       - name: Prepare home layout
         run: |
@@ -66,18 +71,33 @@ jobs:
         env:
           CHEZMOI_MISE_TOOLS: ${{ matrix.mise_tools }}
         run: |
+          export PATH="$HOME/.local/bin:$PATH"
           chezmoi execute-template --init < .chezmoi.toml.tmpl > "$HOME/.config/chezmoi/chezmoi.toml"
           echo "--- generated config ---"
           cat "$HOME/.config/chezmoi/chezmoi.toml"
 
       - name: Apply to staging destination (no scripts)
         run: |
+          export PATH="$HOME/.local/bin:$PATH"
           mkdir -p "$RUNNER_TEMP/ci-home"
           chezmoi apply --destination "$RUNNER_TEMP/ci-home" --exclude scripts
 
       - name: Verify target state
         run: |
+          export PATH="$HOME/.local/bin:$PATH"
           chezmoi verify --destination "$RUNNER_TEMP/ci-home" --exclude scripts
+
+      - name: Ensure python3 (container jobs)
+        if: runner.os == 'Linux'
+        run: |
+          if ! command -v python3 >/dev/null 2>&1; then
+            if command -v apt-get >/dev/null 2>&1; then
+              apt-get update -y && apt-get install -y python3
+            elif command -v dnf >/dev/null 2>&1; then
+              dnf install -y python3
+            fi
+          fi
+          command -v python3 >/dev/null
 
       - name: Validate TOML files parse
         run: |
