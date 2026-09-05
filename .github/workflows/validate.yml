@@ -122,3 +122,60 @@ jobs:
                   tomllib.load(fh)
               print(f"OK {f}")
           EOF
+
+  flag-combinations:
+    name: apply + run_once templates (all flag combinations)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install chezmoi
+        run: |
+          mkdir -p "$HOME/.local/bin"
+          sh -c "$(curl -fsLS get.chezmoi.io)" -- -b "$HOME/.local/bin"
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+          echo "PATH=$HOME/.local/bin:$PATH" >> "$GITHUB_ENV"
+          "$HOME/.local/bin/chezmoi" --version
+
+      - name: Prepare home layout
+        run: |
+          mkdir -p "$HOME/.local/share/chezmoi" "$HOME/.config/chezmoi"
+          tar --exclude=.git -C . -cf - . | tar -C "$HOME/.local/share/chezmoi" -xf -
+
+      - name: Apply, verify and lint run_once across all flag combinations
+        run: |
+          set -euo pipefail
+          export PATH="$HOME/.local/bin:$PATH"
+          config="$HOME/.config/chezmoi/chezmoi.toml"
+          apply_total=0
+          lint_total=0
+          for headless in true false; do
+            for services in true false; do
+              for kvm in true false; do
+                for mise in true false; do
+                  export CHEZMOI_HEADLESS="$headless"
+                  export CHEZMOI_ENABLE_CONTAINER_SERVICES="$services"
+                  export CHEZMOI_ENABLE_KVM="$kvm"
+                  export CHEZMOI_MISE_TOOLS="$mise"
+                  chezmoi execute-template --init < .chezmoi.toml.tmpl > "$config"
+                  dest="${RUNNER_TEMP:-/tmp}/ci-combo-$headless-$services-$kvm-$mise"
+                  rm -rf "$dest"
+                  mkdir -p "$dest"
+                  chezmoi apply --destination "$dest" --exclude scripts
+                  chezmoi verify --destination "$dest" --exclude scripts
+                  apply_total=$((apply_total + 1))
+                  for f in run_once_*.tmpl; do
+                    out="${TMPDIR:-/tmp}/$(basename "${f%.tmpl}").sh"
+                    chezmoi execute-template "$f" > "$out"
+                    if grep -q '{{' "$out"; then
+                      echo "ERROR: unresolved template directives in $f (headless=$headless services=$services kvm=$kvm mise=$mise)"
+                      exit 1
+                    fi
+                    bash -n "$out"
+                    lint_total=$((lint_total + 1))
+                  done
+                done
+              done
+            done
+          done
+          echo "OK: $apply_total apply/verify + $lint_total run_once lints across 16 combinations"
