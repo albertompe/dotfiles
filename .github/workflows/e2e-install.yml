@@ -3,10 +3,14 @@ name: e2e-install
 on:
   workflow_dispatch:
   # TEMPORARY — eliminates the default-branch requirement for workflow_dispatch.
-  # Fires only when this workflow file changes. Remove once merged to main.
+  # Fires when install-relevant files change. Remove once merged to main.
   push:
     paths:
       - .github/workflows/e2e-install.yml
+      - .chezmoidata/**
+      - run_once_before_00-install-packages-linux.sh.tmpl
+      - run_once_after_10-install-mise-tools.sh.tmpl
+      - dot_config/mise/config.toml
 
 permissions:
   contents: read
@@ -75,6 +79,10 @@ jobs:
           fi
           command -v sudo >/dev/null && command -v python3 >/dev/null
 
+      - name: Fix home SSH directory permissions (runner images)
+        run: |
+          chmod 700 "$HOME/.ssh" 2>/dev/null || true
+
       - name: Prepare home layout
         run: |
           export PATH="$HOME/.local/bin:$PATH"
@@ -89,6 +97,7 @@ jobs:
       - name: Apply dotfiles (real install)
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GIT_CONFIG_GLOBAL: /dev/null
         run: |
           export PATH="$HOME/.local/bin:$PATH"
           chezmoi apply

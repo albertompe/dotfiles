@@ -5,7 +5,6 @@ common_cli = [  # Linux common CLI packages
   "btop",
   "curl",
   "ethtool",
-  "fastfetch",
   "fortune-mod",
   "gettext",
   "git",
@@ -21,9 +20,7 @@ common_cli = [  # Linux common CLI packages
   "tmux",
   "tree",
   "ufw",
-  "unace",
   "unzip",
-  "wakeonlan",
   "wavemon",
   "wget",
   "zip",
@@ -53,6 +50,8 @@ cli = [  # Debian-specific CLI packages
   "python3-pip",
   "python3-venv",
   "ripgrep",
+  "unace",
+  "wakeonlan",
   "xz-utils",
   "zlib1g-dev"
 ]
@@ -85,6 +84,7 @@ cli = [  # Ubuntu-specific CLI packages
   "bridge-utils",
   "build-essential",
   "exfatprogs",
+  "fd-find",
   "libcurl4-openssl-dev",
   "libffi-dev",
   "libssl-dev",
@@ -92,6 +92,8 @@ cli = [  # Ubuntu-specific CLI packages
   "python3-pip",
   "python3-venv",
   "ripgrep",
+  "unace",
+  "wakeonlan",
   "xz-utils",
   "zlib1g-dev"
 ]
@@ -119,17 +121,19 @@ kvm_gui = [  # Ubuntu-specific KVM GUI packages
 
 [packages.fedora]
 cli = [  # Fedora-specific CLI packages
-  "p7zip",
-  "p7zip-plugins",
-  "acpicli",
+  "acpi",
   "bridge-utils",
   "Development Tools",
   "exfatprogs",
   "fd-find",
   "libcurl-devel",
+  "p7zip",
+  "p7zip-plugins",
   "powertop",
   "python3-pip",
-  "ripgrep"
+  "ripgrep",
+  "unar",
+  "wol"
 ]
 gui = [  # Fedora-specific GUI packages
   "fontawesome-fonts",
@@ -159,7 +163,6 @@ brews = [  # Hombrew brews
   "btop",
   "container",
   "curl",
-  "fastfetch",
   "fd",
   "fortune",
   "gemini-cli",

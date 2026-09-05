@@ -38,7 +38,9 @@
 [github]
     user = {{ $githubUser }}
 [core]
+{{- if $sshKey }}
     sshCommand = "ssh -i ~/.ssh/{{ $sshKey }}"
+{{- end }}
     excludesfile = ~/.config/git/ignore
 {{- if $sshSignKey }}
 [gpg]
@@ -74,7 +76,9 @@
     unstage = reset HEAD --
     last = log -1 HEAD
     amend = commit --amend --no-edit
+{{- if $sshKey }}
 [url "git@github.com:"]
     insteadOf = https://github.com/
+{{- end }}
 [include]
     path = ~/.gitconfig.local

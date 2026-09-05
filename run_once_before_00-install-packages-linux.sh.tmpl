@@ -54,6 +54,7 @@ PACKAGES+=("{{ . }}")
     echo "==> Installing Fedora Development Tools group..."
     sudo dnf groupinstall -y "Development Tools" || sudo dnf install -y @development-tools
 
+    echo "==> Building Fedora package list..."
     {{ range .packages.fedora.cli -}}
     {{ if ne . "Development Tools" -}}
     PACKAGES+=("{{ . }}")
@@ -66,8 +67,23 @@ PACKAGES+=("{{ . }}")
         {{ end -}}
     {{ end -}}
 
-    echo "==> Installing individual packages via DNF..."
-    sudo dnf install -y "${PACKAGES[@]}"
+    # Skip packages already present (dnf5 errors on "already installed") and
+    # anything not available in this Fedora release (dnf5 "No match").
+    INSTALL_PACKAGES=()
+    for pkg in "${PACKAGES[@]}"; do
+        if rpm -q "$pkg" &> /dev/null; then
+            echo "==> $pkg already installed, skipping."
+        else
+            INSTALL_PACKAGES+=("$pkg")
+        fi
+    done
+
+    if [ ${#INSTALL_PACKAGES[@]} -gt 0 ]; then
+        echo "==> Installing individual packages via DNF..."
+        sudo dnf install -y --skip-unavailable "${INSTALL_PACKAGES[@]}"
+    else
+        echo "==> No additional packages to install via DNF."
+    fi
 
 {{ else -}}
     echo "==> Error: Unsupported Linux distribution: {{ .chezmoi.osRelease.id }}"
