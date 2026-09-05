@@ -22,8 +22,7 @@ else
     curl -fL -o /tmp/google-chrome.deb "https://dl.google.com/linux/direct/$CHROME_DEB"
 
     echo "==> Installing Google Chrome..."
-    sudo dpkg -i /tmp/google-chrome.deb
-    sudo apt-get install -fy
+    sudo apt-get -o DPkg::Lock::Timeout=600 install -fy /tmp/google-chrome.deb
 
     rm -f /tmp/google-chrome.deb
 

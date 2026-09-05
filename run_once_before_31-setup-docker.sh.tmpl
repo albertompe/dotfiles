@@ -8,8 +8,8 @@ echo "==> Installing Docker from official repositories..."
 {{ if or (eq .chezmoi.osRelease.id "debian") (eq .chezmoi.osRelease.id "ubuntu") -}}
 
 # Prerequisites
-sudo apt-get update
-sudo apt-get install -y ca-certificates curl gnupg
+sudo apt-get -o DPkg::Lock::Timeout=600 update
+sudo apt-get -o DPkg::Lock::Timeout=600 install -y ca-certificates curl gnupg
 
 # Docker GPG key
 sudo install -m 0755 -d /etc/apt/keyrings
@@ -24,8 +24,8 @@ https://download.docker.com/linux/{{ .chezmoi.osRelease.id }} \
     | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 
 # Install Docker packages
-sudo apt-get update
-sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
+sudo apt-get -o DPkg::Lock::Timeout=600 update
+sudo apt-get -o DPkg::Lock::Timeout=600 install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
 
 {{ else if eq .chezmoi.osRelease.id "fedora" -}}
 
@@ -35,8 +35,22 @@ if ! sudo dnf config-manager addrepo --from-repofile "$DOCKER_REPO_URL" 2>/dev/n
     sudo dnf config-manager --add-repo "$DOCKER_REPO_URL"
 fi
 
-# Install Docker packages
-sudo dnf install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
+# Install Docker packages (rpm filter: dnf5 errors on already-installed)
+DOCKER_PACKAGES=(docker-ce docker-ce-cli containerd.io docker-compose-plugin)
+INSTALL_PACKAGES=()
+for pkg in "${DOCKER_PACKAGES[@]}"; do
+    if rpm -q "$pkg" &> /dev/null 2>&1; then
+        echo "    $pkg already installed, skipping."
+    else
+        INSTALL_PACKAGES+=("$pkg")
+    fi
+done
+
+if [ ${#INSTALL_PACKAGES[@]} -gt 0 ]; then
+    sudo dnf install -y --skip-unavailable "${INSTALL_PACKAGES[@]}"
+else
+    echo "    Docker packages already installed."
+fi
 
 {{ else -}}
 

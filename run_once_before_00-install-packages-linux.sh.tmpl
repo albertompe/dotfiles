@@ -45,8 +45,8 @@ PACKAGES+=("{{ . }}")
     {{ end -}}
 
     echo "==> Updating APT repositories and installing packages..."
-    sudo apt-get update -y
-    sudo apt-get install -y "${PACKAGES[@]}"
+    sudo apt-get -o DPkg::Lock::Timeout=600 update -y
+    sudo apt-get -o DPkg::Lock::Timeout=600 install -y "${PACKAGES[@]}"
 
 {{ else if eq .chezmoi.osRelease.id "fedora" -}}
 

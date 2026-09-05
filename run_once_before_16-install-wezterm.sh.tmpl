@@ -19,8 +19,8 @@ else
     sudo chmod 644 /usr/share/keyrings/wezterm-fury.gpg
 
     echo "==> Updating APT repositories and installing WezTerm..."
-    sudo apt update -y
-    sudo apt install -y wezterm
+    sudo apt-get -o DPkg::Lock::Timeout=600 update -y
+    sudo apt-get -o DPkg::Lock::Timeout=600 install -y wezterm
 
 {{ else if eq .chezmoi.osRelease.id "fedora" -}}
     echo "==> Installing WezTerm (nightly) via COPR..."

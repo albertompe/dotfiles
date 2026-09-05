@@ -321,7 +321,7 @@ jobs:
           export PATH="$HOME/.local/bin:$PATH"
           for f in run_once_*.tmpl; do
             out="${TMPDIR:-/tmp}/$(basename "${f%.tmpl}").sh"
-            chezmoi execute-template "$f" > "$out"
+            chezmoi execute-template < "$f" > "$out"
             if grep -q '{{' "$out"; then
               echo "ERROR: unresolved template directives in $f"
               exit 1

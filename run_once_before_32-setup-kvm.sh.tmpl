@@ -21,8 +21,8 @@ KVM_PACKAGES+=("{{ . }}")
 {{ end -}}
 
 echo "==> Installing KVM packages via APT..."
-sudo apt-get update -y
-sudo apt-get install -y "${KVM_PACKAGES[@]}"
+sudo apt-get -o DPkg::Lock::Timeout=600 update -y
+sudo apt-get -o DPkg::Lock::Timeout=600 install -y "${KVM_PACKAGES[@]}"
 
 # Add user to libvirt groups
 KVM_GROUPS=("libvirt" "kvm" "libvirt-qemu")
@@ -56,7 +56,22 @@ KVM_PACKAGES+=("{{ . }}")
 {{ end -}}
 
 echo "==> Installing KVM packages via DNF..."
-sudo dnf install -y "${KVM_PACKAGES[@]}"
+# Skip packages already present (dnf5 errors on "already installed") and
+# anything not available in this release (dnf5 "No match").
+INSTALL_PACKAGES=()
+for pkg in "${KVM_PACKAGES[@]}"; do
+    if rpm -q "$pkg" &> /dev/null; then
+        echo "    $pkg already installed, skipping."
+    else
+        INSTALL_PACKAGES+=("$pkg")
+    fi
+done
+
+if [ ${#INSTALL_PACKAGES[@]} -gt 0 ]; then
+    sudo dnf install -y --skip-unavailable "${INSTALL_PACKAGES[@]}"
+else
+    echo "    No additional KVM packages to install via DNF."
+fi
 
 # Add user to libvirt groups
 KVM_GROUPS=("libvirt" "qemu")

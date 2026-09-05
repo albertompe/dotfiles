@@ -142,7 +142,7 @@ gui = [  # Fedora-specific GUI packages
 ]
 kvm_cli = [  # Fedora-specific KVM/hypervisor CLI packages
   "qemu-system-x86",
-  "qemu-utils",
+  "qemu-img",
   "libvirt",
   "libvirt-client",
   "virt-install",

@@ -18,10 +18,10 @@ else
     echo "deb [arch=amd64,arm64 signed-by=/usr/share/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main" | sudo tee /etc/apt/sources.list.d/vscode.list
 
     echo "==> Updating APT repositories..."
-    sudo apt update -y
+    sudo apt-get -o DPkg::Lock::Timeout=600 update -y
 
     echo "==> Installing VS Code (stable + Insiders)..."
-    sudo apt install -y code code-insiders
+    sudo apt-get -o DPkg::Lock::Timeout=600 install -y code code-insiders
 
 {{ else if eq .chezmoi.osRelease.id "fedora" -}}
     echo "==> Installing VS Code via official Microsoft DNF repository..."
