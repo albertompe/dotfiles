@@ -17,38 +17,258 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - label: ubuntu / mise tools
-            os: ubuntu-latest
-            mise_tools: 'true'
-          - label: ubuntu / bare mise
-            os: ubuntu-latest
-            mise_tools: 'false'
-          - label: debian / mise tools
+          - label: debian / mise tools / services=on
             os: ubuntu-latest
             container: debian:bookworm
             mise_tools: 'true'
-          - label: debian / bare mise
+            headless: 'true'
+            container_services: 'true'
+            kvm: 'false'
+          - label: debian / mise tools / services=off
+            os: ubuntu-latest
+            container: debian:bookworm
+            mise_tools: 'true'
+            headless: 'true'
+            container_services: 'false'
+            kvm: 'false'
+          - label: debian / bare mise / services=on
             os: ubuntu-latest
             container: debian:bookworm
             mise_tools: 'false'
-          - label: fedora / mise tools
+            headless: 'true'
+            container_services: 'true'
+            kvm: 'false'
+          - label: debian / bare mise / services=off
+            os: ubuntu-latest
+            container: debian:bookworm
+            mise_tools: 'false'
+            headless: 'true'
+            container_services: 'false'
+            kvm: 'false'
+          - label: fedora / mise tools / services=on
             os: ubuntu-latest
             container: fedora:latest
             mise_tools: 'true'
-          - label: fedora / bare mise
+            headless: 'true'
+            container_services: 'true'
+            kvm: 'false'
+          - label: fedora / mise tools / services=off
+            os: ubuntu-latest
+            container: fedora:latest
+            mise_tools: 'true'
+            headless: 'true'
+            container_services: 'false'
+            kvm: 'false'
+          - label: fedora / bare mise / services=on
             os: ubuntu-latest
             container: fedora:latest
             mise_tools: 'false'
-          - label: macos / mise tools
+            headless: 'true'
+            container_services: 'true'
+            kvm: 'false'
+          - label: fedora / bare mise / services=off
+            os: ubuntu-latest
+            container: fedora:latest
+            mise_tools: 'false'
+            headless: 'true'
+            container_services: 'false'
+            kvm: 'false'
+          - label: ubuntu / mise tools / headless=on services=on kvm=on
+            os: ubuntu-latest
+            mise_tools: 'true'
+            headless: 'true'
+            container_services: 'true'
+            kvm: 'true'
+          - label: ubuntu / mise tools / headless=on services=on kvm=off
+            os: ubuntu-latest
+            mise_tools: 'true'
+            headless: 'true'
+            container_services: 'true'
+            kvm: 'false'
+          - label: ubuntu / mise tools / headless=on services=off kvm=on
+            os: ubuntu-latest
+            mise_tools: 'true'
+            headless: 'true'
+            container_services: 'false'
+            kvm: 'true'
+          - label: ubuntu / mise tools / headless=on services=off kvm=off
+            os: ubuntu-latest
+            mise_tools: 'true'
+            headless: 'true'
+            container_services: 'false'
+            kvm: 'false'
+          - label: ubuntu / mise tools / headless=off services=on kvm=on
+            os: ubuntu-latest
+            mise_tools: 'true'
+            headless: 'false'
+            container_services: 'true'
+            kvm: 'true'
+          - label: ubuntu / mise tools / headless=off services=on kvm=off
+            os: ubuntu-latest
+            mise_tools: 'true'
+            headless: 'false'
+            container_services: 'true'
+            kvm: 'false'
+          - label: ubuntu / mise tools / headless=off services=off kvm=on
+            os: ubuntu-latest
+            mise_tools: 'true'
+            headless: 'false'
+            container_services: 'false'
+            kvm: 'true'
+          - label: ubuntu / mise tools / headless=off services=off kvm=off
+            os: ubuntu-latest
+            mise_tools: 'true'
+            headless: 'false'
+            container_services: 'false'
+            kvm: 'false'
+          - label: ubuntu / bare mise / headless=on services=on kvm=on
+            os: ubuntu-latest
+            mise_tools: 'false'
+            headless: 'true'
+            container_services: 'true'
+            kvm: 'true'
+          - label: ubuntu / bare mise / headless=on services=on kvm=off
+            os: ubuntu-latest
+            mise_tools: 'false'
+            headless: 'true'
+            container_services: 'true'
+            kvm: 'false'
+          - label: ubuntu / bare mise / headless=on services=off kvm=on
+            os: ubuntu-latest
+            mise_tools: 'false'
+            headless: 'true'
+            container_services: 'false'
+            kvm: 'true'
+          - label: ubuntu / bare mise / headless=on services=off kvm=off
+            os: ubuntu-latest
+            mise_tools: 'false'
+            headless: 'true'
+            container_services: 'false'
+            kvm: 'false'
+          - label: ubuntu / bare mise / headless=off services=on kvm=on
+            os: ubuntu-latest
+            mise_tools: 'false'
+            headless: 'false'
+            container_services: 'true'
+            kvm: 'true'
+          - label: ubuntu / bare mise / headless=off services=on kvm=off
+            os: ubuntu-latest
+            mise_tools: 'false'
+            headless: 'false'
+            container_services: 'true'
+            kvm: 'false'
+          - label: ubuntu / bare mise / headless=off services=off kvm=on
+            os: ubuntu-latest
+            mise_tools: 'false'
+            headless: 'false'
+            container_services: 'false'
+            kvm: 'true'
+          - label: ubuntu / bare mise / headless=off services=off kvm=off
+            os: ubuntu-latest
+            mise_tools: 'false'
+            headless: 'false'
+            container_services: 'false'
+            kvm: 'false'
+          - label: macos / mise tools / headless=on services=on kvm=on
             os: macos-latest
             mise_tools: 'true'
-          - label: macos / bare mise
+            headless: 'true'
+            container_services: 'true'
+            kvm: 'true'
+          - label: macos / mise tools / headless=on services=on kvm=off
+            os: macos-latest
+            mise_tools: 'true'
+            headless: 'true'
+            container_services: 'true'
+            kvm: 'false'
+          - label: macos / mise tools / headless=on services=off kvm=on
+            os: macos-latest
+            mise_tools: 'true'
+            headless: 'true'
+            container_services: 'false'
+            kvm: 'true'
+          - label: macos / mise tools / headless=on services=off kvm=off
+            os: macos-latest
+            mise_tools: 'true'
+            headless: 'true'
+            container_services: 'false'
+            kvm: 'false'
+          - label: macos / mise tools / headless=off services=on kvm=on
+            os: macos-latest
+            mise_tools: 'true'
+            headless: 'false'
+            container_services: 'true'
+            kvm: 'true'
+          - label: macos / mise tools / headless=off services=on kvm=off
+            os: macos-latest
+            mise_tools: 'true'
+            headless: 'false'
+            container_services: 'true'
+            kvm: 'false'
+          - label: macos / mise tools / headless=off services=off kvm=on
+            os: macos-latest
+            mise_tools: 'true'
+            headless: 'false'
+            container_services: 'false'
+            kvm: 'true'
+          - label: macos / mise tools / headless=off services=off kvm=off
+            os: macos-latest
+            mise_tools: 'true'
+            headless: 'false'
+            container_services: 'false'
+            kvm: 'false'
+          - label: macos / bare mise / headless=on services=on kvm=on
             os: macos-latest
             mise_tools: 'false'
+            headless: 'true'
+            container_services: 'true'
+            kvm: 'true'
+          - label: macos / bare mise / headless=on services=on kvm=off
+            os: macos-latest
+            mise_tools: 'false'
+            headless: 'true'
+            container_services: 'true'
+            kvm: 'false'
+          - label: macos / bare mise / headless=on services=off kvm=on
+            os: macos-latest
+            mise_tools: 'false'
+            headless: 'true'
+            container_services: 'false'
+            kvm: 'true'
+          - label: macos / bare mise / headless=on services=off kvm=off
+            os: macos-latest
+            mise_tools: 'false'
+            headless: 'true'
+            container_services: 'false'
+            kvm: 'false'
+          - label: macos / bare mise / headless=off services=on kvm=on
+            os: macos-latest
+            mise_tools: 'false'
+            headless: 'false'
+            container_services: 'true'
+            kvm: 'true'
+          - label: macos / bare mise / headless=off services=on kvm=off
+            os: macos-latest
+            mise_tools: 'false'
+            headless: 'false'
+            container_services: 'true'
+            kvm: 'false'
+          - label: macos / bare mise / headless=off services=off kvm=on
+            os: macos-latest
+            mise_tools: 'false'
+            headless: 'false'
+            container_services: 'false'
+            kvm: 'true'
+          - label: macos / bare mise / headless=off services=off kvm=off
+            os: macos-latest
+            mise_tools: 'false'
+            headless: 'false'
+            container_services: 'false'
+            kvm: 'false'
     env:
-      CHEZMOI_HEADLESS: 'true'
-      CHEZMOI_ENABLE_CONTAINER_SERVICES: 'false'
-      CHEZMOI_ENABLE_KVM: 'false'
+      CHEZMOI_HEADLESS: ${{ matrix.headless }}
+      CHEZMOI_ENABLE_CONTAINER_SERVICES: ${{ matrix.container_services }}
+      CHEZMOI_ENABLE_KVM: ${{ matrix.kvm }}
     steps:
       - uses: actions/checkout@v4
 
@@ -94,6 +314,22 @@ jobs:
           export PATH="$HOME/.local/bin:$PATH"
           chezmoi verify --destination "$RUNNER_TEMP/ci-home" --exclude scripts
 
+      - name: Lint run_once templates for this combination
+        env:
+          CHEZMOI_MISE_TOOLS: ${{ matrix.mise_tools }}
+        run: |
+          export PATH="$HOME/.local/bin:$PATH"
+          for f in run_once_*.tmpl; do
+            out="${TMPDIR:-/tmp}/$(basename "${f%.tmpl}").sh"
+            chezmoi execute-template "$f" > "$out"
+            if grep -q '{{' "$out"; then
+              echo "ERROR: unresolved template directives in $f"
+              exit 1
+            fi
+            bash -n "$out"
+          done
+          echo "run_once templates OK"
+
       - name: Ensure python3 (container jobs)
         if: runner.os == 'Linux'
         run: |
@@ -122,60 +358,3 @@ jobs:
                   tomllib.load(fh)
               print(f"OK {f}")
           EOF
-
-  flag-combinations:
-    name: apply + run_once templates (all flag combinations)
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Install chezmoi
-        run: |
-          mkdir -p "$HOME/.local/bin"
-          sh -c "$(curl -fsLS get.chezmoi.io)" -- -b "$HOME/.local/bin"
-          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
-          echo "PATH=$HOME/.local/bin:$PATH" >> "$GITHUB_ENV"
-          "$HOME/.local/bin/chezmoi" --version
-
-      - name: Prepare home layout
-        run: |
-          mkdir -p "$HOME/.local/share/chezmoi" "$HOME/.config/chezmoi"
-          tar --exclude=.git -C . -cf - . | tar -C "$HOME/.local/share/chezmoi" -xf -
-
-      - name: Apply, verify and lint run_once across all flag combinations
-        run: |
-          set -euo pipefail
-          export PATH="$HOME/.local/bin:$PATH"
-          config="$HOME/.config/chezmoi/chezmoi.toml"
-          apply_total=0
-          lint_total=0
-          for headless in true false; do
-            for services in true false; do
-              for kvm in true false; do
-                for mise in true false; do
-                  export CHEZMOI_HEADLESS="$headless"
-                  export CHEZMOI_ENABLE_CONTAINER_SERVICES="$services"
-                  export CHEZMOI_ENABLE_KVM="$kvm"
-                  export CHEZMOI_MISE_TOOLS="$mise"
-                  chezmoi execute-template --init < .chezmoi.toml.tmpl > "$config"
-                  dest="${RUNNER_TEMP:-/tmp}/ci-combo-$headless-$services-$kvm-$mise"
-                  rm -rf "$dest"
-                  mkdir -p "$dest"
-                  chezmoi apply --destination "$dest" --exclude scripts
-                  chezmoi verify --destination "$dest" --exclude scripts
-                  apply_total=$((apply_total + 1))
-                  for f in run_once_*.tmpl; do
-                    out="${TMPDIR:-/tmp}/$(basename "${f%.tmpl}").sh"
-                    chezmoi execute-template "$f" > "$out"
-                    if grep -q '{{' "$out"; then
-                      echo "ERROR: unresolved template directives in $f (headless=$headless services=$services kvm=$kvm mise=$mise)"
-                      exit 1
-                    fi
-                    bash -n "$out"
-                    lint_total=$((lint_total + 1))
-                  done
-                done
-              done
-            done
-          done
-          echo "OK: $apply_total apply/verify + $lint_total run_once lints across 16 combinations"
