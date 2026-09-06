@@ -5,10 +5,12 @@ set -euo pipefail
 KREW_BIN=""
 if command -v krew &>/dev/null; then
     KREW_BIN="$(command -v krew)"
-elif [[ -f "$HOME/.local/share/mise/shims/krew" ]]; then
+elif [[ -x "$HOME/.local/share/mise/shims/krew" ]]; then
     KREW_BIN="$HOME/.local/share/mise/shims/krew"
-elif [[ -f "/opt/homebrew/bin/krew" ]]; then
+elif [[ -x "/opt/homebrew/bin/krew" ]]; then
     KREW_BIN="/opt/homebrew/bin/krew"
+elif [[ -x "/usr/local/bin/krew" ]]; then
+    KREW_BIN="/usr/local/bin/krew"
 fi
 
 if [[ -z "$KREW_BIN" ]]; then
@@ -30,9 +32,21 @@ KREW_PLUGINS+=("{{ . }}")
 {{ end -}}
 {{ end -}}
 
+if [ ${#KREW_PLUGINS[@]} -eq 0 ]; then
+    echo "==> No krew plugins configured; nothing to do."
+    exit 0
+fi
+
 echo "==> Installing krew plugins..."
+
+# `krew list` is captured once instead of being piped to grep inside the loop:
+# `grep -q` exits on the first match, which sends SIGPIPE to krew, and with
+# `pipefail` the pipeline then reports failure, making an installed plugin look
+# missing and turning the redundant `krew install` into a fatal error.
+INSTALLED_PLUGINS="$("$KREW_BIN" list 2>/dev/null || true)"
+
 for plugin in "${KREW_PLUGINS[@]}"; do
-    if "$KREW_BIN" list | grep -qx "$plugin"; then
+    if printf '%s\n' "$INSTALLED_PLUGINS" | grep -qx "$plugin"; then
         echo "--> $plugin is already installed."
     else
         echo "--> Installing $plugin..."

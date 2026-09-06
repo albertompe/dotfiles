@@ -9,33 +9,42 @@ if command -v google-chrome &> /dev/null; then
     echo "==> Google Chrome is already installed."
 else
 {{ if or (eq .chezmoi.osRelease.id "debian") (eq .chezmoi.osRelease.id "ubuntu") -}}
+    # Google does not publish a Linux ARM build of Chrome, so anything that is
+    # not x86_64 is skipped rather than treated as an error: a missing browser
+    # must not abort the whole apply.
+    if [ "$(uname -m)" != "x86_64" ]; then
+        echo "==> Google Chrome is only published for x86_64 on Linux (found $(uname -m)). Skipping."
+        exit 0
+    fi
+
     echo "==> Installing Google Chrome via official DEB package..."
 
-    # Detect architecture to pick the correct .deb package
-    case "$(uname -m)" in
-        x86_64)  CHROME_DEB="google-chrome-stable_current_amd64.deb" ;;
-        aarch64) CHROME_DEB="google-chrome-stable_current_arm64.deb" ;;
-        *)       echo "Error: Unsupported architecture."; exit 1 ;;
-    esac
+    CHROME_PKG="$(mktemp -t google-chrome-XXXXXX.deb)"
+    trap 'rm -f "$CHROME_PKG"' EXIT
 
-    echo "==> Downloading $CHROME_DEB..."
-    curl -fL -o /tmp/google-chrome.deb "https://dl.google.com/linux/direct/$CHROME_DEB"
+    echo "==> Downloading google-chrome-stable_current_amd64.deb..."
+    curl -fsSL -o "$CHROME_PKG" "https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb"
 
     echo "==> Installing Google Chrome..."
-    sudo apt-get -o DPkg::Lock::Timeout=600 install -fy /tmp/google-chrome.deb
-
-    rm -f /tmp/google-chrome.deb
+    sudo apt-get -o DPkg::Lock::Timeout=600 install -fy "$CHROME_PKG"
 
 {{ else if eq .chezmoi.osRelease.id "fedora" -}}
+    # Google only publishes an x86_64 RPM; skip cleanly on any other arch.
+    if [ "$(uname -m)" != "x86_64" ]; then
+        echo "==> Google Chrome is only published for x86_64 on Linux (found $(uname -m)). Skipping."
+        exit 0
+    fi
+
     echo "==> Installing Google Chrome via official RPM package..."
 
+    CHROME_PKG="$(mktemp -t google-chrome-XXXXXX.rpm)"
+    trap 'rm -f "$CHROME_PKG"' EXIT
+
     echo "==> Downloading google-chrome-stable_current_x86_64.rpm..."
-    curl -fL -o /tmp/google-chrome.rpm "https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm"
+    curl -fsSL -o "$CHROME_PKG" "https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm"
 
     echo "==> Installing Google Chrome..."
-    sudo dnf install -y /tmp/google-chrome.rpm
-
-    rm -f /tmp/google-chrome.rpm
+    sudo dnf install -y "$CHROME_PKG"
 
 {{ else -}}
     echo "==> Error: Chrome installation is not supported on {{ .chezmoi.osRelease.id }}."

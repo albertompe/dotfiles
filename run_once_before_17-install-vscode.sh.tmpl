@@ -5,8 +5,11 @@ set -euo pipefail
 
 echo "==> Checking VS Code installation..."
 
-if command -v code &> /dev/null; then
-    echo "==> VS Code is already installed."
+# Both binaries are checked: this script installs stable *and* Insiders, so
+# testing only `code` would permanently skip Insiders on a machine that already
+# has stable.
+if command -v code &> /dev/null && command -v code-insiders &> /dev/null; then
+    echo "==> VS Code (stable + Insiders) is already installed."
 else
 {{ if or (eq .chezmoi.osRelease.id "debian") (eq .chezmoi.osRelease.id "ubuntu") -}}
     echo "==> Installing VS Code via official Microsoft APT repository..."
@@ -39,7 +42,7 @@ gpgkey=https://packages.microsoft.com/keys/microsoft.asc
 EOF
 
     echo "==> Installing VS Code (stable + Insiders)..."
-    sudo dnf install -y code code-insiders
+    sudo dnf install -y --skip-unavailable code code-insiders
 
 {{ else -}}
     echo "==> Error: VS Code installation is not supported on {{ .chezmoi.osRelease.id }}."

@@ -17,10 +17,26 @@ curl -fsSL "https://download.docker.com/linux/{{ .chezmoi.osRelease.id }}/gpg" \
     | sudo gpg --batch --yes --dearmor -o /etc/apt/keyrings/docker.gpg
 sudo chmod a+r /etc/apt/keyrings/docker.gpg
 
-# Docker repository
+# Docker repository. The codename is resolved at runtime because
+# .chezmoi.osRelease.versionCodename is absent on minimal images and some
+# Debian derivatives, which would otherwise bake an unresolved placeholder into
+# the repo file and leave APT permanently broken.
+CODENAME="{{ if hasKey .chezmoi.osRelease "versionCodename" }}{{ .chezmoi.osRelease.versionCodename }}{{ end }}"
+if [ -z "$CODENAME" ] && [ -r /etc/os-release ]; then
+    # shellcheck disable=SC1091
+    CODENAME="$(. /etc/os-release && printf '%s' "${VERSION_CODENAME:-}")"
+fi
+if [ -z "$CODENAME" ] && command -v lsb_release > /dev/null 2>&1; then
+    CODENAME="$(lsb_release -cs)"
+fi
+if [ -z "$CODENAME" ]; then
+    echo "    ERROR: could not determine the distro codename for the Docker APT repository." >&2
+    exit 1
+fi
+
 echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] \
 https://download.docker.com/linux/{{ .chezmoi.osRelease.id }} \
-{{ .chezmoi.osRelease.versionCodename }} stable" \
+$CODENAME stable" \
     | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 
 # Install Docker packages
@@ -31,15 +47,17 @@ sudo apt-get -o DPkg::Lock::Timeout=600 install -y docker-ce docker-ce-cli conta
 
 # Add Docker repository (idempotent; dnf5 `addrepo`, fallback dnf4 `--add-repo`)
 DOCKER_REPO_URL="https://download.docker.com/linux/fedora/docker-ce.repo"
+DOCKER_REPO_ERR="$(mktemp -t docker-repo-XXXXXX.err)"
+trap 'rm -f "$DOCKER_REPO_ERR"' EXIT
 if [ -f /etc/yum.repos.d/docker-ce.repo ]; then
     echo "    Docker repository already configured."
-elif sudo dnf config-manager addrepo --from-repofile "$DOCKER_REPO_URL" 2>/tmp/docker-repo.err; then
+elif sudo dnf config-manager addrepo --from-repofile "$DOCKER_REPO_URL" 2>"$DOCKER_REPO_ERR"; then
     echo "    Docker repository added."
-elif sudo dnf config-manager --add-repo "$DOCKER_REPO_URL" 2>>/tmp/docker-repo.err; then
+elif sudo dnf config-manager --add-repo "$DOCKER_REPO_URL" 2>>"$DOCKER_REPO_ERR"; then
     echo "    Docker repository added."
 else
     echo "    FAILED to add the Docker repository:"
-    cat /tmp/docker-repo.err
+    cat "$DOCKER_REPO_ERR"
     exit 1
 fi
 
@@ -67,10 +85,17 @@ echo "    Docker CLI will not be available. Install manually: https://docs.docke
 
 {{ end -}}
 
-# Add user to docker group (requires re-login to take effect)
+# Add user to docker group (requires re-login to take effect).
+# The `getent` guard matters: on an unsupported distro the install branch above
+# is skipped entirely, so the group does not exist and `usermod` would exit 6
+# and abort the whole apply under `set -e`.
 {{ if not .isContainer -}}
 CURRENT_USER="$(id -un)"
-if ! groups "$CURRENT_USER" | grep -qw docker; then
+if ! getent group docker > /dev/null 2>&1; then
+    echo "    Skipping docker group setup: the 'docker' group does not exist."
+elif id -nG "$CURRENT_USER" | tr ' ' '\n' | grep -qx docker; then
+    echo "    $CURRENT_USER is already in the docker group."
+else
     echo "    Adding $CURRENT_USER to docker group..."
     sudo usermod -aG docker "$CURRENT_USER"
 fi
