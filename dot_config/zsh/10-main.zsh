@@ -4,6 +4,52 @@ umask 077
 # Path to the zsh config files
 export ZSH_CONFIG_FILES="${XDG_CONFIG_HOME:-$HOME/.config}/zsh"
 
+# Keep PATH and FPATH free of duplicates. Without this every `exec zsh` or
+# `source ~/.zshrc` re-appends each entry below and the variables grow without
+# bound for the life of the session.
+typeset -U path PATH fpath FPATH
+
+## Configure the PATH
+#
+# This block runs before any tool initialization: mise lives in ~/.local/bin on
+# Linux, and activating it before that directory is on PATH only worked by
+# accident on distros whose /etc/profile.d happens to add it.
+
+# Local bin dir, prepended so user- and mise-installed binaries win over the
+# system copies rather than being shadowed by them.
+export PATH="$HOME/.local/bin:$PATH"
+
+# Add user development settings from dev-profile file
+if [[ -f $HOME/dev-tools/dev-profile ]]; then
+    source $HOME/dev-tools/dev-profile
+fi
+
+# Add custom scripts dir to PATH
+if [[ -d $HOME/scripts ]]; then
+    export PATH="$PATH:$HOME/scripts"
+fi
+
+# Add LM Studio bin dir to PATH (LM Studio CLI - lms)
+if [[ -d $HOME/.lmstudio/bin ]]; then
+    export PATH="$PATH:$HOME/.lmstudio/bin"
+fi
+
+# Add krew (kubectl plugin manager) bin dir to PATH
+if [[ -d "${KREW_ROOT:-$HOME/.krew}/bin" ]]; then
+    export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
+fi
+
+# Antigravity (macOS only in practice; guarded so Linux does not carry a dead
+# PATH entry)
+if [[ -d "$HOME/.antigravity/antigravity/bin" ]]; then
+    export PATH="$HOME/.antigravity/antigravity/bin:$PATH"
+fi
+
+# Add Rancher Desktop bin dir to PATH
+if [[ -d "$HOME/.rd/bin" ]]; then
+    export PATH="$PATH:$HOME/.rd/bin"
+fi
+
 # Zsh history configuration
 HISTFILE=$HOME/.zsh_history # Location of the history file
 HISTSIZE=10000              # Number of commands kept in internal memory
@@ -33,12 +79,18 @@ bindkey "^[OB" down-line-or-beginning-search
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
 # confirmations, etc.) must go above this block; everything else may go below.
-if [ $SELECTED_PROMPT = "omz" ] && [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+if [ "$SELECTED_PROMPT" = "omz" ] && [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
     source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
-# Initialize zsh complations with caching
-autoload -Uz compinit && compinit -C
+## Tool manager
+#
+# mise is activated here, before the completion machinery, because it is what
+# puts kubectl, oc, k3d, oh-my-posh and the rest on PATH. Nothing below can
+# detect those tools until this has run.
+if command -v mise &>/dev/null; then
+    eval "$(mise activate zsh)"
+fi
 
 # Zsh completion styles
 zstyle ':completion:*' menu select=long-list
@@ -58,13 +110,61 @@ if [ ! -d "$ZINIT_HOME" ]; then
 fi
 source "${ZINIT_HOME}/zinit.zsh"
 
-# Load zsh plugins
+# Load zsh plugins.
+#
+# Order matters: zsh-completions must extend fpath before compinit runs;
+# fzf-tab has to be loaded before anything that wraps widgets (upstream
+# requirement), so it precedes zsh-autosuggestions; and
+# zsh-syntax-highlighting must come last because it wraps every widget
+# defined up to that point.
 zinit light zsh-users/zsh-completions
-zinit light zsh-users/zsh-autosuggestions
-zinit light zsh-users/zsh-syntax-highlighting
 
 # Replace zsh's default completion selection menu with fzf
 zinit light Aloxaf/fzf-tab
+
+## Cached tool completions
+#
+# Completions are generated once into a cache directory on fpath instead of
+# being regenerated with `source <(tool completion zsh)` on every startup.
+# Each of those subshells costs 150-600ms, and there were four of them.
+#
+# To refresh after upgrading a tool: rm -rf ~/.cache/zsh/completions
+ZSH_COMPLETION_CACHE="${XDG_CACHE_HOME:-$HOME/.cache}/zsh/completions"
+[[ -d $ZSH_COMPLETION_CACHE ]] || mkdir -p "$ZSH_COMPLETION_CACHE"
+fpath=("$ZSH_COMPLETION_CACHE" $fpath)
+
+# Generate a completion script into the cache if it is not there yet.
+# Usage: _cache_completion <command> <completion-name> [args...]
+_cache_completion() {
+    local cmd=$1 name=$2
+    shift 2
+    command -v "$cmd" &>/dev/null || return 0
+    local target="$ZSH_COMPLETION_CACHE/$name"
+    [[ -s $target ]] && return 0
+    if "$cmd" "$@" >"$target.tmp" 2>/dev/null && [[ -s $target.tmp ]]; then
+        mv "$target.tmp" "$target"
+    else
+        rm -f "$target.tmp"
+    fi
+}
+
+_cache_completion oc      _oc      completion zsh
+_cache_completion kubectl _kubectl completion zsh
+_cache_completion docker  _docker  completion zsh
+_cache_completion podman  _podman  completion zsh
+_cache_completion k3d     _k3d     completion zsh
+
+unfunction _cache_completion
+
+# compinit runs here, once, now that fpath carries both the plugin completions
+# and the cached tool completions. -C skips the fpath security audit, which is
+# the expensive part.
+autoload -Uz compinit && compinit -C
+
+# These wrap widgets, so they load after the completion system is up.
+zinit light zsh-users/zsh-autosuggestions
+zinit light zsh-users/zsh-syntax-highlighting
+
 # disable sort when completing `git checkout`
 zstyle ':completion:*:git-checkout:*' sort false
 # set descriptions format to enable group support
@@ -89,23 +189,20 @@ zstyle ':fzf-tab:*' fzf-command ftb-tmux-popup
 
 ## Prompt configuration
 
-# Mise initialization (we need to initialize mise here to have omp available)
-eval "$(mise activate zsh)"
-
 # Oh my posh conditional configuration
-if [ $SELECTED_PROMPT = "omp" ]; then
+if [ "$SELECTED_PROMPT" = "omp" ]; then
     eval "$(oh-my-posh init zsh --config $ZSH_CONFIG_FILES/oh-my-posh/omp-config.toml)"
 fi
 
 # p10k conditional configuration
-if [ $SELECTED_PROMPT = "omz" ]; then
+if [ "$SELECTED_PROMPT" = "omz" ]; then
     zinit light ohmyzsh/ohmyzsh
     zinit ice depth=1
     zinit light romkatv/powerlevel10k
 fi
 
 # Starship conditional configuration
-if [ $SELECTED_PROMPT = "starship" ]; then
+if [ "$SELECTED_PROMPT" = "starship" ]; then
     export STARSHIP_CONFIG="${ZSH_CONFIG_FILES}/starship/starship.toml"
     eval "$(starship init zsh)"
     starship config palette $STARSHIP_THEME
@@ -114,12 +211,11 @@ fi
 # p10k conditional configuration
 # Load Powerlevel10k theme.
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
-[ $SELECTED_PROMPT = "omz" ] && source $ZSH_CONFIG_FILES/p10k-themes/p10k-lean.zsh
+[ "$SELECTED_PROMPT" = "omz" ] && source $ZSH_CONFIG_FILES/p10k-themes/p10k-lean.zsh
 
 ## fzf configuration
 
 # fzf base configuration
-export FZF_BASE="$HOME/.fzf"
 export FZF_COMPLETION_TRIGGER='**'
 export FZF_DEFAULT_OPTS="
     --height 40%
@@ -150,84 +246,21 @@ _fzf_comprun() {
 ## Custom experience configuration
 
 # zoxide initialization
-eval "$(zoxide init zsh)"
-
-## Configure the PATH
-
-# Add local bin dir to PATH
-export PATH=$PATH:$HOME/.local/bin
-
-# Add user development settings from dev-profile file
-if [[ -f $HOME/dev-tools/dev-profile ]]; then
-    source $HOME/dev-tools/dev-profile
-fi
-
-# Add custom scripts dir to PATH
-if [[ -d $HOME/scripts ]]; then
-    export PATH=$PATH:$HOME/scripts
-fi
-
-# Add LM Studio bin dir to PATH (LM Studio CLI - lms)
-if [[ -d $HOME/.lmstudio/bin ]]; then
-    export PATH="$PATH:$HOME/.lmstudio/bin"
-fi
-
-# Add krew (kubectl plugin manager) bin dir to PATH
-if [[ -d "${KREW_ROOT:-$HOME/.krew}/bin" ]]; then
-    export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
-fi
-
-# Antigravity
-export PATH="$HOME/.antigravity/antigravity/bin:$PATH"
-
-# Add Rancher Desktop bin dir to PATH
-if [[ -d "$HOME/.rd/bin" ]]; then
-    export PATH="$PATH:$HOME/.rd/bin"
+if command -v zoxide &>/dev/null; then
+    eval "$(zoxide init zsh)"
 fi
 
 ## Configure autocompletions
 
-# oc autocompletion
-if command -v oc &>/dev/null; then
-    source <(oc completion zsh)
-fi
-
-# kubectl autocompletion
-if command -v kubectl &>/dev/null; then
-    source <(kubectl completion zsh)
-fi
-
-# docker autocompletion
-if command -v docker &>/dev/null; then
-    if [ ! -d ~/.docker/completions ]; then
-        mkdir -p $HOME/.docker/completions
-    fi
-    if [ ! -f ~/.docker/completions/_docker ]; then
-        docker completion zsh >$HOME/.docker/completions/_docker
-    fi
-
-    FPATH="$HOME/.docker/completions:$FPATH"
-    autoload -Uz compinit
-    compinit
-fi
-
-# podman autocompletion
-if command -v podman &>/dev/null; then
-    source <(podman completion zsh)
-fi
-
-# k3d autocompletion
-if command -v k3d &>/dev/null; then
-    source <(k3d completion zsh)
-fi
-
-# terraform autocompletion
+# terraform ships no zsh completion; it uses the bash completion bridge
 if command -v terraform &>/dev/null; then
     autoload -U +X bashcompinit && bashcompinit
-    complete -o nospace -C $(command -v terraform) terraform
+    complete -o nospace -C "$(command -v terraform)" terraform
 fi
 
 ## Other tools
 
-# dirvenv
-eval "$(direnv hook zsh)"
+# direnv
+if command -v direnv &>/dev/null; then
+    eval "$(direnv hook zsh)"
+fi

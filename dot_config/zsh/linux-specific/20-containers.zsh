@@ -1,7 +1,12 @@
 # Container engine switching
+#
+# This file lives under linux-specific/ because everything in it depends on
+# systemd and /run/user. Loaded from the common directory it exported a bogus
+# DOCKER_HOST on macOS and defined docker-*/podman-* helpers that shell out to
+# systemctl, which does not exist there.
 _CE_STATE_FILE="${XDG_CONFIG_HOME:-$HOME/.config}/container-engine"
 DOCKER_SOCK="unix:///var/run/docker.sock"
-PODMAN_SOCK="unix:///run/user/$(id -u)/podman/podman.sock"
+PODMAN_SOCK="unix:///run/user/${UID}/podman/podman.sock"
 
 ce() {
     case "${1:-}" in
@@ -20,7 +25,11 @@ ce() {
     esac
 }
 
-CONTAINER_ENGINE="$(cat "$_CE_STATE_FILE" 2>/dev/null || echo docker)"
+if [[ -r $_CE_STATE_FILE ]]; then
+    CONTAINER_ENGINE="$(<"$_CE_STATE_FILE")"
+else
+    CONTAINER_ENGINE=docker
+fi
 [ "$CONTAINER_ENGINE" = "docker" ] && export DOCKER_HOST="$DOCKER_SOCK" || export DOCKER_HOST="$PODMAN_SOCK"
 
 # Container services management

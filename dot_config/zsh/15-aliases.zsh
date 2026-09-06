@@ -4,7 +4,13 @@ alias vim=nvim
 alias vi=nvim
 alias v=nvim
 
-alias ls='ls --color=auto'
+# BSD ls (macOS) has no --color; it uses -G instead. GNU coreutils is not in
+# the darwin brew list, so this cannot assume a GNU ls is present.
+if ls --color=auto . >/dev/null 2>&1; then
+    alias ls='ls --color=auto'
+else
+    alias ls='ls -G'
+fi
 alias l='ls -lah'
 alias la='ls -lAh'
 alias ll='ls -lh'
