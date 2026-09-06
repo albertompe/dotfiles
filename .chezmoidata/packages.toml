@@ -43,6 +43,7 @@ cli = [  # Debian/Ubuntu CLI packages
   "acpi",
   "bridge-utils",
   "build-essential",
+  "universal-ctags",  # required by the nvim Tagbar plugin
   "exfatprogs",
   "fd-find",
   "libcurl4-openssl-dev",
@@ -89,6 +90,7 @@ groups = [
 cli = [  # Fedora-specific CLI packages
   "acpi",
   "bridge-utils",
+  "ctags",  # universal-ctags; required by the nvim Tagbar plugin
   "exfatprogs",
   "fd-find",
   # Build dependencies for compiling Python from source. mise config.local.toml
@@ -158,6 +160,7 @@ brews = [  # Hombrew brews
   "telnet",
   "tree",
   "unar",
+  "universal-ctags",
   "unzip",
   "wget",
   "zsh"

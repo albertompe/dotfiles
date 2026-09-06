@@ -31,7 +31,11 @@ config.window_padding = {
 -- Font
 config.font_size = 11
 config.adjust_window_size_when_changing_font_size = false
-config.font = wezterm.font('JetBrains Mono', { weight = 'Regular' })
+config.font = wezterm.font_with_fallback({
+    'MesloLGS NF',
+    'JetBrains Mono',
+    'monospace',
+})
 
 -- Cursor
 config.default_cursor_style = "SteadyBar"

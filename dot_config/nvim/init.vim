@@ -177,7 +177,11 @@ if filereadable(plugged)
   execute 'source ' . fnameescape(plugged)
 endif
 
-call plug#begin('~/.vim/plugged')
+" Plugin directory. Line 175 already resolves plug.vim itself via stdpath() on
+" nvim; the plugin dir was still hardcoded to the vim path, so nvim wrote its
+" plugins under ~/.vim/plugged.
+let plug_dir = has('nvim') ? stdpath('data') . '/plugged' : expand('~/.vim/plugged')
+call plug#begin(plug_dir)
 " Airline
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
@@ -210,8 +214,11 @@ let g:airline#extensions#tabline#right_alt_sep = ''
 "let g:airline_left_sep = ''
 "let g:airline_right_sep = ''
 
-" Switch to your current theme
-let g:airline_theme = 'onedark'
+" Switch to your current theme.
+" Honours $DOTFILES_THEME (set in ~/.zshenv) the same way wezterm and starship
+" do, instead of hardcoding a theme that disagreed with the rest of the setup.
+let g:airline_theme = get({'nord': 'nord', 'onedark': 'onedark'},
+    \ $DOTFILES_THEME, 'onedark')
 
 " Always show tabs
 set showtabline=2

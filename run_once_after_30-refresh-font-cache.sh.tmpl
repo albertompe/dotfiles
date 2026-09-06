@@ -1,0 +1,27 @@
+{{ if and (eq .chezmoi.os "linux") (not .isHeadless) -}}
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+# Fonts are deployed to ~/.fonts (see dot_fonts/). fontconfig still reads that
+# legacy path, but it does not notice new files on its own: without a cache
+# rebuild the freshly installed MesloLGS NF is invisible to wezterm, and
+# powerlevel10k renders its glyphs as boxes until the next login.
+
+echo "==> Refreshing font cache..."
+
+if ! command -v fc-cache > /dev/null 2>&1; then
+    echo "    fontconfig not installed; skipping font cache refresh."
+    exit 0
+fi
+
+if [ ! -d "$HOME/.fonts" ]; then
+    echo "    No ~/.fonts directory; nothing to refresh."
+    exit 0
+fi
+
+fc-cache -f "$HOME/.fonts" > /dev/null 2>&1 \
+    || echo "    Warning: fc-cache failed; fonts may not be visible until next login."
+
+echo "==> Font cache refresh completed."
+{{ end -}}

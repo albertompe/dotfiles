@@ -19,8 +19,16 @@ indent_size = 2
 [*.{toml,yaml,yml,json}]
 indent_size = 2
 
-[*.sh]
+# The provisioning scripts are named *.sh.tmpl, which a bare [*.sh] glob does
+# not match.
+[*.{sh,sh.tmpl,bash}]
 indent_size = 4
 
 [*.zsh]
+indent_size = 4
+
+[*.lua]
+indent_size = 2
+
+[*.py]
 indent_size = 4

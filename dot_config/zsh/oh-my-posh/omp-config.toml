@@ -109,7 +109,7 @@ console_title_template = '{{ .Shell }} in {{ .Folder }}'
   type = 'rust'
   style = 'plain'
   foreground = 'p:green'
-  backgroung = 'transparent'
+  background = 'transparent'
   template = ' {{ .Full }} '
 
   [blocks.segments.options]
