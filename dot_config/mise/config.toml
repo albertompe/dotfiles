@@ -1,4 +1,5 @@
 [tools]
+actionlint = "latest"
 ansible = "latest"
 bat = "latest"
 black = "latest"
@@ -47,6 +48,7 @@ pipx = "latest"
 python = "latest"
 redis = "latest"
 rust = "latest"
+shellcheck = "latest"
 shfmt = "latest"
 starship = "latest"
 terraform = "latest"

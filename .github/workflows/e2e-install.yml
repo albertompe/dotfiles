@@ -1,11 +1,14 @@
 name: e2e-install
 
 on:
+  # TEMPORARY: workflow_dispatch is only offered on the default branch, and
+  # main does not carry .github/ yet, so there is no other way to launch this.
+  # Remove the push trigger once this branch is merged to main.
   push:
   workflow_dispatch:
 
 concurrency:
-  group: e2e-install-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 permissions:
@@ -41,7 +44,7 @@ jobs:
       CHEZMOI_ENABLE_KVM: ${{ matrix.kvm }}
       CHEZMOI_MISE_TOOLS: 'true'
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
 
       - name: Install chezmoi
         env:

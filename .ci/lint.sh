@@ -72,13 +72,23 @@ find_chezmoi() {
 # Each row is "headless:mise_tools:container_services:kvm". These four flags are
 # the only inputs that change what the templates emit, so this covers the same
 # ground as the CI matrix without needing four operating systems.
+#
+# $LINT_COMBOS overrides the list (space or newline separated). CI uses it so
+# each matrix job lints its own combination on its own OS, which is what
+# exercises the distro-specific template branches.
 # -----------------------------------------------------------------------------
-MATRIX=(
+DEFAULT_MATRIX=(
     "false:true:true:true"
     "true:true:false:false"
     "false:false:true:false"
     "true:false:false:true"
 )
+
+if [ -n "${LINT_COMBOS:-}" ]; then
+    read -r -a MATRIX <<< "$LINT_COMBOS"
+else
+    MATRIX=("${DEFAULT_MATRIX[@]}")
+fi
 
 lint_templates() {
     local chezmoi

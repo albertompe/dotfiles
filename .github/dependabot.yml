@@ -1,0 +1,14 @@
+version: 2
+
+updates:
+  # Actions are SHA-pinned, which is only safe if something keeps the pins
+  # fresh. Dependabot rewrites the SHA and updates the trailing version
+  # comment when a new release lands.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    commit-message:
+      prefix: ci
+    labels:
+      - dependencies

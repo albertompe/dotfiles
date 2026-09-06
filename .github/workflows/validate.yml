@@ -2,17 +2,54 @@ name: validate
 
 on:
   push:
+    branches: [main]
   pull_request:
   workflow_dispatch:
 
 permissions:
   contents: read
 
+# The matrix is 40 jobs, 16 of them macOS. Without cancellation a burst of
+# pushes queues full runs indefinitely.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
+  lint:
+    name: lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+
+      - name: Install chezmoi
+        run: |
+          mkdir -p "$HOME/.local/bin"
+          sh -c "$(curl -fsLS get.chezmoi.io)" -- -b "$HOME/.local/bin"
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+          "$HOME/.local/bin/chezmoi" --version
+
+      - name: Install shellcheck and actionlint
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y shellcheck
+          curl -fsSL -o "$RUNNER_TEMP/actionlint.tar.gz" \
+            "https://github.com/rhysd/actionlint/releases/download/v${ACTIONLINT_VERSION}/actionlint_${ACTIONLINT_VERSION}_linux_amd64.tar.gz"
+          tar -C "$HOME/.local/bin" -xzf "$RUNNER_TEMP/actionlint.tar.gz" actionlint
+          shellcheck --version
+          actionlint --version
+        env:
+          ACTIONLINT_VERSION: 1.7.7
+
+      - name: Run lint
+        run: make lint
+
   validate:
     name: ${{ matrix.label }}
     runs-on: ${{ matrix.os }}
     container: ${{ matrix.container }}
+    timeout-minutes: 20
     strategy:
       fail-fast: false
       matrix:
@@ -169,97 +206,53 @@ jobs:
             headless: 'false'
             container_services: 'false'
             kvm: 'false'
-          - label: macos / mise tools / headless=on services=on kvm=on
-            os: macos-latest
-            mise_tools: 'true'
-            headless: 'true'
-            container_services: 'true'
-            kvm: 'true'
-          - label: macos / mise tools / headless=on services=on kvm=off
+          # The kvm axis is inert on macOS: run_once_before_32 is gated on
+          # `eq .chezmoi.os "linux"`, so it renders to nothing on darwin
+          # regardless. Only kvm=off is exercised here; carrying both values
+          # doubled the most expensive rows in the matrix for no coverage.
+          - label: macos / mise tools / headless=on services=on
             os: macos-latest
             mise_tools: 'true'
             headless: 'true'
             container_services: 'true'
             kvm: 'false'
-          - label: macos / mise tools / headless=on services=off kvm=on
-            os: macos-latest
-            mise_tools: 'true'
-            headless: 'true'
-            container_services: 'false'
-            kvm: 'true'
-          - label: macos / mise tools / headless=on services=off kvm=off
+          - label: macos / mise tools / headless=on services=off
             os: macos-latest
             mise_tools: 'true'
             headless: 'true'
             container_services: 'false'
             kvm: 'false'
-          - label: macos / mise tools / headless=off services=on kvm=on
-            os: macos-latest
-            mise_tools: 'true'
-            headless: 'false'
-            container_services: 'true'
-            kvm: 'true'
-          - label: macos / mise tools / headless=off services=on kvm=off
+          - label: macos / mise tools / headless=off services=on
             os: macos-latest
             mise_tools: 'true'
             headless: 'false'
             container_services: 'true'
             kvm: 'false'
-          - label: macos / mise tools / headless=off services=off kvm=on
-            os: macos-latest
-            mise_tools: 'true'
-            headless: 'false'
-            container_services: 'false'
-            kvm: 'true'
-          - label: macos / mise tools / headless=off services=off kvm=off
+          - label: macos / mise tools / headless=off services=off
             os: macos-latest
             mise_tools: 'true'
             headless: 'false'
             container_services: 'false'
             kvm: 'false'
-          - label: macos / bare mise / headless=on services=on kvm=on
-            os: macos-latest
-            mise_tools: 'false'
-            headless: 'true'
-            container_services: 'true'
-            kvm: 'true'
-          - label: macos / bare mise / headless=on services=on kvm=off
+          - label: macos / bare mise / headless=on services=on
             os: macos-latest
             mise_tools: 'false'
             headless: 'true'
             container_services: 'true'
             kvm: 'false'
-          - label: macos / bare mise / headless=on services=off kvm=on
-            os: macos-latest
-            mise_tools: 'false'
-            headless: 'true'
-            container_services: 'false'
-            kvm: 'true'
-          - label: macos / bare mise / headless=on services=off kvm=off
+          - label: macos / bare mise / headless=on services=off
             os: macos-latest
             mise_tools: 'false'
             headless: 'true'
             container_services: 'false'
             kvm: 'false'
-          - label: macos / bare mise / headless=off services=on kvm=on
-            os: macos-latest
-            mise_tools: 'false'
-            headless: 'false'
-            container_services: 'true'
-            kvm: 'true'
-          - label: macos / bare mise / headless=off services=on kvm=off
+          - label: macos / bare mise / headless=off services=on
             os: macos-latest
             mise_tools: 'false'
             headless: 'false'
             container_services: 'true'
             kvm: 'false'
-          - label: macos / bare mise / headless=off services=off kvm=on
-            os: macos-latest
-            mise_tools: 'false'
-            headless: 'false'
-            container_services: 'false'
-            kvm: 'true'
-          - label: macos / bare mise / headless=off services=off kvm=off
+          - label: macos / bare mise / headless=off services=off
             os: macos-latest
             mise_tools: 'false'
             headless: 'false'
@@ -270,7 +263,7 @@ jobs:
       CHEZMOI_ENABLE_CONTAINER_SERVICES: ${{ matrix.container_services }}
       CHEZMOI_ENABLE_KVM: ${{ matrix.kvm }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
 
       - name: Install chezmoi
         env:
@@ -323,18 +316,12 @@ jobs:
       - name: Lint run_once templates for this combination
         env:
           CHEZMOI_MISE_TOOLS: ${{ matrix.mise_tools }}
+          # Only this job's combination, but rendered on this job's OS, which
+          # is what exercises the distro-specific template branches.
+          LINT_COMBOS: "${{ matrix.headless }}:${{ matrix.mise_tools }}:${{ matrix.container_services }}:${{ matrix.kvm }}"
         run: |
           export PATH="$HOME/.local/bin:$PATH"
-          for f in run_once_*.tmpl; do
-            out="${TMPDIR:-/tmp}/$(basename "${f%.tmpl}").sh"
-            chezmoi execute-template < "$f" > "$out"
-            if grep -q '{{' "$out"; then
-              echo "ERROR: unresolved template directives in $f"
-              exit 1
-            fi
-            bash -n "$out"
-          done
-          echo "run_once templates OK"
+          .ci/lint.sh templates
 
       - name: Ensure python3 (container jobs)
         if: runner.os == 'Linux'
@@ -350,17 +337,7 @@ jobs:
 
       - name: Validate TOML files parse
         run: |
-          python3 - <<'EOF'
-          import pathlib, tomllib
-          home = pathlib.Path.home()
-          files = [
-              home / ".config/chezmoi/chezmoi.toml",
-              *sorted(pathlib.Path(".chezmoidata").glob("*.toml")),
-              pathlib.Path("dot_config/mise/config.toml"),
-              pathlib.Path("dot_config/mise/config.local.toml"),
-          ]
-          for f in files:
-              with open(f, "rb") as fh:
-                  tomllib.load(fh)
-              print(f"OK {f}")
-          EOF
+          .ci/lint.sh toml
+          python3 -c "import tomllib,sys; tomllib.load(open(sys.argv[1],'rb'))" \
+            "$HOME/.config/chezmoi/chezmoi.toml"
+          echo "OK generated chezmoi.toml"
