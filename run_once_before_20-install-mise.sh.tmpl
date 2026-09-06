@@ -12,9 +12,18 @@ export PATH="$HOME/.local/bin:$PATH"
 
 if ! command -v mise &> /dev/null; then
     echo "==> Installing mise CLI..."
-    curl https://mise.run | sh
+    # -f is what makes curl fail on an HTTP error instead of piping the error
+    # page body straight into sh; -L follows redirects, which would otherwise
+    # produce an empty body and a silent no-op install.
+    curl -fsSL https://mise.run | sh
+
+    command -v mise &> /dev/null || {
+        echo "==> Error: mise installation did not produce a usable binary." >&2
+        exit 1
+    }
 else
     echo "==> mise is already installed. Updating..."
+    # Tolerated: self-update fails for distro- or brew-packaged mise.
     mise self-update -y --quiet || true
 fi
 

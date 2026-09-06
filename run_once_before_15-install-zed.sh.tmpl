@@ -5,13 +5,15 @@ set -euo pipefail
 
 echo "==> Checking Zed editor installation..."
 
-# Asegurar que ~/.local/bin existe
+# Ensure ~/.local/bin exists
 mkdir -p "$HOME/.local/bin"
 export PATH="$HOME/.local/bin:$PATH"
 
 if ! command -v zed &> /dev/null; then
     echo "==> Installing Zed editor natively via official script..."
-    curl -f https://zed.dev/install.sh | sh
+    # -L matters here: without it a redirect yields an empty body that sh
+    # executes successfully, so nothing is installed and the script reports OK.
+    curl -fsSL https://zed.dev/install.sh | sh
 else
     echo "==> Zed editor is already installed."
 fi

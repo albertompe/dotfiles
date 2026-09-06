@@ -7,14 +7,34 @@ echo "==> Checking Homebrew installation on macOS..."
 
 if ! command -v brew &> /dev/null; then
     echo "==> Homebrew not found. Installing Homebrew..."
-    NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
-    # Asegurar que brew se cargue en la sesión actual
-    if [[ -f /opt/homebrew/bin/brew ]]; then
+    # The installer is downloaded to a file rather than run as
+    # `bash -c "$(curl ...)"`: in that form the exit status of the command
+    # substitution is discarded, so a failed download silently runs an empty
+    # script and the check below would report success with no Homebrew.
+    BREW_INSTALLER="$(mktemp -t homebrew-install-XXXXXX.sh)"
+    trap 'rm -f "$BREW_INSTALLER"' EXIT
+
+    curl -fsSL -o "$BREW_INSTALLER" \
+        https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh
+    [ -s "$BREW_INSTALLER" ] || {
+        echo "==> Error: the Homebrew installer downloaded empty." >&2
+        exit 1
+    }
+
+    NONINTERACTIVE=1 /bin/bash "$BREW_INSTALLER"
+
+    # Make brew available in the current session
+    if [[ -x /opt/homebrew/bin/brew ]]; then
         eval "$(/opt/homebrew/bin/brew shellenv)"
-    elif [[ -f /usr/local/bin/brew ]]; then
+    elif [[ -x /usr/local/bin/brew ]]; then
         eval "$(/usr/local/bin/brew shellenv)"
     fi
+
+    command -v brew &> /dev/null || {
+        echo "==> Error: Homebrew installation did not produce a usable brew." >&2
+        exit 1
+    }
 else
     echo "==> Homebrew is already installed."
 fi

@@ -292,7 +292,13 @@ jobs:
       - name: Prepare home layout
         run: |
           mkdir -p "$HOME/.local/share/chezmoi" "$HOME/.config/chezmoi"
-          tar --exclude=.git -C . -cf - . | tar -C "$HOME/.local/share/chezmoi" -xf -
+          # Not `tar | tar`: only the consumer's status is checked there, so a
+          # failing producer silently seeds an incomplete source tree and every
+          # later step validates a partial repo.
+          tar --exclude=.git -cf "$RUNNER_TEMP/src.tar" -C . .
+          tar -C "$HOME/.local/share/chezmoi" -xf "$RUNNER_TEMP/src.tar"
+          rm -f "$RUNNER_TEMP/src.tar"
+          test -f "$HOME/.local/share/chezmoi/.chezmoi.toml.tmpl"
 
       - name: Render chezmoi config
         env:

@@ -3,42 +3,51 @@
 
 set -euo pipefail
 
-# Asegurar que brew esté disponible en el PATH para este script
-if [[ -f /opt/homebrew/bin/brew ]]; then
+# Make brew available on PATH for this script
+if [[ -x /opt/homebrew/bin/brew ]]; then
     eval "$(/opt/homebrew/bin/brew shellenv)"
-elif [[ -f /usr/local/bin/brew ]]; then
+elif [[ -x /usr/local/bin/brew ]]; then
     eval "$(/usr/local/bin/brew shellenv)"
+fi
+
+if ! command -v brew &> /dev/null; then
+    echo "==> Error: brew is not available; cannot install packages." >&2
+    exit 1
 fi
 
 echo "==> Starting macOS Homebrew package installation..."
 
-# Actualizar fórmulas de Homebrew
-brew update
+# Refresh formulae. Tolerated: a transient network failure here must not abort
+# the apply before a single package has been installed.
+brew update || echo "    Warning: 'brew update' failed; continuing with the current formulae."
 
-# Añadir Taps
+# Taps. The installed list is captured once instead of being piped to grep per
+# item: grep -q exits on first match, which SIGPIPEs brew and, under pipefail,
+# makes an existing tap look missing.
 {{ if hasKey .packages.darwin "taps" -}}
+INSTALLED_TAPS="$(brew tap)"
 {{ range .packages.darwin.taps -}}
-if ! brew tap | grep -q "^{{ . }}$"; then
+if ! printf '%s\n' "$INSTALLED_TAPS" | grep -qxF '{{ . }}'; then
     echo "Adding brew tap: {{ . }}"
-    brew tap {{ . }}
+    brew tap '{{ . }}'
 fi
 {{ end -}}
 {{ end -}}
 
-# Instalar fórmulas CLI
+# CLI formulae
 {{ range .packages.darwin.brews -}}
-if ! brew list {{ . }} &>/dev/null; then
+if ! brew list '{{ . }}' &>/dev/null; then
     echo "Installing brew formula: {{ . }}"
-    brew install {{ . }}
+    brew install '{{ . }}'
 fi
 {{ end -}}
 
-# Instalar Casks GUI (si no es un entorno headless)
+# GUI casks (skipped on headless machines)
 {{ if not .isHeadless -}}
 {{ range .packages.darwin.casks -}}
-if ! brew list --cask {{ . }} &>/dev/null; then
+if ! brew list --cask '{{ . }}' &>/dev/null; then
     echo "Installing brew cask: {{ . }}"
-    brew install --cask {{ . }}
+    brew install --cask '{{ . }}'
 fi
 {{ end -}}
 {{ end -}}
