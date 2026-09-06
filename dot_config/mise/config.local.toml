@@ -14,3 +14,11 @@ auto_install = true
 # .chezmoidata/packages.toml; if something is missing there, a warning naming
 # it is what we want, not mise reaching for another package manager.
 system_deps = "warn"
+
+# Raised from the 30s default. This budget applies to opening the request, not
+# to the transfer — http_download_timeout is already 30m, which is ample even
+# for the ~1.3GB ollama tarball. It helps when the link is simply slow. It does
+# not help with contention, where a parallel job saturates the connection and a
+# new one cannot be opened at all; that case is covered by the retry in
+# run_once_after_10-install-mise-tools.sh.
+http_timeout = "120s"

@@ -45,8 +45,36 @@ fi
 # --yes is defence in depth: config.local.toml sets system_deps = "warn", so
 # mise should not ask anything, but any other confirmation prompt would hang an
 # unattended `chezmoi apply` indefinitely with no indication of why.
+#
+# The retry is not redundant with mise's own. mise retries each request three
+# times, but its backoff totals roughly 4.5 seconds, so all three attempts land
+# inside the same congestion window. The failure this guards against is
+# contention rather than a slow link: with several jobs running in parallel and
+# a ~1.3GB download in flight, other tools cannot open a connection at all and
+# burn their attempts immediately. Retrying once the whole pass has finished is
+# what actually helps, because by then the large downloads are done and the
+# link is free. `mise install` is idempotent, so the second pass only picks up
+# whatever is still missing rather than downloading everything again.
 echo "==> Installing all configured tools from $MISE_CONFIG ..."
-"$MISE_BIN" install --yes -v
+
+MISE_INSTALL_ATTEMPTS=2
+attempt=1
+while true; do
+    # Kept inside an `if` on purpose: `set -e` does not fire on a command in a
+    # condition, so a first failure does not kill the script before the retry.
+    if "$MISE_BIN" install --yes -v; then
+        break
+    fi
+
+    if [ "$attempt" -ge "$MISE_INSTALL_ATTEMPTS" ]; then
+        echo "==> Error: mise install failed after $MISE_INSTALL_ATTEMPTS attempts." >&2
+        exit 1
+    fi
+
+    echo "==> mise install failed (attempt $attempt/$MISE_INSTALL_ATTEMPTS); retrying in 15s..." >&2
+    attempt=$((attempt + 1))
+    sleep 15
+done
 
 echo "==> mise tools installation completed successfully."
 {{ end -}}
