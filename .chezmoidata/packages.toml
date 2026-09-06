@@ -96,10 +96,11 @@ cli = [  # Fedora-specific CLI packages
   "ctags",  # universal-ctags; required by the nvim Tagbar plugin
   "exfatprogs",
   "fd-find",
-  # Build dependencies for compiling Python from source. mise config.local.toml
-  # sets [settings.python] compile = true, and without these the build either
-  # fails outright or silently produces an interpreter missing ssl, zlib,
-  # lzma, curses, uuid or sqlite support. The Debian list carries equivalents.
+  # Development headers. Python normally installs prebuilt (see
+  # config.local.toml), so these are not on the hot path, but they are still
+  # needed for: mise's fallback to compiling CPython when no prebuilt exists
+  # for a requested version, building redis from source, and `pip install` of
+  # any package carrying C extensions.
   #
   # zlib is requested by capability rather than by name: Fedora 44 dropped
   # zlib-devel in favour of zlib-ng-compat-devel, and because the installer
