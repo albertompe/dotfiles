@@ -41,7 +41,7 @@ $CODENAME stable" \
 
 # Install Docker packages
 sudo apt-get -o DPkg::Lock::Timeout=600 update
-sudo apt-get -o DPkg::Lock::Timeout=600 install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
+sudo apt-get -o DPkg::Lock::Timeout=600 install -y {{ join " " .containers.docker_packages }}
 
 {{ else if eq .chezmoi.osRelease.id "fedora" -}}
 
@@ -62,7 +62,7 @@ else
 fi
 
 # Install Docker packages (rpm filter: dnf5 errors on already-installed)
-DOCKER_PACKAGES=(docker-ce docker-ce-cli containerd.io docker-compose-plugin)
+DOCKER_PACKAGES=({{ join " " .containers.docker_packages }})
 INSTALL_PACKAGES=()
 for pkg in "${DOCKER_PACKAGES[@]}"; do
     if rpm -q "$pkg" &> /dev/null 2>&1; then

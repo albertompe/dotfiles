@@ -1,0 +1,19 @@
+[containers]
+
+# Registries consulted when a short image name (e.g. "nginx") is pulled.
+# Written to /etc/containers/registries.conf by the podman setup script.
+unqualified_search_registries = [
+  "docker.io",
+  "quay.io",
+  "ghcr.io",
+  "registry.fedoraproject.org",
+  "registry.access.redhat.com"
+]
+
+# Packages installed from Docker's own repository. Identical on APT and DNF.
+docker_packages = [
+  "docker-ce",
+  "docker-ce-cli",
+  "containerd.io",
+  "docker-compose-plugin"
+]

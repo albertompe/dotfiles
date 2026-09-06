@@ -15,25 +15,29 @@ KVM_PACKAGES=()
 
 {{ if or (eq .chezmoi.osRelease.id "debian") (eq .chezmoi.osRelease.id "ubuntu") -}}
 
-{{ range .packages.debian.kvm_cli -}}
+{{ range .packages.debian_family.kvm_cli -}}
 KVM_PACKAGES+=("{{ . }}")
 {{ end -}}
 {{ if not .isHeadless -}}
-{{ range .packages.debian.kvm_gui -}}
+{{ range .packages.debian_family.kvm_gui -}}
 KVM_PACKAGES+=("{{ . }}")
 {{ end -}}
 {{ end -}}
 
 echo "==> Installing KVM packages via APT..."
 sudo apt-get -o DPkg::Lock::Timeout=600 update -y
-sudo apt-get -o DPkg::Lock::Timeout=600 install -y "${KVM_PACKAGES[@]}"
+if [ ${#KVM_PACKAGES[@]} -gt 0 ]; then
+    sudo apt-get -o DPkg::Lock::Timeout=600 install -y "${KVM_PACKAGES[@]}"
+fi
 
-# Add user to libvirt groups
+# Add user to libvirt groups. -r creates them as system groups, matching what
+# the distro packages do; a plain groupadd would pick an arbitrary GID that can
+# mismatch the ownership of /dev/kvm.
 KVM_GROUPS=("libvirt" "kvm" "libvirt-qemu")
 for grp in "${KVM_GROUPS[@]}"; do
     if ! getent group "$grp" > /dev/null 2>&1; then
         echo "    Creating group $grp..."
-        sudo groupadd "$grp"
+        sudo groupadd -r "$grp"
     fi
 done
 echo "    Adding $CURRENT_USER to groups: ${KVM_GROUPS[*]}"
@@ -63,13 +67,15 @@ echo "==> Installing KVM packages via DNF..."
 # Skip packages already present (dnf5 errors on "already installed") and
 # anything not available in this release (dnf5 "No match").
 INSTALL_PACKAGES=()
-for pkg in "${KVM_PACKAGES[@]}"; do
-    if rpm -q "$pkg" &> /dev/null; then
-        echo "    $pkg already installed, skipping."
-    else
-        INSTALL_PACKAGES+=("$pkg")
-    fi
-done
+if [ ${#KVM_PACKAGES[@]} -gt 0 ]; then
+    for pkg in "${KVM_PACKAGES[@]}"; do
+        if rpm -q "$pkg" &> /dev/null; then
+            echo "    $pkg already installed, skipping."
+        else
+            INSTALL_PACKAGES+=("$pkg")
+        fi
+    done
+fi
 
 if [ ${#INSTALL_PACKAGES[@]} -gt 0 ]; then
     sudo dnf install -y --skip-unavailable "${INSTALL_PACKAGES[@]}"
@@ -82,7 +88,7 @@ KVM_GROUPS=("libvirt" "qemu")
 for grp in "${KVM_GROUPS[@]}"; do
     if ! getent group "$grp" > /dev/null 2>&1; then
         echo "    Creating group $grp..."
-        sudo groupadd "$grp"
+        sudo groupadd -r "$grp"
     fi
 done
 echo "    Adding $CURRENT_USER to groups: ${KVM_GROUPS[*]}"

@@ -24,41 +24,36 @@ PACKAGES+=("{{ . }}")
 # 3. Add OS-specific packages
 {{ if or (eq .chezmoi.osRelease.id "debian") (eq .chezmoi.osRelease.id "ubuntu") -}}
 
-    {{ if eq .chezmoi.osRelease.id "debian" -}}
-        {{ range .packages.debian.cli -}}
+    {{ range .packages.debian_family.cli -}}
+    PACKAGES+=("{{ . }}")
+    {{ end -}}
+    {{ if not .isHeadless -}}
+        {{ range .packages.debian_family.gui -}}
         PACKAGES+=("{{ . }}")
-        {{ end -}}
-        {{ if not .isHeadless -}}
-            {{ range .packages.debian.gui -}}
-            PACKAGES+=("{{ . }}")
-            {{ end -}}
-        {{ end -}}
-    {{ else if eq .chezmoi.osRelease.id "ubuntu" -}}
-        {{ range .packages.ubuntu.cli -}}
-        PACKAGES+=("{{ . }}")
-        {{ end -}}
-        {{ if not .isHeadless -}}
-            {{ range .packages.ubuntu.gui -}}
-            PACKAGES+=("{{ . }}")
-            {{ end -}}
         {{ end -}}
     {{ end -}}
 
     echo "==> Updating APT repositories and installing packages..."
     sudo apt-get -o DPkg::Lock::Timeout=600 update -y
-    sudo apt-get -o DPkg::Lock::Timeout=600 install -y "${PACKAGES[@]}"
+    if [ ${#PACKAGES[@]} -gt 0 ]; then
+        sudo apt-get -o DPkg::Lock::Timeout=600 install -y "${PACKAGES[@]}"
+    fi
 
 {{ else if eq .chezmoi.osRelease.id "fedora" -}}
 
-    # Install Fedora Development Tools group separately to avoid DNF package resolution errors
-    echo "==> Installing Fedora Development Tools group..."
-    sudo dnf groupinstall -y "Development Tools" || sudo dnf install -y @development-tools
+    # Install dnf groups separately; they are not packages and dnf install
+    # would treat the name as one.
+    {{ range .packages.fedora.groups -}}
+    echo "==> Installing Fedora group: {{ . }}..."
+    # dnf5 dropped `groupinstall`; `group install` works on both dnf4 and dnf5.
+    sudo dnf group install -y "{{ . }}" \
+        || sudo dnf groupinstall -y "{{ . }}" \
+        || echo "    Warning: could not install group '{{ . }}'; continuing."
+    {{ end -}}
 
     echo "==> Building Fedora package list..."
     {{ range .packages.fedora.cli -}}
-    {{ if ne . "Development Tools" -}}
     PACKAGES+=("{{ . }}")
-    {{ end -}}
     {{ end -}}
 
     {{ if not .isHeadless -}}
@@ -70,13 +65,15 @@ PACKAGES+=("{{ . }}")
     # Skip packages already present (dnf5 errors on "already installed") and
     # anything not available in this Fedora release (dnf5 "No match").
     INSTALL_PACKAGES=()
-    for pkg in "${PACKAGES[@]}"; do
-        if rpm -q "$pkg" &> /dev/null; then
-            echo "==> $pkg already installed, skipping."
-        else
-            INSTALL_PACKAGES+=("$pkg")
-        fi
-    done
+    if [ ${#PACKAGES[@]} -gt 0 ]; then
+        for pkg in "${PACKAGES[@]}"; do
+            if rpm -q "$pkg" &> /dev/null; then
+                echo "==> $pkg already installed, skipping."
+            else
+                INSTALL_PACKAGES+=("$pkg")
+            fi
+        done
+    fi
 
     if [ ${#INSTALL_PACKAGES[@]} -gt 0 ]; then
         echo "==> Installing individual packages via DNF..."

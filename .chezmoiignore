@@ -1,8 +1,24 @@
+{{- /*
+  Repo documentation and tooling. These live at the source root but are not
+  dotfiles, so they must not be written to $HOME.
+*/ -}}
 Makefile
 README.md
 LICENSE
-.github
+tmux-cheatsheet.md
+
 {{- if not .enableDefaultMiseTools }}
 .config/mise/config.toml
 {{- end }}
 
+{{- /*
+  GUI-only configuration. run_once_before_15 through 18 already skip Zed,
+  WezTerm, VS Code and Chrome on a headless machine, so deploying their config
+  there is dead weight — including ~4.8MB of fonts a headless box cannot use.
+*/ -}}
+{{- if .isHeadless }}
+.config/wezterm
+.config/zed
+.config/terminator
+.fonts
+{{- end }}

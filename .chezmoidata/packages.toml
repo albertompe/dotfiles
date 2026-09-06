@@ -35,8 +35,10 @@ common_gui = [  # Linux common GUI packages
   "terminator"
 ]
 
-[packages.debian]
-cli = [  # Debian-specific CLI packages
+# Debian and Ubuntu shared identical package lists in full; they are one table
+# now so a change cannot be applied to one and silently missed on the other.
+[packages.debian_family]
+cli = [  # Debian/Ubuntu CLI packages
   "7zip",
   "acpi",
   "bridge-utils",
@@ -55,13 +57,13 @@ cli = [  # Debian-specific CLI packages
   "xz-utils",
   "zlib1g-dev"
 ]
-gui = [  # Debian-specific GUI packages
+gui = [  # Debian/Ubuntu GUI packages
   "fonts-font-awesome",
   "gnome-tweaks",
   "gufw",
   "lshw-gtk"
 ]
-kvm_cli = [  # Debian-specific KVM/hypervisor CLI packages
+kvm_cli = [  # Debian/Ubuntu KVM/hypervisor CLI packages
   "qemu-system-x86",
   "qemu-utils",
   "libvirt-daemon-system",
@@ -71,62 +73,35 @@ kvm_cli = [  # Debian-specific KVM/hypervisor CLI packages
   "cpu-checker",
   "ovmf"
 ]
-kvm_gui = [  # Debian-specific KVM GUI packages
-  "virt-manager",
-  "virt-viewer",
-  "qemu-system-gui"
-]
-
-[packages.ubuntu]
-cli = [  # Ubuntu-specific CLI packages
-  "7zip",
-  "acpi",
-  "bridge-utils",
-  "build-essential",
-  "exfatprogs",
-  "fd-find",
-  "libcurl4-openssl-dev",
-  "libffi-dev",
-  "libssl-dev",
-  "powertop",
-  "python3-pip",
-  "python3-venv",
-  "ripgrep",
-  "unace",
-  "wakeonlan",
-  "xz-utils",
-  "zlib1g-dev"
-]
-gui = [  # Ubuntu-specific GUI packages
-  "fonts-font-awesome",
-  "gnome-tweaks",
-  "gufw",
-  "lshw-gtk"
-]
-kvm_cli = [  # Ubuntu-specific KVM/hypervisor CLI packages
-  "qemu-system-x86",
-  "qemu-utils",
-  "libvirt-daemon-system",
-  "libvirt-daemon",
-  "libvirt-clients",
-  "virtinst",
-  "cpu-checker",
-  "ovmf"
-]
-kvm_gui = [  # Ubuntu-specific KVM GUI packages
+kvm_gui = [  # Debian/Ubuntu KVM GUI packages
   "virt-manager",
   "virt-viewer",
   "qemu-system-gui"
 ]
 
 [packages.fedora]
+# dnf groups, installed with `dnf group install`. Kept separate from `cli`
+# because "Development Tools" is a group, not a package, and used to be
+# filtered out of the package list by matching on its name.
+groups = [
+  "Development Tools"
+]
 cli = [  # Fedora-specific CLI packages
   "acpi",
   "bridge-utils",
-  "Development Tools",
   "exfatprogs",
   "fd-find",
+  # Build dependencies for compiling Python from source. mise config.local.toml
+  # sets [settings.python] compile = true, and without these the build either
+  # fails or silently produces an interpreter missing ssl, zlib, readline or
+  # sqlite support. The Debian list carries the equivalents.
+  "bzip2-devel",
   "libcurl-devel",
+  "libffi-devel",
+  "openssl-devel",
+  "readline-devel",
+  "sqlite-devel",
+  "zlib-devel",
   "p7zip",
   "p7zip-plugins",
   "powertop",

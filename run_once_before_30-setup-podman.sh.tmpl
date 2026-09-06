@@ -6,7 +6,7 @@ set -euo pipefail
 echo "==> Configuring Podman..."
 
 REGISTRIES_CONF="/etc/containers/registries.conf"
-SEARCH_REGISTRIES='unqualified-search-registries = ["docker.io", "quay.io", "ghcr.io", "registry.fedoraproject.org", "registry.access.redhat.com"]'
+SEARCH_REGISTRIES='unqualified-search-registries = [{{ range $i, $r := .containers.unqualified_search_registries }}{{ if $i }}, {{ end }}"{{ $r }}"{{ end }}]'
 
 # Bail out cleanly when there is nothing to configure. Without this guard the
 # `sed -i` below exits 2 on a missing file and aborts the whole apply.
