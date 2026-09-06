@@ -24,7 +24,7 @@ common_cli = [  # Linux common CLI packages
   "wavemon",
   "wget",
   "zip",
-  "zsh"
+  "zsh"  # do not remove -> set as the login shell by run_once_after_40
 ]
 
 common_gui = [  # Linux common GUI packages
@@ -163,7 +163,7 @@ brews = [  # Hombrew brews
   "universal-ctags",
   "unzip",
   "wget",
-  "zsh"
+  "zsh"  # do not remove -> set as the login shell by run_once_after_40
 ]
 casks = [  # Homrebrew casks
   "alacritty",

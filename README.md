@@ -348,13 +348,40 @@ Execution order (`run_once_*` scripts, in the order the names are sorted):
 7. `20` — mise CLI (installs/updates it).
 8. `after 10` — mise tools declared in `config.toml` (uses `GITHUB_TOKEN`).
 9. `after 20` — krew kubectl plugins, from `.chezmoidata/krew.toml`.
-10. `30`–`32` — Podman/Docker and KVM/libvirt setup (skipped when not enabled
+10. `after 30` — font cache refresh so the deployed fonts become visible.
+11. `after 40` — sets zsh as the login shell (see below).
+12. `30`–`32` — Podman/Docker and KVM/libvirt setup (skipped when not enabled
     or inside a container).
 
 GUI applications come primarily from **Flatpak**; **Snap** covers the cases
 where Flatpak is not an option; on macOS the GUI apps are Homebrew **casks**.
 All CLI tooling is provided through **mise**, APT/DNF/Homebrew packages, and a
 set of **krew** plugins for `kubectl`.
+
+### Default shell
+
+`run_once_after_40` makes **zsh** the login shell for the user running the
+apply. It runs as an `after` script so the configuration under `~/.config/zsh`
+is already in place before the switch: the first login afterwards lands on a
+configured shell rather than a bare one.
+
+It is idempotent — if the login shell is already zsh it does nothing — and
+never fatal: if zsh is missing, or sudo is unavailable, it prints a warning
+with the manual command and exits 0 rather than aborting the apply.
+
+The change is applied with `usermod -s` on Linux and `chsh -s` on macOS, which
+has no `usermod`. `chsh` is deliberately not preferred on Linux: it goes
+through PAM, and `pam_shells` treats a user whose *current* shell is absent
+from `/etc/shells` as restricted, prompting for a password even under sudo,
+which would hang an unattended apply.
+
+**The change takes effect on the next login**, not in the current session.
+To verify:
+
+```bash
+getent passwd "$(id -un)" | cut -d: -f7   # Linux
+dscl . -read "/Users/$(id -un)" UserShell  # macOS
+```
 
 ## Managing changes after install
 

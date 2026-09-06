@@ -1,0 +1,94 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+# Make zsh the user's login shell.
+#
+# Runs as an `after` script so the zsh configuration under ~/.config/zsh is
+# already in place before the shell is switched: the first login after this
+# must land on a configured shell, not a bare one.
+
+echo "==> Checking default shell..."
+
+# $USER is not guaranteed to be set under `set -u` (cron, some containers,
+# non-login shells), so the name is resolved from the uid.
+CURRENT_USER="$(id -un)"
+
+ZSH_PATH="$(command -v zsh || true)"
+if [ -z "$ZSH_PATH" ]; then
+    echo "    zsh is not installed; skipping. It is listed in packages.common_cli" >&2
+    echo "    (Linux) and packages.darwin.brews (macOS), so this points at a" >&2
+    echo "    failed package install earlier in the run." >&2
+    exit 0
+fi
+
+# usermod is preferred on Linux over chsh. chsh goes through PAM, and pam_shells
+# treats a user whose *current* shell is absent from /etc/shells as restricted,
+# prompting for a password even under sudo — which would hang an unattended
+# apply. usermod edits the account directly and has no such behaviour. macOS
+# has no usermod, so chsh is the fallback there.
+if command -v usermod > /dev/null 2>&1; then
+    SET_SHELL_CMD=usermod
+elif command -v chsh > /dev/null 2>&1; then
+    SET_SHELL_CMD=chsh
+else
+    echo "    Neither usermod nor chsh is available; cannot change the login shell."
+    exit 0
+fi
+
+# Resolve the current login shell from the user database rather than $SHELL,
+# which reflects the shell that happens to be running this script.
+current_login_shell() {
+    if command -v getent > /dev/null 2>&1; then
+        getent passwd "$CURRENT_USER" | cut -d: -f7
+    elif command -v dscl > /dev/null 2>&1; then
+        # macOS has no getent(1).
+        dscl . -read "/Users/$CURRENT_USER" UserShell 2>/dev/null | awk '{print $2}'
+    else
+        printf '%s' "${SHELL:-}"
+    fi
+}
+
+CURRENT_SHELL="$(current_login_shell)"
+
+# Compared by basename on purpose: /bin/zsh and /usr/bin/zsh are the same shell
+# on most distros, and on macOS the system zsh is already the default. Matching
+# on the full path would pointlessly rewrite one for the other.
+if [ "$(basename "${CURRENT_SHELL:-none}")" = "zsh" ]; then
+    echo "    Login shell for $CURRENT_USER is already zsh ($CURRENT_SHELL)."
+    exit 0
+fi
+
+echo "    Current login shell: ${CURRENT_SHELL:-unknown}"
+
+# Register the shell as a valid login shell. Only ever appended to an existing
+# file: creating /etc/shells from scratch with a single entry would leave every
+# other shell on the system unlisted, which is what makes pam_shells treat
+# accounts as restricted.
+if [ -f /etc/shells ]; then
+    if ! grep -qxF "$ZSH_PATH" /etc/shells; then
+        echo "    Registering $ZSH_PATH in /etc/shells..."
+        echo "$ZSH_PATH" | sudo tee -a /etc/shells > /dev/null \
+            || echo "    Warning: could not write to /etc/shells."
+    fi
+else
+    echo "    Note: /etc/shells does not exist; skipping registration."
+fi
+
+echo "    Setting $ZSH_PATH as the login shell for $CURRENT_USER..."
+
+# Run through sudo so the change is non-interactive.
+if [ "$SET_SHELL_CMD" = "usermod" ]; then
+    set_login_shell() { sudo usermod -s "$ZSH_PATH" "$CURRENT_USER"; }
+else
+    set_login_shell() { sudo chsh -s "$ZSH_PATH" "$CURRENT_USER"; }
+fi
+
+if set_login_shell 2> /dev/null; then
+    echo "    Login shell changed via $SET_SHELL_CMD. It takes effect on the next login."
+else
+    echo "    Warning: could not change the login shell automatically."
+    echo "    Run it manually with: chsh -s $ZSH_PATH"
+fi
+
+echo "==> Default shell check completed."

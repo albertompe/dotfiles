@@ -175,6 +175,20 @@ jobs:
             echo "FAIL: neither dpkg nor rpm available; cannot verify KVM packages"; exit 1
           fi
 
+      - name: Verify zsh is the login shell
+        run: |
+          command -v zsh >/dev/null || { echo "FAIL: zsh not installed"; exit 1; }
+          USER_NAME="$(id -un)"
+          if command -v getent >/dev/null 2>&1; then
+            LOGIN_SHELL="$(getent passwd "$USER_NAME" | cut -d: -f7)"
+          else
+            LOGIN_SHELL="$(dscl . -read "/Users/$USER_NAME" UserShell | awk '{print $2}')"
+          fi
+          echo "login shell for $USER_NAME: $LOGIN_SHELL"
+          [ "$(basename "$LOGIN_SHELL")" = "zsh" ] \
+            || { echo "FAIL: login shell is not zsh"; exit 1; }
+          echo "OK zsh is the login shell"
+
       - name: Check libvirtd service (informational)
         if: matrix.kvm == 'true'
         run: |
