@@ -29,10 +29,18 @@ sudo apt-get -o DPkg::Lock::Timeout=600 install -y docker-ce docker-ce-cli conta
 
 {{ else if eq .chezmoi.osRelease.id "fedora" -}}
 
-# Add Docker repository (dnf5: `config-manager addrepo --from-repofile`; fallback: dnf4 `--add-repo`)
+# Add Docker repository (idempotent; dnf5 `addrepo`, fallback dnf4 `--add-repo`)
 DOCKER_REPO_URL="https://download.docker.com/linux/fedora/docker-ce.repo"
-if ! sudo dnf config-manager addrepo --from-repofile "$DOCKER_REPO_URL" 2>/dev/null; then
-    sudo dnf config-manager --add-repo "$DOCKER_REPO_URL"
+if [ -f /etc/yum.repos.d/docker-ce.repo ]; then
+    echo "    Docker repository already configured."
+elif sudo dnf config-manager addrepo --from-repofile "$DOCKER_REPO_URL" 2>/tmp/docker-repo.err; then
+    echo "    Docker repository added."
+elif sudo dnf config-manager --add-repo "$DOCKER_REPO_URL" 2>>/tmp/docker-repo.err; then
+    echo "    Docker repository added."
+else
+    echo "    FAILED to add the Docker repository:"
+    cat /tmp/docker-repo.err
+    exit 1
 fi
 
 # Install Docker packages (rpm filter: dnf5 errors on already-installed)
