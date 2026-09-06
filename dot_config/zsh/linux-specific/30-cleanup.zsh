@@ -1,9 +1,18 @@
-# System cleanup helpers that depend on Linux-only tooling (snap, apt,
+# System cleanup helpers that depend on Linux-only tooling (snap, apt, dnf,
 # systemd-journald). They live under linux-specific/ because loaded from the
 # common directory they were defined on macOS too, where none of these
 # commands exist.
+#
+# Each one checks for its own tool before doing anything: within Linux these
+# are not interchangeable either — Fedora ships no snapd and no apt, Debian no
+# dnf — so calling one on the wrong distro used to end in command-not-found.
 
 function clean-snap() {
+    if ! command -v snap &> /dev/null; then
+        echo "snap is not installed; nothing to clean."
+        return 0
+    fi
+
     echo "Starting deep Snap cleanup..."
 
     echo "\nCurrent Snap disk usage:"
@@ -58,6 +67,11 @@ function clean-snap() {
 }
 
 function clean-apt() {
+    if ! command -v apt-get &> /dev/null; then
+        echo "apt is not installed; nothing to clean."
+        return 0
+    fi
+
     echo "Starting APT cache and package cleanup..."
 
     # Check initial cache size
@@ -66,11 +80,11 @@ function clean-apt() {
 
     # 1. Remove unused dependency packages and leftover configs
     echo "\n1. Removing orphaned dependencies and residual configs..."
-    sudo apt autoremove --purge -y
+    sudo apt-get autoremove --purge -y
 
     # 2. Clean the entire downloaded .deb archive cache
     echo "\n2. Clearing downloaded package cache..."
-    sudo apt clean
+    sudo apt-get clean
 
     # Final disk usage summary
     echo "\nAPT cleanup complete!"
@@ -80,7 +94,55 @@ function clean-apt() {
     return 0
 }
 
+# Report DNF cache size. dnf5 moved the cache to /var/cache/libdnf5; dnf4 used
+# /var/cache/dnf. Report whichever exists rather than assuming a version.
+function _dnf-cache-usage() {
+    local dir found=1
+    for dir in /var/cache/libdnf5 /var/cache/dnf; do
+        if [[ -d "$dir" ]]; then
+            sudo du -sh "$dir" 2>/dev/null && found=0
+        fi
+    done
+    (( found == 0 )) || echo "  0B"
+}
+
+function clean-dnf() {
+    if ! command -v dnf &> /dev/null; then
+        echo "dnf is not installed; nothing to clean."
+        return 0
+    fi
+
+    echo "Starting DNF cache and package cleanup..."
+
+    echo "\nCurrent DNF cache usage:"
+    _dnf-cache-usage
+
+    # 1. Orphaned dependencies, the counterpart of `apt autoremove`
+    echo "\n1. Removing orphaned dependencies..."
+    sudo dnf autoremove -y
+
+    # 2. Old kernels. Fedora keeps installonly_limit versions (3 by default)
+    #    and they live in /boot, which is small and easy to fill.
+    echo "\n2. Removing superseded kernels (keeping the 2 most recent)..."
+    sudo dnf remove --oldinstallonly --limit=2 -y
+
+    # 3. Cached packages, repo metadata and the resolver dbcache
+    echo "\n3. Clearing package cache and repository metadata..."
+    sudo dnf clean all
+
+    echo "\nDNF cleanup complete!"
+    echo "\nUpdated DNF cache usage:"
+    _dnf-cache-usage
+
+    return 0
+}
+
 function clean-journal-logs() {
+    if ! command -v journalctl &> /dev/null; then
+        echo "systemd-journald is not present; nothing to clean."
+        return 0
+    fi
+
     echo "Starting systemd journal logs cleanup..."
 
     # Check current logs disk usage
