@@ -19,12 +19,20 @@
 {{- $gpgKey     := "" -}}
 {{- $sshSignKey := "" -}}
 {{- if $secrets -}}
-{{-   $userName   = regexFind "GIT_USER_NAME=[^\r\n]+" $secrets | trimPrefix "GIT_USER_NAME=" | trim | trimAll "\"" -}}
-{{-   $userEmail  = regexFind "GIT_USER_EMAIL=[^\r\n]+" $secrets | trimPrefix "GIT_USER_EMAIL=" | trim | trimAll "\"" -}}
-{{-   $githubUser = regexFind "GIT_GITHUB_USER=[^\r\n]+" $secrets | trimPrefix "GIT_GITHUB_USER=" | trim | trimAll "\"" -}}
-{{-   $sshKey     = regexFind "GIT_SSH_KEY=[^\r\n]+" $secrets | trimPrefix "GIT_SSH_KEY=" | trim | trimAll "\"" -}}
-{{-   $gpgKey     = regexFind "GIT_SIGNING_KEY=[^\r\n]+" $secrets | trimPrefix "GIT_SIGNING_KEY=" | trim | trimAll "\"" -}}
-{{-   $sshSignKey = regexFind "GIT_SSH_SIGNING_KEY=[^\r\n]+" $secrets | trimPrefix "GIT_SSH_SIGNING_KEY=" | trim | trimAll "\"" -}}
+{{/*
+  Patterns are anchored to the start of a line with (?m) so they cannot match
+  inside a commented-out example. dot_private.zsh.example ships the optional
+  signing keys commented out, and an unanchored regexFind picked those up from
+  a verbatim copy, silently turning on commit.gpgSign with the placeholder key.
+  The optional `export ` prefix is stripped after the fact, since the anchor
+  has to account for it to match at all.
+*/}}
+{{-   $userName   = regexFind "(?m)^[ \t]*(?:export[ \t]+)?GIT_USER_NAME=[^\r\n]+" $secrets | trim | trimPrefix "export " | trim | trimPrefix "GIT_USER_NAME=" | trim | trimAll "\"" -}}
+{{-   $userEmail  = regexFind "(?m)^[ \t]*(?:export[ \t]+)?GIT_USER_EMAIL=[^\r\n]+" $secrets | trim | trimPrefix "export " | trim | trimPrefix "GIT_USER_EMAIL=" | trim | trimAll "\"" -}}
+{{-   $githubUser = regexFind "(?m)^[ \t]*(?:export[ \t]+)?GIT_GITHUB_USER=[^\r\n]+" $secrets | trim | trimPrefix "export " | trim | trimPrefix "GIT_GITHUB_USER=" | trim | trimAll "\"" -}}
+{{-   $sshKey     = regexFind "(?m)^[ \t]*(?:export[ \t]+)?GIT_SSH_KEY=[^\r\n]+" $secrets | trim | trimPrefix "export " | trim | trimPrefix "GIT_SSH_KEY=" | trim | trimAll "\"" -}}
+{{-   $gpgKey     = regexFind "(?m)^[ \t]*(?:export[ \t]+)?GIT_SIGNING_KEY=[^\r\n]+" $secrets | trim | trimPrefix "export " | trim | trimPrefix "GIT_SIGNING_KEY=" | trim | trimAll "\"" -}}
+{{-   $sshSignKey = regexFind "(?m)^[ \t]*(?:export[ \t]+)?GIT_SSH_SIGNING_KEY=[^\r\n]+" $secrets | trim | trimPrefix "export " | trim | trimPrefix "GIT_SSH_SIGNING_KEY=" | trim | trimAll "\"" -}}
 {{- end }}
 
 [user]
