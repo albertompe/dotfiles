@@ -41,8 +41,12 @@ fi
 
 # mise auto-loads ~/.config/mise/config.toml and installs every tool listed.
 # -v shows per-tool install output so failures are visible.
+#
+# --yes is defence in depth: config.local.toml sets system_deps = "warn", so
+# mise should not ask anything, but any other confirmation prompt would hang an
+# unattended `chezmoi apply` indefinitely with no indication of why.
 echo "==> Installing all configured tools from $MISE_CONFIG ..."
-"$MISE_BIN" install -v
+"$MISE_BIN" install --yes -v
 
 echo "==> mise tools installation completed successfully."
 {{ end -}}

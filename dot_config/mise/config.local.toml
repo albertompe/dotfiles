@@ -5,5 +5,15 @@
 github_attestations = false
 auto_install = true
 
+# Report missing build dependencies instead of offering to install them.
+#
+# The default is "prompt", which blocks an unattended `chezmoi apply` on a
+# yes/no question and, when it cannot map a package to the local package
+# manager, falls through to other backends — offering to install make via
+# Homebrew on Fedora, for instance. Installing system packages is the job of
+# .chezmoidata/packages.toml; if something is missing there, a warning naming
+# it is what we want, not mise reaching for another package manager.
+system_deps = "warn"
+
 [settings.python]
 compile = true

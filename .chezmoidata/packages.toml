@@ -84,8 +84,11 @@ kvm_gui = [  # Debian/Ubuntu KVM GUI packages
 # dnf groups, installed with `dnf group install`. Kept separate from `cli`
 # because "Development Tools" is a group, not a package, and used to be
 # filtered out of the package list by matching on its name.
+# Referenced by group ID, not display name. dnf5 dropped the `groupinstall`
+# subcommand and no longer resolves "Development Tools"; the ID works on both
+# dnf4 and dnf5 via `dnf install @<id>`.
 groups = [
-  "Development Tools"
+  "development-tools"
 ]
 cli = [  # Fedora-specific CLI packages
   "acpi",
@@ -95,15 +98,25 @@ cli = [  # Fedora-specific CLI packages
   "fd-find",
   # Build dependencies for compiling Python from source. mise config.local.toml
   # sets [settings.python] compile = true, and without these the build either
-  # fails or silently produces an interpreter missing ssl, zlib, readline or
-  # sqlite support. The Debian list carries the equivalents.
+  # fails outright or silently produces an interpreter missing ssl, zlib,
+  # lzma, curses, uuid or sqlite support. The Debian list carries equivalents.
+  #
+  # zlib is requested by capability rather than by name: Fedora 44 dropped
+  # zlib-devel in favour of zlib-ng-compat-devel, and because the installer
+  # passes --skip-unavailable the rename was swallowed silently and only
+  # surfaced later as a failed Python build.
+  "pkgconfig(zlib)",
   "bzip2-devel",
+  "gdbm-devel",
   "libcurl-devel",
   "libffi-devel",
+  "libuuid-devel",
+  "ncurses-devel",
   "openssl-devel",
   "readline-devel",
   "sqlite-devel",
-  "zlib-devel",
+  "tk-devel",
+  "xz-devel",
   "p7zip",
   "p7zip-plugins",
   "powertop",

@@ -41,15 +41,29 @@ PACKAGES+=("{{ . }}")
 
 {{ else if eq .chezmoi.osRelease.id "fedora" -}}
 
-    # Install dnf groups separately; they are not packages and dnf install
-    # would treat the name as one.
+    # Install dnf groups. The `@<id>` form is understood by both dnf4 and dnf5;
+    # dnf5 removed the `groupinstall` subcommand and does not resolve groups by
+    # display name.
     {{ range .packages.fedora.groups -}}
-    echo "==> Installing Fedora group: {{ . }}..."
-    # dnf5 dropped `groupinstall`; `group install` works on both dnf4 and dnf5.
-    sudo dnf group install -y "{{ . }}" \
-        || sudo dnf groupinstall -y "{{ . }}" \
-        || echo "    Warning: could not install group '{{ . }}'; continuing."
+    echo "==> Installing Fedora group: @{{ . }}..."
+    sudo dnf install -y "@{{ . }}" \
+        || sudo dnf group install -y "{{ . }}" \
+        || echo "    Warning: could not install group '{{ . }}'."
     {{ end -}}
+
+    # Verify the toolchain rather than trusting the exit code above. A missing
+    # compiler does not fail here; it fails much later and far less clearly,
+    # when mise tries to build Python or Redis from source.
+    MISSING_TOOLCHAIN=()
+    for tool in gcc make; do
+        command -v "$tool" > /dev/null 2>&1 || MISSING_TOOLCHAIN+=("$tool")
+    done
+    if [ ${#MISSING_TOOLCHAIN[@]} -gt 0 ]; then
+        echo "==> ERROR: build toolchain missing after group install: ${MISSING_TOOLCHAIN[*]}" >&2
+        echo "    Tools that compile from source (python, redis) cannot build without it." >&2
+        echo "    Try: sudo dnf install -y @development-tools" >&2
+        exit 1
+    fi
 
     echo "==> Building Fedora package list..."
     {{ range .packages.fedora.cli -}}
@@ -67,7 +81,7 @@ PACKAGES+=("{{ . }}")
     INSTALL_PACKAGES=()
     if [ ${#PACKAGES[@]} -gt 0 ]; then
         for pkg in "${PACKAGES[@]}"; do
-            if rpm -q "$pkg" &> /dev/null; then
+            if rpm -q --whatprovides "$pkg" &> /dev/null; then
                 echo "==> $pkg already installed, skipping."
             else
                 INSTALL_PACKAGES+=("$pkg")
@@ -78,6 +92,19 @@ PACKAGES+=("{{ . }}")
     if [ ${#INSTALL_PACKAGES[@]} -gt 0 ]; then
         echo "==> Installing individual packages via DNF..."
         sudo dnf install -y --skip-unavailable "${INSTALL_PACKAGES[@]}"
+
+        # --skip-unavailable is what keeps a partially-renamed package list from
+        # aborting the run, but it also hides renames completely. Report anything
+        # that is still absent so a silent drop cannot reach a build step.
+        UNRESOLVED=()
+        for pkg in "${INSTALL_PACKAGES[@]}"; do
+            rpm -q --whatprovides "$pkg" &> /dev/null || UNRESOLVED+=("$pkg")
+        done
+        if [ ${#UNRESOLVED[@]} -gt 0 ]; then
+            echo "==> Warning: not available in this Fedora release, skipped: ${UNRESOLVED[*]}" >&2
+            echo "    If one of these is a build dependency it was likely renamed;" >&2
+            echo "    check .chezmoidata/packages.toml." >&2
+        fi
     else
         echo "==> No additional packages to install via DNF."
     fi
