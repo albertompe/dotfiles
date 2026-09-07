@@ -207,7 +207,6 @@ casks = [  # Homrebrew casks
   "stats",
   "synology-drive",
   "telegram-desktop",
-  "terminator",
   "utm",
   "vagrant",
   "visual-studio-code",
