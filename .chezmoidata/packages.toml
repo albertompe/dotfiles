@@ -180,7 +180,7 @@ brews = [  # Hombrew brews
   "zsh"  # do not remove -> set as the login shell by run_once_after_40
 ]
 casks = [  # Homrebrew casks
-  "alacritty",
+  # "alacritty",  removed temporarily from homebrew
   "alt-tab",
   "antigravity",
   "appcleaner",
