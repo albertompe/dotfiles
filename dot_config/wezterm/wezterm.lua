@@ -32,7 +32,7 @@ config.window_padding = {
 config.font_size = 11
 config.adjust_window_size_when_changing_font_size = false
 config.font = wezterm.font_with_fallback({
-    'MesloLGS NF',
+    'MesloLGS Nerd Font Mono',
     'JetBrains Mono',
     'monospace',
 })

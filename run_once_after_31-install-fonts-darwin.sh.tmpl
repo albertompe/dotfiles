@@ -4,8 +4,8 @@
 set -euo pipefail
 
 # On macOS ~/.fonts is a fontconfig path that CoreText ignores, so wezterm and
-# other apps never see the deployed MesloLGS NF. User fonts must live in
-# ~/Library/Fonts to be picked up by the system font books.
+# other apps never see the deployed MesloLGS Nerd Font Mono. User fonts must
+# live in ~/Library/Fonts to be picked up by the system font books.
 echo "==> Installing fonts for macOS..."
 
 if [ -d "$HOME/.fonts" ]; then

@@ -5,7 +5,8 @@ set -euo pipefail
 
 # Fonts are deployed to ~/.fonts (see dot_fonts/). fontconfig still reads that
 # legacy path, but it does not notice new files on its own: without a cache
-# rebuild the freshly installed MesloLGS NF is invisible to wezterm, and
+# rebuild the freshly installed MesloLGS Nerd Font Mono is invisible to
+# wezterm, and
 # powerlevel10k renders its glyphs as boxes until the next login.
 
 echo "==> Refreshing font cache..."
