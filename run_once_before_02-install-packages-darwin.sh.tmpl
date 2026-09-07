@@ -38,7 +38,9 @@ fi
 {{ range .packages.darwin.brews -}}
 if ! brew list '{{ . }}' &>/dev/null; then
     echo "Installing brew formula: {{ . }}"
-    brew install '{{ . }}'
+    # stdin from /dev/null disables brew's interactive dependency prompt
+    # (Ask.confirm? skips it when stdin is not a TTY).
+    brew install '{{ . }}' < /dev/null
 fi
 {{ end -}}
 
@@ -47,7 +49,7 @@ fi
 {{ range .packages.darwin.casks -}}
 if ! brew list --cask '{{ . }}' &>/dev/null; then
     echo "Installing brew cask: {{ . }}"
-    brew install --cask '{{ . }}'
+    brew install --cask '{{ . }}' < /dev/null
 fi
 {{ end -}}
 {{ end -}}
