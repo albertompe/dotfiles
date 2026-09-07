@@ -5,6 +5,16 @@ set -euo pipefail
 
 echo "==> Checking Homebrew installation on macOS..."
 
+# chezmoi runs scripts in a non-login, non-interactive shell where PATH does
+# not include Homebrew's bin dir (on macOS it is added by ~/.zprofile). Load
+# the brew environment up front so an existing installation is detected and the
+# install step stays idempotent.
+if [[ -x /opt/homebrew/bin/brew ]]; then
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+elif [[ -x /usr/local/bin/brew ]]; then
+    eval "$(/usr/local/bin/brew shellenv)"
+fi
+
 if ! command -v brew &> /dev/null; then
     echo "==> Homebrew not found. Installing Homebrew..."
 
@@ -21,6 +31,25 @@ if ! command -v brew &> /dev/null; then
         echo "==> Error: the Homebrew installer downloaded empty." >&2
         exit 1
     }
+
+    # The installer runs with NONINTERACTIVE=1, which makes it use `sudo -n`
+    # and abort if a password is required. Cache the credentials up front when
+    # run from an interactive terminal so the non-interactive installer can use
+    # them. Without a TTY there is nothing to pre-cache, so fail with a clear
+    # hint rather than a cryptic sudo error.
+    if ! sudo -n -v 2>/dev/null; then
+        if [[ -t 0 ]]; then
+            echo "==> Requesting sudo access for Homebrew installation..."
+            sudo -v || {
+                echo "==> Error: sudo access is required for Homebrew installation." >&2
+                exit 1
+            }
+        else
+            echo "==> Error: Homebrew installation needs sudo access but no TTY is available." >&2
+            echo "    Run 'sudo -v' first, or grant passwordless sudo." >&2
+            exit 1
+        fi
+    fi
 
     NONINTERACTIVE=1 /bin/bash "$BREW_INSTALLER"
 
